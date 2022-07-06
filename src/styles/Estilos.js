@@ -26,7 +26,8 @@ const cores = {
     branco: '#FFFFFF',
     fonteBranco: '#F5F2F2',
     fonteCinza: '#7C7979',
-    pretoBorder: '#181818'
+    pretoBorder: '#181818',
+    vermelhoBorder: '#FC6A6A'
 }
 
 const estilos = {

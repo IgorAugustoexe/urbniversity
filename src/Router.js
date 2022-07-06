@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import TelaHome from './screens/TelaHome'
 import TelaLogin from './screens/TelaLogin'
+import TelaCadastro from './screens/TelaCadastro'
+
 const Stack = createStackNavigator()
 
 export default function App() {
@@ -12,6 +14,10 @@ export default function App() {
                 <Stack.Screen
                     name="login"
                     component={TelaLogin}
+                />
+                <Stack.Screen
+                    name="cadastro"
+                    component={TelaCadastro}
                 />
                 <Stack.Screen
                     name="home"
