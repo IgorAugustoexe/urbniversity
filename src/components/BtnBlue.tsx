@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native'
-import { config, cores } from '../styles/Estilos'
+import { cores } from '../styles/Estilos'
 
 type Props = {
     text: string,

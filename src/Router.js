@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import TelaHome from './screens/TelaHome'
 import TelaLogin from './screens/TelaLogin'
 import TelaCadastro from './screens/TelaCadastro'
+import ModalErroGenerico from './screens/ModalErroGenerico'
 
 const Stack = createStackNavigator()
 
@@ -22,6 +23,15 @@ export default function App() {
                 <Stack.Screen
                     name="home"
                     component={TelaHome}
+                />
+                <Stack.Screen
+                    name="modalErro"
+                    component={ModalErroGenerico}
+                    options={{
+                        presentation: 'transparentModal',
+                        animationEnabled: true,
+                        cardOverlay: true
+                    }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

@@ -24,7 +24,7 @@ export const removerAcento = (string) => {
     return string
 }
 
-export const validarEmail = (email) => {
+export const verificaEmail = (email) => {
     /* eslint-disable */
     const reg = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
     if (!(reg.test(email.trim()))) {

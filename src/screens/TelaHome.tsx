@@ -1,15 +1,24 @@
 import React, { useState, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { config, cores, estilos } from '../styles/Estilos'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
 import { faMapLocationDot } from '@fortawesome/free-solid-svg-icons/faMapLocationDot'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 
+type navigation = {
+    props: {
+        isDrive: boolean
+    }
+}
+
 export default function TelaHome() {
     const navigation = useNavigation<any>()
+    const route = useRoute<RouteProp<navigation, 'props'>>()
+
+    console.log(route.params)
 
     const [temMotorista, setTemMotorista] = useState<boolean>(true)
 
