@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { StyleSheet, View, Text, TextInput } from 'react-native'
 import { config, cores } from '../styles/Estilos'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -13,21 +13,22 @@ type Props = {
     onFocus?: any,
     placeholder?: string,
     autoCapitalize?: any,
+    styleIcon?: any,
     icon?: any,
     secureText?: boolean,
     maxLenght?: number
 }
 
-export default function InputDadosUser({ onChangeText, style, value, txtErro, textoInput, keyboardType, onFocus, placeholder, autoCapitalize, secureText, maxLenght, icon }: Props) {
+export default function InputDadosUser({ onChangeText, style, value, txtErro, textoInput, keyboardType, onFocus, placeholder, autoCapitalize, secureText, maxLenght, styleIcon, icon }: Props) {
     const attTextvalue = (text: string) => {
         onChangeText && onChangeText(text)
     }
 
     return (
-        <Fragment>
-            <Text style={[styles.txtInput, txtErro.length > 0 && { color: cores.vermelhoBorder }]}>{textoInput}</Text>
+        <View style={[{ width: '90%', marginLeft: config.windowWidth / 20 }, style]}>
+            <Text style={[stylesInput.txtInput, txtErro.length > 0 && { color: cores.vermelhoBorder }]}>{textoInput}</Text>
             <TextInput
-                style={[styles.inputStyle, txtErro.length > 0 && { borderColor: cores.vermelhoBorder }, style]}
+                style={[stylesInput.inputStyle, txtErro.length > 0 && { borderColor: cores.vermelhoBorder }]}
                 value={value}
                 keyboardType={keyboardType}
                 onChangeText={(text) => attTextvalue(text)}
@@ -38,17 +39,17 @@ export default function InputDadosUser({ onChangeText, style, value, txtErro, te
                 secureTextEntry={secureText}
                 maxLength={maxLenght}
             />
-            <FontAwesomeIcon icon={icon} size={config.windowWidth / 16} color={txtErro.length > 0 ? cores.vermelhoBorder : cores.branco} style={styles.styleIcon} />
+            <FontAwesomeIcon icon={icon} size={config.windowWidth / 16} color={txtErro.length > 0 ? cores.vermelhoBorder : cores.branco} style={[stylesInput.styleIcon, styleIcon]} />
             {txtErro.length > 0 &&
-                <View style={styles.containerInputInvalido}>
-                    <Text style={styles.txtErro}>{txtErro}</Text>
+                <View style={stylesInput.containerInputInvalido}>
+                    <Text style={stylesInput.txtErro}>{txtErro}</Text>
                 </View>
             }
-        </Fragment>
+        </View>
     )
 }
 
-const styles = StyleSheet.create({
+export const stylesInput = StyleSheet.create({
     txtInput: {
         fontSize: 16,
         color: cores.fonteBranco

@@ -18,7 +18,7 @@ export default function TelaHome() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    console.log(route.params)
+    console.log(route)
 
     const [temMotorista, setTemMotorista] = useState<boolean>(true)
 

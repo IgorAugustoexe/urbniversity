@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
 import { config, cores, estilos } from '../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
@@ -7,7 +7,7 @@ import { verificaEmail } from '../helpers/FuncoesPadrao'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap'
+import { faUserGraduate } from '@fortawesome/free-solid-svg-icons/faUserGraduate'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import BtnBlue from '../components/BtnBlue'
 import InputDadosUser from '../components/InputDadosUser'
@@ -52,7 +52,7 @@ export default function TelaLogin() {
         navigation.navigate('home', { isDrive: true })
         setLoaderReq(false)
 
-        /*
+        return
 
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
@@ -65,16 +65,12 @@ export default function TelaLogin() {
             return
         }
 
-
-        console.log(loginMotorista)
         // IMPLENTAR REQUISIÇÃO
-        if (!loginMotorista) {
-            console.log('entrou')
+        if (loginMotorista) {
             navigation.navigate("home", { isDrive: true })
         } navigation.navigate("home")
 
         setLoaderReq(false)
-        */
     }
 
     return (
@@ -88,10 +84,10 @@ export default function TelaLogin() {
                     <Text style={styles.txtLogo}>URBNiversity</Text>
                     <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
                         <Text style={styles.txtTipoLogin}>{loginMotorista ? 'MOTORISTA' : 'ESTUDANTE'}</Text>
-                        <FontAwesomeIcon icon={loginMotorista ? faVanShuttle : faGraduationCap} size={config.windowWidth / 16} color={cores.azulBtn} style={{ left: 10 }} />
+                        <FontAwesomeIcon icon={loginMotorista ? faVanShuttle : faUserGraduate} size={config.windowWidth / 16} color={cores.azulBtn} style={{ left: 10 }} />
                     </View>
                 </View>
-                <View style={{ paddingHorizontal: config.windowWidth / 20 }}>
+                <Fragment>
                     <View style={{ paddingVertical: config.windowWidth / 10, alignItems: 'center' }}>
                         <Text style={styles.txtBold}>Login</Text>
                     </View>
@@ -121,7 +117,7 @@ export default function TelaLogin() {
                             secureText={true}
                         />
                     </View>
-                </View>
+                </Fragment>
 
                 <TouchableOpacity onPress={() => realizarLogin()} disabled={loaderReq} style={{ marginVertical: config.windowWidth / 8, marginHorizontal: config.windowWidth / 4 }}>
                     <BtnBlue

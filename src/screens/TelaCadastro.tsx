@@ -97,6 +97,12 @@ export default function TelaCadastro() {
     const realizarCadastro = () => {
         setLoaderReq(true)
 
+
+        navigation.navigate('finalizacaoCadastro', { isDrive: false })
+
+        setLoaderReq(false)
+        return
+
         !tipoCadastrovalido && setTipoCadastroValido(true)
         txtIdInvalido.length > 0 && setTxtIdInvalido('')
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
@@ -129,7 +135,7 @@ export default function TelaCadastro() {
                 keyboardShouldPersistTaps={'handled'}
                 showsVerticalScrollIndicator={false}
             >
-                <View style={{ marginHorizontal: config.windowWidth / 20, paddingTop: config.windowWidth / 20 }}>
+                <View style={{ paddingTop: config.windowWidth / 20 }}>
                     <View>
                         <Text style={[styles.txt, !tipoCadastrovalido && { color: cores.vermelhoBorder }]}>Deseja-se Cadastrar como?</Text>
                         <View style={styles.containerBtnTipoCadastro}>

@@ -18,7 +18,7 @@ type PropsButton = {
 }
 
 export const BackButton = ({ color }: PropsButton) => (
-    <FontAwesomeIcon icon={faChevronLeft} size={config.windowWidth / 13} color={color ? color : cores.branco} />
+    <FontAwesomeIcon icon={faChevronLeft} size={config.windowWidth / 14} color={color ? color : cores.branco} />
 )
 
 export const RightButton = ({ color }: PropsButton) => (
@@ -65,9 +65,10 @@ const styles = StyleSheet.create({
     },
 
     tituloNavBar: {
-        fontSize: 22,
-        fontWeight: '700',
+        fontSize: 18,
+        fontWeight: '800',
         color: cores.fonteBranco,
+        textTransform: 'uppercase',
     },
 
     areaTouch: {

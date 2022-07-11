@@ -5,6 +5,7 @@ import TelaHome from './screens/TelaHome'
 import TelaLogin from './screens/TelaLogin'
 import TelaCadastro from './screens/TelaCadastro'
 import ModalErroGenerico from './screens/ModalErroGenerico'
+import TelaFinalizacaoCadastro from './screens/FinalizacaoCadastro'
 
 const Stack = createStackNavigator()
 
@@ -19,6 +20,10 @@ export default function App() {
                 <Stack.Screen
                     name="cadastro"
                     component={TelaCadastro}
+                />
+                <Stack.Screen
+                    name="finalizacaoCadastro"
+                    component={TelaFinalizacaoCadastro}
                 />
                 <Stack.Screen
                     name="home"
