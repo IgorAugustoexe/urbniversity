@@ -1,16 +1,16 @@
 import React, { Fragment, useState } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
-import { config, cores, estilos } from '../styles/Estilos'
+import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { verificaEmail } from '../helpers/FuncoesPadrao'
+import { verificaEmail } from '../../helpers/FuncoesPadrao'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
 import { faUserGraduate } from '@fortawesome/free-solid-svg-icons/faUserGraduate'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
-import BtnBlue from '../components/BtnBlue'
-import InputDadosUser from '../components/InputDadosUser'
+import BtnBlue from '../../components/BtnBlue'
+import InputDadosUser from '../../components/InputDadosUser'
 
 
 export default function TelaLogin() {

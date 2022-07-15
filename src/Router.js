@@ -1,11 +1,11 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import TelaHome from './screens/TelaHome'
-import TelaLogin from './screens/TelaLogin'
-import TelaCadastro from './screens/TelaCadastro'
+import TelaHome from './screens/home/TelaHome'
+import TelaLogin from './screens/loginCadastro/TelaLogin'
+import TelaCadastro from './screens/loginCadastro/TelaCadastro'
+import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro'
 import ModalErroGenerico from './screens/ModalErroGenerico'
-import TelaFinalizacaoCadastro from './screens/FinalizacaoCadastro'
 
 const Stack = createStackNavigator()
 
@@ -22,8 +22,8 @@ export default function App() {
                     component={TelaCadastro}
                 />
                 <Stack.Screen
-                    name="finalizacaoCadastro"
-                    component={TelaFinalizacaoCadastro}
+                    name="finalizarCadastro"
+                    component={TelaFinalizarCadastro}
                 />
                 <Stack.Screen
                     name="home"

@@ -1,13 +1,13 @@
 import React, { useState, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
-import { config, cores, estilos } from '../styles/Estilos'
+import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { AsYouType } from 'libphonenumber-js'
-import { verificaEmail } from '../helpers/FuncoesPadrao'
-import NavBar from '../components/NavBar'
-import InputDadosUser from '../components/InputDadosUser'
-import BtnBlue from '../components/BtnBlue'
+import { verificaEmail } from '../../helpers/FuncoesPadrao'
+import NavBar from '../../components/NavBar'
+import InputDadosUser from '../../components/InputDadosUser'
+import BtnBlue from '../../components/BtnBlue'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
 import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard'
@@ -97,8 +97,11 @@ export default function TelaCadastro() {
     const realizarCadastro = () => {
         setLoaderReq(true)
 
-
-        navigation.navigate('finalizacaoCadastro', { isDrive: false })
+        if (tipoCadastro == 2) {
+            navigation.navigate('finalizarCadastro', { isDrive: true })
+        } else {
+            navigation.navigate('finalizarCadastro', { isDrive: false })
+        }
 
         setLoaderReq(false)
         return
@@ -123,8 +126,8 @@ export default function TelaCadastro() {
 
         // IMPLENTAR REQUISIÇÃO
         if (tipoCadastro == 2) {
-            navigation.navigate('home', { isDrive: true })
-        } navigation.navigate('home')
+            navigation.navigate('finalizarCadastro', { isDrive: true })
+        } navigation.navigate('finalizarCadastro')
     }
 
     return (
@@ -140,14 +143,14 @@ export default function TelaCadastro() {
                         <Text style={[styles.txt, !tipoCadastrovalido && { color: cores.vermelhoBorder }]}>Deseja-se Cadastrar como?</Text>
                         <View style={styles.containerBtnTipoCadastro}>
                             <TouchableOpacity
-                                style={[styles.btn, tipoCadastro == 1 && { backgroundColor: cores.azulBtn, borderColor: cores.branco }, !tipoCadastrovalido && { borderColor: cores.vermelhoBorder }]}
+                                style={[styles.btn, tipoCadastro == 1 && { backgroundColor: cores.azulPrimario, borderColor: cores.branco }, !tipoCadastrovalido && { borderColor: cores.vermelhoBorder }]}
                                 onPress={() => { setTipoCadastro(1), setTipoCadastroValido(true) }}
                             >
                                 <Text style={[styles.txtBtn, !tipoCadastrovalido && { color: cores.vermelhoBorder }]}>Estudante</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={[styles.btn, tipoCadastro == 2 && { backgroundColor: cores.azulBtn, borderColor: cores.branco }, !tipoCadastrovalido && { borderColor: cores.vermelhoBorder }]}
+                                style={[styles.btn, tipoCadastro == 2 && { backgroundColor: cores.azulPrimario, borderColor: cores.branco }, !tipoCadastrovalido && { borderColor: cores.vermelhoBorder }]}
                                 onPress={() => { setTipoCadastro(2), setTipoCadastroValido(true) }}
                             >
                                 <Text style={[styles.txtBtn, !tipoCadastrovalido && { color: cores.vermelhoBorder }]}>Motorista</Text>

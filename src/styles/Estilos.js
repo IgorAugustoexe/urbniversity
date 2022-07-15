@@ -17,10 +17,10 @@ const config = {
 }
 
 const cores = {
-    backgroundPadrao: '#1D2740',
-    azulPrimario: '#3B4E80',
+    backgroundPadrao: '#2b2b2b',
+    azulPrimario: '#2F3F66',
+    azulSecundario: '#1D2740',
     azulBtn: '#5875BF',
-    azulEscuro: '#2F3F66',
     azulDisabled: 'rgba(29, 39, 64, 0.3)',
     disabled: 'rgba(255,255,255, 0.3)',
     branco: '#FFFFFF',

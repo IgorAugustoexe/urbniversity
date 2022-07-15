@@ -6,11 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 type Props = {
     onChangeText?: (text: string) => void,
     style?: any,
+    styleInput?: any,
     value: string,
     txtErro: string,
     textoInput: string,
     keyboardType?: any,
     onFocus?: any,
+    onBlur?: any,
+    editable?: boolean,
     placeholder?: string,
     autoCapitalize?: any,
     styleIcon?: any,
@@ -19,7 +22,7 @@ type Props = {
     maxLenght?: number
 }
 
-export default function InputDadosUser({ onChangeText, style, value, txtErro, textoInput, keyboardType, onFocus, placeholder, autoCapitalize, secureText, maxLenght, styleIcon, icon }: Props) {
+export default function InputDadosUser({ onChangeText, style, styleInput, value, txtErro, textoInput, keyboardType, onFocus, onBlur, editable, placeholder, autoCapitalize, secureText, maxLenght, styleIcon, icon }: Props) {
     const attTextvalue = (text: string) => {
         onChangeText && onChangeText(text)
     }
@@ -28,18 +31,22 @@ export default function InputDadosUser({ onChangeText, style, value, txtErro, te
         <View style={[{ width: '90%', marginLeft: config.windowWidth / 20 }, style]}>
             <Text style={[stylesInput.txtInput, txtErro.length > 0 && { color: cores.vermelhoBorder }]}>{textoInput}</Text>
             <TextInput
-                style={[stylesInput.inputStyle, txtErro.length > 0 && { borderColor: cores.vermelhoBorder }]}
+                style={[stylesInput.inputStyle, txtErro.length > 0 && { borderColor: cores.vermelhoBorder }, styleInput]}
                 value={value}
                 keyboardType={keyboardType}
                 onChangeText={(text) => attTextvalue(text)}
                 onFocus={onFocus}
+                onBlur={onBlur}
+                editable={editable}
                 placeholder={placeholder}
                 placeholderTextColor={cores.fonteCinza}
                 autoCapitalize={autoCapitalize}
                 secureTextEntry={secureText}
                 maxLength={maxLenght}
             />
-            <FontAwesomeIcon icon={icon} size={config.windowWidth / 16} color={txtErro.length > 0 ? cores.vermelhoBorder : cores.branco} style={[stylesInput.styleIcon, styleIcon]} />
+            {icon &&
+                <FontAwesomeIcon icon={icon} size={config.windowWidth / 16} color={txtErro.length > 0 ? cores.vermelhoBorder : cores.branco} style={[stylesInput.styleIcon, styleIcon]} />
+            }
             {txtErro.length > 0 &&
                 <View style={stylesInput.containerInputInvalido}>
                     <Text style={stylesInput.txtErro}>{txtErro}</Text>
@@ -60,7 +67,7 @@ export const stylesInput = StyleSheet.create({
         borderColor: cores.azulBtn,
         padding: 5,
         color: cores.fonteBranco,
-        paddingRight: config.windowWidth / 9
+        paddingRight: config.windowWidth / 9,
     },
 
     styleIcon: {
@@ -76,7 +83,8 @@ export const stylesInput = StyleSheet.create({
     },
 
     txtErro: {
-        fontSize: 14,
-        color: cores.vermelhoBorder
+        fontSize: 11,
+        color: cores.vermelhoBorder,
+        bottom: 3
     }
 })

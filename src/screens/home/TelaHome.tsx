@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
-import { config, cores, estilos } from '../styles/Estilos'
+import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     txtCodigoRota: {
         fontSize: 16,
         color: cores.fonteBranco,
-        backgroundColor: cores.azulEscuro,
+        backgroundColor: cores.azulPrimario,
         position: 'absolute',
         top: -16,
         left: 10,
