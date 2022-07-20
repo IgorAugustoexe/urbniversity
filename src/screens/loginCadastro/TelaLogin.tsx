@@ -49,7 +49,13 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        navigation.navigate('home', { isDrive: true })
+        if (loginMotorista) {
+            navigation.navigate('home', { isDrive: true })
+        } else {
+            navigation.navigate('home', { isDrive: false })
+        }
+
+
         setLoaderReq(false)
 
         return

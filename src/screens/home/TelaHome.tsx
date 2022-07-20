@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
+import { useDispatch } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -7,6 +8,7 @@ import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
 import { faMapLocationDot } from '@fortawesome/free-solid-svg-icons/faMapLocationDot'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
+
 
 type navigation = {
     props: {
@@ -17,8 +19,10 @@ type navigation = {
 export default function TelaHome() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
+    const dispatch = useDispatch()
 
-    console.log(route)
+
+    console.log(route.params)
 
     const [temMotorista, setTemMotorista] = useState<boolean>(true)
 
