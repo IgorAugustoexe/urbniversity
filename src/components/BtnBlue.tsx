@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     btn: {
         backgroundColor: cores.azulBtn,
         alignItems: 'center',
-        borderWidth: 1,
         borderRadius: 20,
         padding: 13,
     },

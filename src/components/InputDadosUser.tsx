@@ -28,7 +28,7 @@ export default function InputDadosUser({ onChangeText, style, styleInput, value,
     }
 
     return (
-        <View style={[{ width: '90%', marginLeft: config.windowWidth / 20 }, style]}>
+        <View style={[{ width: '90%', marginHorizontal: config.windowWidth / 20 }, style]}>
             <Text style={[stylesInput.txtInput, txtErro.length > 0 && { color: cores.vermelhoBorder }]}>{textoInput}</Text>
             <TextInput
                 style={[stylesInput.inputStyle, txtErro.length > 0 && { borderColor: cores.vermelhoBorder }, styleInput]}

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, Linking, Alert, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -17,6 +17,9 @@ import { faTreeCity } from '@fortawesome/free-solid-svg-icons/faTreeCity'
 import { faHouseChimneyUser } from '@fortawesome/free-solid-svg-icons/faHouseChimneyUser'
 import { removerAcento } from '../../helpers/FuncoesPadrao'
 import { pesquisaEndereco } from '../../apis/shearchApi'
+import { requisitarPermissaoGaleria } from '../../controllers/PermissoesController'
+import { escolherImagem } from '../../controllers/ImagemController'
+import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 
 type navigation = {
     props: {
@@ -28,11 +31,29 @@ export default function TelaFinalizarCadastro() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    const [cnh, setCnh] = useState<string>('')
     const [cpf, setCpf] = useState<string>('')
+    const [txtCpfInvalido, setTxtCpfInvalido] = useState<string>('')
+
+    //motorista
+    const [cnh, setCnh] = useState<string>('')
+    const [placa, setPlaca] = useState<string>('')
+    const [modelo, setModelo] = useState<string>('')
+    const [marca, setMarca] = useState<string>('')
+    const [ano, setAno] = useState<string>('')
+    const [assentos, setAssentos] = useState<string>('')
+    const [corPredominante, setCorPredominante] = useState<string>('')
+
+    const [txtCnhInvalida, setTxtCnhInvalida] = useState<string>('')
+    const [txtPlacaInvalida, setTxtPlacaInvalida] = useState<string>('')
+    const [txtModeloInvalido, setTxtModeloInvalido] = useState<string>('')
+    const [txtMarcaInvalida, setTxtMarcaInvalida] = useState<string>('')
+    const [txtAnoInvalido, setTxtAnoInvalido] = useState<string>('')
+    const [txtAssentosInvalidos, setTxtAssentosInvalidos] = useState<string>('')
+    const [txtCorPredominante, setTxtCorPredominante] = useState<string>('')
+
+    //estudante
     const [faculdade, setFaculdade] = useState<string>('')
     const [curso, setCurso] = useState<string>('')
-
     const [cep, setCep] = useState<string>('')
     const [endereco, setEndereco] = useState<string>('')
     const [numero, setNumero] = useState<string>('')
@@ -41,8 +62,8 @@ export default function TelaFinalizarCadastro() {
     const [cidade, setCidade] = useState<string>('')
     const [complemento, setComplemento] = useState<string>('')
 
-    const [txtCnhInvalida, setTxtCnhInvalida] = useState<string>('')
-    const [txtCpfInvalido, setTxtCpfInvalido] = useState<string>('')
+    const [loaderCep, setLoaderCep] = useState<boolean>(false)
+
     const [txtFaculdadeInvalida, setTxtFaculdadeInvalida] = useState<string>('')
     const [txtCursoInvalido, setTxtCursoInvalido] = useState<string>('')
     const [txtCepInvalido, setTxtCepInvalido] = useState<string>('')
@@ -51,9 +72,12 @@ export default function TelaFinalizarCadastro() {
     const [txtBairroInvalido, setTxtBairroInvalido] = useState<string>('')
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [loaderCep, setLoaderCep] = useState<boolean>(false)
 
-    const validarCpf = (cpfFormatado: string) => {
+    const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
+
+    const validarCpf = () => {
+        txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
+        const cpfFormatado = removerAcento(cpf)
         if (cpfFormatado.length <= 10) {
             setTxtCpfInvalido('CPF Inválido')
             return false
@@ -61,64 +85,90 @@ export default function TelaFinalizarCadastro() {
         return true
     }
 
-    const validarCnh = (cnh: string) => {
-        if (cnh.length <= 13) {
-            setTxtCnhInvalida('CNH Inválida')
-            return false
-        }
-        return true
-    }
+    const validarDadosEstudante = () => {
+        let controleEstudante = true
+        txtFaculdadeInvalida.length > 0 && setTxtFaculdadeInvalida('')
+        txtCursoInvalido.length > 0 && setTxtCursoInvalido('')
+        txtCepInvalido.length > 0 && setTxtCepInvalido('')
+        txtEnderecoInvalido.length > 0 && setTxtEnderecoInvalido('')
+        txtNumeroInvalido.length > 0 && setTxtNumeroInvalido('')
+        txtBairroInvalido.length > 0 && setTxtBairroInvalido('')
 
-    const validarFaculdade = (faculdade: string) => {
+        if (!validarCpf()) {
+            controleEstudante = false
+        }
+
         if (faculdade.length == 0) {
             setTxtFaculdadeInvalida('Campo Obrigatório')
-            return false
+            controleEstudante = false
         }
-        return true
-    }
 
-    const validarCep = (cep: string) => {
-        if (cep.length == 0) {
-            setTxtCepInvalido('Campo Obrigatório')
-            return false
-        }
-        return true
-    }
-
-    const validarCurso = (curso: string) => {
         if (curso.length == 0) {
             setTxtCursoInvalido('Campo Obrigatório')
-            return false
+            controleEstudante = false
         }
-        return true
-    }
 
-    const validarEndereco = (endereco: string) => {
+        if (cep.length == 0) {
+            setTxtCepInvalido('Campo Obrigatório')
+            controleEstudante = false
+        }
+
         if (endereco.length == 0) {
             setTxtEnderecoInvalido('Campo Obrigatório')
-            return false
+            controleEstudante = false
         }
-        return true
-    }
 
-    const validarNumero = (numero: string) => {
+        if (endereco.length == 0) {
+            setTxtEnderecoInvalido('Campo Obrigatório')
+            controleEstudante = false
+        }
+
         if (numero.length == 0) {
             setTxtNumeroInvalido('Campo Obrigatório')
-            return false
+            controleEstudante = false
         }
-        return true
-    }
 
-    const validarBairro = (bairro: string) => {
         if (bairro.length == 0) {
             setTxtBairroInvalido('Campo Obrigatório')
-            return false
+            controleEstudante = false
         }
-        return true
+
+        return controleEstudante
+    }
+
+    const validarDadosMotorista = () => {
+        let controleMotorista = true
+        txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
+
+        if (!validarCpf()) {
+            controleMotorista = false
+        }
+
+        if (cnh.length <= 13) {
+            console.log(1)
+            setTxtCnhInvalida('CNH Inválida')
+            controleMotorista = false
+        }
+
+        return controleMotorista
     }
 
     const finalizarCadastro = () => {
         setLoaderReq(true)
+
+        if (route.params.isDrive) {
+            if (!validarDadosMotorista()) {
+                setLoaderReq(false)
+                return
+            }
+        } else {
+            if (!validarDadosEstudante()) {
+                setLoaderReq(false)
+                return
+            }
+        }
+
+        return
 
         if (route.params.isDrive) {
             navigation.navigate('home', { isDrive: true })
@@ -127,46 +177,6 @@ export default function TelaFinalizarCadastro() {
         }
 
         setLoaderReq(false)
-
-        return
-        txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
-        txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
-        txtFaculdadeInvalida.length > 0 && setTxtFaculdadeInvalida('')
-        txtCursoInvalido.length > 0 && setTxtCursoInvalido('')
-        txtCepInvalido.length > 0 && setTxtCepInvalido('')
-        txtEnderecoInvalido.length > 0 && setTxtEnderecoInvalido('')
-        txtNumeroInvalido.length > 0 && setTxtNumeroInvalido('')
-        txtBairroInvalido.length > 0 && setTxtBairroInvalido('')
-
-        const cpfFormatado = removerAcento(cpf)
-
-        validarCpf(cpfFormatado)
-
-        if (route.params.isDrive) {
-            validarCnh(cnh)
-            if ((!validarCnh(cnh)) || (!validarCpf(cpf))) {
-                setLoaderReq(false)
-                return
-            }
-        }
-
-        validarFaculdade(faculdade)
-        validarCurso(curso)
-        validarCep(cep)
-        validarEndereco(endereco)
-        validarNumero(numero)
-        validarBairro(bairro)
-
-        if ((!validarCpf(cpf)) || (!validarFaculdade(faculdade)) || (!validarCurso(curso)) || (!validarCep(cep)) || (!validarEndereco(endereco)) || (!validarNumero(numero)) || (!validarBairro(bairro))) {
-            setLoaderReq(false)
-            return
-        }
-
-        if (route.params.isDrive) {
-            navigation.navigate('home', { isDrive: true })
-        } else {
-            navigation.naviate('home', { isDrive: false })
-        }
     }
 
     const pesquisarCep = async (text: string) => {
@@ -198,6 +208,268 @@ export default function TelaFinalizarCadastro() {
         }
     }
 
+    const callBackImagem = (img: string) => {
+        setImagem(img)
+    }
+
+    const acessarGaleria = async () => {
+        const permissaoGaleria = await requisitarPermissaoGaleria()
+        if (permissaoGaleria == PermissionsAndroid.RESULTS.GRANTED) {
+            escolherImagem(callBackImagem)
+            return
+        }
+        Alert.alert(
+            "Permissão da Galeria",
+            "Libere o acesso ao Urbniversity para acessar a Galeria.",
+            [
+                {
+                    text: "Cancelar"
+                },
+                { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+            ]
+        )
+    }
+
+    const DadosMotorista = () => (
+        <Fragment>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setCnh(text)}
+                    value={cnh}
+                    textoInput={'CNH'}
+                    placeholder={'Digite o número da sua CNH'}
+                    keyboardType={'number-pad'}
+                    onFocus={() => txtCnhInvalida.length > 0 && setTxtCnhInvalida('')}
+                    txtErro={txtCnhInvalida}
+                    icon={faCarSide}
+                    maxLenght={11}
+                />
+            </View>
+            <View style={[styles.espacoInputs, { width: '90%', marginLeft: config.windowWidth / 20 }]}>
+                <Text style={[stylesInput.txtInput, txtCpfInvalido.length > 0 && { color: cores.vermelhoBorder }]}>CPF</Text>
+                <TextInputMask
+                    style={[stylesInput.inputStyle, txtCpfInvalido.length > 0 && { borderColor: cores.vermelhoBorder }]}
+                    value={cpf}
+                    type={'cpf'}
+                    placeholder={'Digite o número do seu CPF'}
+                    placeholderTextColor={cores.fonteCinza}
+                    onChangeText={(text) => setCpf(text)}
+                    onFocus={() => txtCpfInvalido.length > 0 && setTxtCpfInvalido('')}
+                    maxLength={14}
+                />
+                <FontAwesomeIcon icon={faIdCard} size={config.windowWidth / 16} color={txtCpfInvalido.length > 0 ? cores.vermelhoBorder : cores.branco} style={stylesInput.styleIcon} />
+                {txtCpfInvalido.length > 0 &&
+                    <View style={stylesInput.containerInputInvalido}>
+                        <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
+                    </View>
+                }
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setMarca(text)}
+                    value={marca}
+                    textoInput={'Marca'}
+                    placeholder={'Digite a Marca'}
+                    onFocus={() => txtMarcaInvalida.length > 0 && setTxtMarcaInvalida('')}
+                    txtErro={txtMarcaInvalida}
+                />
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setModelo(text)}
+                    value={modelo}
+                    textoInput={'Modelo'}
+                    placeholder={'Digite o Modelo'}
+                    onFocus={() => txtModeloInvalido.length > 0 && setTxtModeloInvalido('')}
+                    txtErro={txtModeloInvalido}
+                />
+            </View>
+            <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
+                <InputDadosUser
+                    style={{ width: '40%' }}
+                    onChangeText={(text) => setPlaca(text)}
+                    value={placa}
+                    textoInput={'Placa'}
+                    placeholder={'Digite a Placa'}
+                    onFocus={() => txtPlacaInvalida.length > 0 && setTxtPlacaInvalida('')}
+                    txtErro={txtPlacaInvalida}
+                    autoCapitalize={'characters'}
+                    maxLenght={7}
+                />
+                <InputDadosUser
+                    style={{ width: '40%' }}
+                    onChangeText={(text) => setAno(text)}
+                    value={ano}
+                    textoInput={'Ano'}
+                    placeholder={'Digite o Ano'}
+                    keyboardType={'number-pad'}
+                    onFocus={() => txtModeloInvalido.length > 0 && setTxtModeloInvalido('')}
+                    txtErro={txtModeloInvalido}
+                    maxLenght={4}
+                />
+            </View>
+            <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
+                <InputDadosUser
+                    style={{ width: '40%' }}
+                    onChangeText={(text) => setAssentos(text)}
+                    value={assentos}
+                    textoInput={'Assentos Totais'}
+                    placeholder={'Qtd Assentos'}
+                    keyboardType={'number-pad'}
+                    onFocus={() => txtAssentosInvalidos.length > 0 && setTxtAssentosInvalidos('')}
+                    txtErro={txtAssentosInvalidos}
+                    maxLenght={2}
+                />
+                <InputDadosUser
+                    style={{ width: '40%' }}
+                    onChangeText={(text) => setCorPredominante(text)}
+                    value={corPredominante}
+                    textoInput={'Cor Predominante'}
+                    placeholder={'Cor do veículo'}
+                    onFocus={() => txtCorPredominante.length > 0 && setTxtCorPredominante('')}
+                    txtErro={txtCorPredominante}
+                />
+            </View>
+        </Fragment>
+    )
+
+    const DadosEstudante = () => (
+        <Fragment>
+            <View style={[styles.espacoInputs, { width: '90%', marginLeft: config.windowWidth / 20 }]}>
+                <Text style={[stylesInput.txtInput, txtCpfInvalido.length > 0 && { color: cores.vermelhoBorder }]}>CPF</Text>
+                <TextInputMask
+                    style={[stylesInput.inputStyle, txtCpfInvalido.length > 0 && { borderColor: cores.vermelhoBorder }]}
+                    value={cpf}
+                    type={'cpf'}
+                    placeholder={'Digite o número do seu CPF'}
+                    placeholderTextColor={cores.fonteCinza}
+                    onChangeText={(text) => setCpf(text)}
+                    onFocus={() => txtCpfInvalido.length > 0 && setTxtCpfInvalido('')}
+                    maxLength={14}
+                />
+                <FontAwesomeIcon icon={faIdCard} size={config.windowWidth / 16} color={txtCpfInvalido.length > 0 ? cores.vermelhoBorder : cores.branco} style={stylesInput.styleIcon} />
+                {txtCpfInvalido.length > 0 &&
+                    <View style={stylesInput.containerInputInvalido}>
+                        <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
+                    </View>
+                }
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setFaculdade(text)}
+                    value={faculdade}
+                    textoInput={'Faculdade'}
+                    placeholder={'Digite o nome da sua Faculdade'}
+                    onFocus={() => txtFaculdadeInvalida.length > 0 && setTxtFaculdadeInvalida('')}
+                    txtErro={txtFaculdadeInvalida}
+                    icon={faSchool}
+                />
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setCurso(text)}
+                    value={curso}
+                    textoInput={'Curso'}
+                    placeholder={'Digite o nome do seu Curso'}
+                    onFocus={() => txtCursoInvalido.length > 0 && setTxtCursoInvalido('')}
+                    txtErro={txtCursoInvalido}
+                    icon={faGraduationCap}
+                />
+            </View>
+            <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
+                <InputDadosUser
+                    style={{ width: '40%' }}
+                    onChangeText={(text) => pesquisarCep(text)}
+                    value={cep}
+                    textoInput={'CEP'}
+                    placeholder={'Digite seu CEP'}
+                    keyboardType={'number-pad'}
+                    onFocus={() => txtCepInvalido.length > 0 && setTxtCepInvalido('')}
+                    txtErro={txtCepInvalido}
+                    icon={faLocationDot}
+                    maxLenght={8}
+                />
+                {loaderCep &&
+                    <View style={{ justifyContent: 'center', left: config.windowWidth / 10, top: 10 }}>
+                        <ActivityIndicator color={cores.azulBtn} size={'small'} />
+                        <Text style={{ fontSize: 13, color: cores.branco, fontWeight: '700' }}>Procurando CEP...</Text>
+
+                    </View>
+                }
+            </View>
+            <View style={[{ paddingTop: 15, flexDirection: 'row' }]}>
+                <View style={{ width: '65%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Cidade</Text>
+                    <TextInput
+                        style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
+                        value={cidade}
+                        placeholder={'Nome da Cidade'}
+                        placeholderTextColor={cores.fonteCinza}
+                        editable={false}
+                    />
+                    <FontAwesomeIcon icon={faTreeCity} size={config.windowWidth / 16} color={cores.branco} style={stylesInput.styleIcon} />
+                </View>
+                <View style={{ width: '20%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Estado</Text>
+                    <TextInput
+                        style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
+                        value={estado}
+                        placeholder={'UF'}
+                        placeholderTextColor={cores.fonteCinza}
+                        editable={false}
+                        maxLength={2}
+                    />
+                </View>
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setEndereco(text)}
+                    value={endereco}
+                    textoInput={'Endereço'}
+                    placeholder={'Digite seu Endereço'}
+                    onFocus={() => txtEnderecoInvalido.length > 0 && setTxtEnderecoInvalido('')}
+                    txtErro={txtEnderecoInvalido}
+                    icon={faHouseChimneyUser}
+                />
+            </View>
+            <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
+                <InputDadosUser
+                    style={{ width: '30%', }}
+                    onChangeText={(text) => setNumero(text)}
+                    value={numero}
+                    keyboardType={'number-pad'}
+                    textoInput={'Número'}
+                    placeholder={'N°'}
+                    onFocus={() => txtNumeroInvalido.length > 0 && setTxtNumeroInvalido('')}
+                    txtErro={txtNumeroInvalido}
+                    maxLenght={5}
+                />
+                <InputDadosUser
+                    style={{ width: '50%' }}
+                    onChangeText={(text) => setBairro(text)}
+                    value={bairro}
+                    textoInput={'Bairro'}
+                    placeholder={'Digite seu Bairro'}
+                    onFocus={() => txtBairroInvalido.length > 0 && setTxtBairroInvalido('')}
+                    txtErro={txtBairroInvalido}
+                />
+
+            </View>
+            <View style={{ paddingTop: 15 }}>
+                <View style={{ width: '90%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Complemento</Text>
+                    <TextInput
+                        style={stylesInput.inputStyle}
+                        onChangeText={(text) => setComplemento(text)}
+                        value={complemento}
+                        placeholder={'Digite o complemento (opicional)'}
+                        placeholderTextColor={cores.fonteCinza}
+                    />
+                </View>
+            </View>
+        </Fragment>
+    )
+
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <NavBar titulo='Finalizar Cadastro' botaoEsquerdo={true} backgroundColor={cores.backgroundPadrao} />
@@ -207,180 +479,23 @@ export default function TelaFinalizarCadastro() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 16, color: cores.fonteBranco, fontWeight: '700', padding: config.windowWidth / 20, textAlign: 'center' }}>Tudo certo agora vamos finalizar seu cadastro como {route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
+                    <Text style={styles.textoInformativo}>Tudo certo agora vamos finalizar seu cadastro como {route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
                 </View>
 
                 {route.params.isDrive ?
-                    <Fragment>
-                        <View style={styles.espacoInputs}>
-                            <InputDadosUser
-                                onChangeText={(text) => setCnh(text)}
-                                value={cnh}
-                                textoInput={'CNH'}
-                                placeholder={'Digite o número da sua CNH'}
-                                keyboardType={'number-pad'}
-                                onFocus={() => txtCnhInvalida.length > 0 && setTxtCnhInvalida('')}
-                                txtErro={txtCnhInvalida}
-                                icon={faCarSide}
-                                maxLenght={11}
-                            />
-                        </View>
-                        <View style={[styles.espacoInputs, { width: '90%', marginLeft: config.windowWidth / 20 }]}>
-                            <Text style={[stylesInput.txtInput, txtCpfInvalido.length > 0 && { color: cores.vermelhoBorder }]}>CPF</Text>
-                            <TextInputMask
-                                style={[stylesInput.inputStyle, txtCpfInvalido.length > 0 && { borderColor: cores.vermelhoBorder }]}
-                                value={cpf}
-                                type={'cpf'}
-                                placeholder={'Digite o número do seu CPF'}
-                                placeholderTextColor={cores.fonteCinza}
-                                onChangeText={(text) => setCpf(text)}
-                                onFocus={() => txtCpfInvalido.length > 0 && setTxtCpfInvalido('')}
-                                maxLength={14}
-                            />
-                            <FontAwesomeIcon icon={faIdCard} size={config.windowWidth / 16} color={txtCpfInvalido.length > 0 ? cores.vermelhoBorder : cores.branco} style={stylesInput.styleIcon} />
-                            {txtCpfInvalido.length > 0 &&
-                                <View style={stylesInput.containerInputInvalido}>
-                                    <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
-                                </View>
-                            }
-                        </View>
-                    </Fragment>
+                    DadosMotorista()
                     :
-                    <Fragment>
-                        <View style={[styles.espacoInputs, { width: '90%', marginLeft: config.windowWidth / 20 }]}>
-                            <Text style={[stylesInput.txtInput, txtCpfInvalido.length > 0 && { color: cores.vermelhoBorder }]}>CPF</Text>
-                            <TextInputMask
-                                style={[stylesInput.inputStyle, txtCpfInvalido.length > 0 && { borderColor: cores.vermelhoBorder }]}
-                                value={cpf}
-                                type={'cpf'}
-                                placeholder={'Digite o número do seu CPF'}
-                                placeholderTextColor={cores.fonteCinza}
-                                onChangeText={(text) => setCpf(text)}
-                                onFocus={() => txtCpfInvalido.length > 0 && setTxtCpfInvalido('')}
-                                maxLength={14}
-                            />
-                            <FontAwesomeIcon icon={faIdCard} size={config.windowWidth / 16} color={txtCpfInvalido.length > 0 ? cores.vermelhoBorder : cores.branco} style={stylesInput.styleIcon} />
-                            {txtCpfInvalido.length > 0 &&
-                                <View style={stylesInput.containerInputInvalido}>
-                                    <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
-                                </View>
-                            }
-                        </View>
-                        <View style={styles.espacoInputs}>
-                            <InputDadosUser
-                                onChangeText={(text) => setFaculdade(text)}
-                                value={faculdade}
-                                textoInput={'Faculdade'}
-                                placeholder={'Digite o nome da sua Faculdade'}
-                                onFocus={() => txtFaculdadeInvalida.length > 0 && setTxtFaculdadeInvalida('')}
-                                txtErro={txtFaculdadeInvalida}
-                                icon={faSchool}
-                            />
-                        </View>
-                        <View style={styles.espacoInputs}>
-                            <InputDadosUser
-                                onChangeText={(text) => setCurso(text)}
-                                value={curso}
-                                textoInput={'Curso'}
-                                placeholder={'Digite o nome do seu Curso'}
-                                onFocus={() => txtCursoInvalido.length > 0 && setTxtCursoInvalido('')}
-                                txtErro={txtCursoInvalido}
-                                icon={faGraduationCap}
-                            />
-                        </View>
-                        <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
-                            <InputDadosUser
-                                style={{ width: '40%' }}
-                                onChangeText={(text) => pesquisarCep(text)}
-                                value={cep}
-                                textoInput={'CEP'}
-                                placeholder={'Digite seu CEP'}
-                                keyboardType={'number-pad'}
-                                onFocus={() => txtCepInvalido.length > 0 && setTxtCepInvalido('')}
-                                txtErro={txtCepInvalido}
-                                icon={faLocationDot}
-                                maxLenght={8}
-                            />
-                            {loaderCep &&
-                                <View style={{ justifyContent: 'center', left: config.windowWidth / 10, top: 10 }}>
-                                    <ActivityIndicator color={cores.azulBtn} size={'small'} />
-                                    <Text style={{ fontSize: 13, color: cores.branco, fontWeight: '700' }}>Procurando CEP...</Text>
-
-                                </View>
-                            }
-                        </View>
-                        <View style={[{ paddingTop: 15, flexDirection: 'row' }]}>
-                            <View style={{ width: '65%', marginLeft: config.windowWidth / 20 }}>
-                                <Text style={stylesInput.txtInput}>Cidade</Text>
-                                <TextInput
-                                    style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
-                                    value={cidade}
-                                    placeholder={'Nome da Cidade'}
-                                    placeholderTextColor={cores.fonteCinza}
-                                    editable={false}
-                                />
-                                <FontAwesomeIcon icon={faTreeCity} size={config.windowWidth / 16} color={cores.branco} style={stylesInput.styleIcon} />
-                            </View>
-                            <View style={{ width: '20%', marginLeft: config.windowWidth / 20 }}>
-                                <Text style={stylesInput.txtInput}>Estado</Text>
-                                <TextInput
-                                    style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
-                                    value={estado}
-                                    placeholder={'UF'}
-                                    placeholderTextColor={cores.fonteCinza}
-                                    editable={false}
-                                    maxLength={2}
-                                />
-                            </View>
-                        </View>
-                        <View style={styles.espacoInputs}>
-                            <InputDadosUser
-                                onChangeText={(text) => setEndereco(text)}
-                                value={endereco}
-                                textoInput={'Endereço'}
-                                placeholder={'Digite seu Endereço'}
-                                onFocus={() => txtEnderecoInvalido.length > 0 && setTxtEnderecoInvalido('')}
-                                txtErro={txtEnderecoInvalido}
-                                icon={faHouseChimneyUser}
-                            />
-                        </View>
-                        <View style={[styles.espacoInputs, { flexDirection: 'row' }]}>
-                            <InputDadosUser
-                                style={{ width: '30%' }}
-                                onChangeText={(text) => setNumero(text)}
-                                value={numero}
-                                keyboardType={'number-pad'}
-                                textoInput={'Número'}
-                                placeholder={'N°'}
-                                onFocus={() => txtNumeroInvalido.length > 0 && setTxtNumeroInvalido('')}
-                                txtErro={txtNumeroInvalido}
-                                maxLenght={5}
-                            />
-                            <InputDadosUser
-                                style={{ width: '55%' }}
-                                onChangeText={(text) => setBairro(text)}
-                                value={bairro}
-                                textoInput={'Bairro'}
-                                placeholder={'Digite seu Bairro'}
-                                onFocus={() => txtBairroInvalido.length > 0 && setTxtBairroInvalido('')}
-                                txtErro={txtBairroInvalido}
-                            />
-
-                        </View>
-                        <View style={{ paddingTop: 15 }}>
-                            <View style={{ width: '90%', marginLeft: config.windowWidth / 20 }}>
-                                <Text style={stylesInput.txtInput}>Complemento</Text>
-                                <TextInput
-                                    style={stylesInput.inputStyle}
-                                    onChangeText={(text) => setComplemento(text)}
-                                    value={complemento}
-                                    placeholder={'Digite o complemento (opicional)'}
-                                    placeholderTextColor={cores.fonteCinza}
-                                />
-                            </View>
-                        </View>
-                    </Fragment>
+                    DadosEstudante()
                 }
+                <View style={{ alignItems: 'center', paddingTop: 15 }}>
+                    <TouchableOpacity onPress={() => acessarGaleria()} style={{ paddingBottom: 10 }}>
+                        <Text>Enviar Imagem</Text>
+                    </TouchableOpacity>
+                    <Image
+                        style={styles.imgUser}
+                        source={{ uri: imagem }}
+                    />
+                </View>
 
                 <TouchableOpacity onPress={() => finalizarCadastro()} disabled={loaderReq} style={styles.btnRodape}>
                     <BtnBlue
@@ -401,6 +516,23 @@ const styles = StyleSheet.create({
     btnRodape: {
         marginVertical: config.windowWidth / 8,
         marginHorizontal: config.windowWidth / 5
-    }
+    },
+
+    textoInformativo: {
+        fontSize: 16,
+        color: cores.fonteBranco,
+        fontWeight: '700',
+        padding: config.windowWidth / 20,
+        textAlign: 'center'
+    },
+
+    imgUser: {
+        width: 80,
+        height: 80,
+        resizeMode: 'cover',
+        borderWidth: 2,
+        borderColor: cores.branco,
+        borderRadius: 3
+    },
 
 })

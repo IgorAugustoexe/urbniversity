@@ -8,7 +8,8 @@ import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
 import { faMapLocationDot } from '@fortawesome/free-solid-svg-icons/faMapLocationDot'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
-
+import { faCoins } from '@fortawesome/free-solid-svg-icons/faCoins'
+import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 
 type navigation = {
     props: {
@@ -21,16 +22,13 @@ export default function TelaHome() {
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
 
-
     console.log(route.params)
-
-    const [temMotorista, setTemMotorista] = useState<boolean>(true)
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.txtBold}>Bem Vindo Estudante!</Text>
+                    <Text style={styles.txtBold}>Bem Vindo {route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('login')}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
@@ -42,23 +40,19 @@ export default function TelaHome() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity
-                            style={styles.containerBtn}
-                        >
-                            <Text style={styles.txtBtn}>VER MAPA</Text>
-                            <FontAwesomeIcon icon={faMapLocationDot} size={config.windowWidth / 12} color={cores.branco} />
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('cadastroVeiculo')}>
+                            <Text style={styles.txtBtn}>MINHA VAN</Text>
+                            <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.containerBtn}
-                        >
-                            <Text style={styles.txtBtn}>CALENDÁRIO</Text>
-                            <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
+                            <Text style={styles.txtBtn}>FINANCEIRO</Text>
+                            <FontAwesomeIcon icon={faCoins} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
 
-            {temMotorista ?
+            {route.params.isDrive ?
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8}>
                     <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
                     <View style={styles.containerRota}>
@@ -76,7 +70,7 @@ export default function TelaHome() {
 
 
             <TouchableOpacity style={styles.rodape}>
-                <Text style={styles.txtBtnRodape}>{temMotorista ? 'Visualizar meu Veículo' : 'Encontrar Motorista'}</Text>
+                <Text style={styles.txtBtnRodape}>{route.params.isDrive ? 'Visualizar meu Veículo' : 'Encontrar Motorista'}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     )
