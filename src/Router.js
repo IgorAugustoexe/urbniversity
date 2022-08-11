@@ -7,13 +7,18 @@ import TelaCadastro from './screens/loginCadastro/TelaCadastro'
 import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro'
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaCadastroVeiculo from './screens/motorista/cadastroVeiculo'
+import {navigationRef} from './apis/AuthContext';
 
 const Stack = createStackNavigator()
 
 export default function App() {
+    //Usar o token guardado na store para validar o usuario
+    //Caso logado, ir para home
+    //Caso deslogado, ir para login/registrar
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
+                
                 <Stack.Screen
                     name="login"
                     component={TelaLogin}

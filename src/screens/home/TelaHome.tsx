@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, Fragment, useContext} from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
@@ -10,6 +10,7 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faCoins } from '@fortawesome/free-solid-svg-icons/faCoins'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
+import { AuthContext } from '../../apis/AuthContext';
 
 type navigation = {
     props: {
@@ -18,6 +19,7 @@ type navigation = {
 }
 
 export default function TelaHome() {
+    const { logout } = useContext(AuthContext)
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
@@ -29,7 +31,7 @@ export default function TelaHome() {
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.txtBold}>Bem Vindo {route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                    <TouchableOpacity onPress={() => logout()}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
