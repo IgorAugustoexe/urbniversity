@@ -22,18 +22,18 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 //REGISTER
-    const register = (entity, object, complement) => {
+    const register = (entity, object, complemento) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
         axios.post(`/${entity}`, object)
         .then(() => {
                 login(object.email, object.password).then(() => {
                     if(entity == 'driver'){
-                        complement('vehicle', complement)
-                    } 
-                }).catch(err){
-                    console.log(`register login error ${err}`)
-                }
+                        complement('vehicle', complemento);
+                    } })
+                    .catch(err =>{
+                    console.log(`register login error ${err}`);
+                })
                  
             })
             .catch(e => {

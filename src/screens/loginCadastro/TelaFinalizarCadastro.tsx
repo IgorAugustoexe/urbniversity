@@ -172,7 +172,7 @@ export default function TelaFinalizarCadastro() {
 
     const finalizarCadastro = () => {
         setLoaderReq(true)
-        console.log(`${route.params.id} ${route.params.email} ${route.params.nome} ${route.params.telefone} ${route.params.senha}`)
+        //console.log(`${route.params.id} ${route.params.email} ${route.params.nome} ${route.params.telefone} ${route.params.senha}`)
         if (route.params.isDrive) {
             if (!validarDadosMotorista()) {
                 setLoaderReq(false)

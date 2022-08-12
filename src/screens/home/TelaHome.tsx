@@ -19,18 +19,19 @@ type navigation = {
 }
 
 export default function TelaHome() {
-    const { logout } = useContext(AuthContext)
+    const { userInfo, logout } = useContext(AuthContext)
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
 
     console.log(route.params)
+    console.log(userInfo.user.fullName)
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.txtBold}>Bem Vindo {route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
+                    <Text style={styles.txtBold}>Bem Vindo {userInfo.user.fullName ? userInfo.user.fullName :  route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={() => logout()}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
