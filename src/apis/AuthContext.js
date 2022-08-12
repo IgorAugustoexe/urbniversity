@@ -22,16 +22,19 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 //REGISTER
-    const register = (entity, object) => {
+    const register = (entity, object, complement) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
-        axios.post(`/${entity}`, JSON.stringify(object)
-        )
-            .then(res => {
-                let userInfo = res.data;
-                setUserInfo(userInfo);
-                AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-                setIsLoading(false);
+        axios.post(`/${entity}`, object)
+        .then(() => {
+                login(object.email, object.password).then(() => {
+                    if(entity == 'driver'){
+                        complement('vehicle', complement)
+                    } 
+                }).catch(err){
+                    console.log(`register login error ${err}`)
+                }
+                 
             })
             .catch(e => {
                 console.log(`register error ${e}`);
@@ -39,6 +42,16 @@ export const AuthProvider = ({ children }) => {
     };
 
     //LOGIN
+    const complement = (entity, complement) => {
+        const config = { headers: { 'Authorization': `Bearer ${userInfo.access_token}` } };
+        try{
+            axios.post(`/${entity}`, complement, config)
+        }catch(e){
+            console.log(`Register ${entity} error: ${e}`)
+        }
+        
+
+    }
     const login = (email, password) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type

@@ -97,14 +97,12 @@ export default function TelaCadastro() {
     const realizarCadastro = () => {
         setLoaderReq(true)
 
-        if (tipoCadastro == 2) {
-            navigation.navigate('finalizarCadastro', { isDrive: true })
-        } else {
-            navigation.navigate('finalizarCadastro', { isDrive: false })
-        }
+        // if (tipoCadastro == 2) {
+        //     navigation.navigate('finalizarCadastro', { isDrive: true })
+        // } else {
+        //     navigation.navigate('finalizarCadastro', { isDrive: false })
+        // }
 
-        setLoaderReq(false)
-        return
 
         !tipoCadastrovalido && setTipoCadastroValido(true)
         txtIdInvalido.length > 0 && setTxtIdInvalido('')
@@ -112,22 +110,23 @@ export default function TelaCadastro() {
         txtNomeInvalido.length > 0 && setTxtNomeInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
-        validarTipoCadastro(tipoCadastro)
-        validarId(id)
-        validarEmail(senha)
-        validarNome(nome)
-        validarTelefone(telefone)
-        validarSenha(senha)
+        // validarTipoCadastro(tipoCadastro)
+        // validarId(id)
+        // validarEmail(email)
+        // validarNome(nome)
+        // validarTelefone(telefone)
+        // validarSenha(senha)
 
         if ((!validarTipoCadastro(tipoCadastro)) || (!validarId(id)) || (!validarEmail(email)) || (!validarNome(nome)) || (!validarTelefone(telefone)) || (!validarSenha(senha))) {
             setLoaderReq(false)
             return
         }
-
-        // IMPLENTAR REQUISIÇÃO
-        if (tipoCadastro == 2) {
-            navigation.navigate('finalizarCadastro', { isDrive: true })
-        } navigation.navigate('finalizarCadastro')
+          if (tipoCadastro == 2) {
+            navigation.navigate('finalizarCadastro', { isDrive: true, id, email, nome, telefone, senha })
+         } else {
+            navigation.navigate('finalizarCadastro', { isDrive: false, id, email, nome, telefone, senha })
+        }
+        setLoaderReq(false)
     }
 
     return (
