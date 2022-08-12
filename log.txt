@@ -1,0 +1,136 @@
+
+> Urbniversity@0.0.1 android
+> react-native run-android
+
+info Running jetifier to migrate libraries to AndroidX. You can disable it using "--no-jetifier" flag.
+Jetifier found 1527 file(s) to forward-jetify. Using 6 workers...
+info Starting JS server...
+info Launching emulator...
+info Successfully launched emulator.
+info Installing the app...
+Starting a Gradle Daemon, 2 incompatible Daemons could not be reused, use --status for details
+> Task :react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :react-native-gradle-plugin:compileJava UP-TO-DATE
+> Task :react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :react-native-gradle-plugin:classes UP-TO-DATE
+> Task :react-native-gradle-plugin:inspectClassesForKotlinIC UP-TO-DATE
+> Task :react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :app
+Unable to detect AGP versions for included builds. All projects in the build should use the same AGP version. Class name for the included build object: org.gradle.composite.internal.DefaultIncludedBuild$IncludedBuildImpl_Decorated.
+
+> Configure project :react-native-mmkv
+MMKV: node_modules/ found at: E:\urbniversity-main\node_modules
+WARNING:DSL element 'dexOptions' is obsolete and should be removed.
+It will be removed in version 8.0 of the Android Gradle plugin.
+Using it has no effect, and the AndroidGradle plugin optimizes dexing automatically.
+
+> Task :app:generatePackageList
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :react-native-fs:preBuild UP-TO-DATE
+> Task :react-native-fs:preDebugBuild UP-TO-DATE
+> Task :react-native-fs:compileDebugAidl NO-SOURCE
+> Task :react-native-gesture-handler:preBuild UP-TO-DATE
+> Task :react-native-gesture-handler:preDebugBuild UP-TO-DATE
+> Task :react-native-gesture-handler:compileDebugAidl NO-SOURCE
+> Task :react-native-image-crop-picker:preBuild UP-TO-DATE
+> Task :react-native-image-crop-picker:preDebugBuild UP-TO-DATE
+> Task :react-native-image-crop-picker:compileDebugAidl NO-SOURCE
+> Task :react-native-image-resizer:preBuild UP-TO-DATE
+> Task :react-native-image-resizer:preDebugBuild UP-TO-DATE
+> Task :react-native-image-resizer:compileDebugAidl NO-SOURCE
+> Task :react-native-mmkv:preBuild UP-TO-DATE
+> Task :react-native-mmkv:preDebugBuild UP-TO-DATE
+> Task :react-native-mmkv:compileDebugAidl NO-SOURCE
+> Task :react-native-push-notification:preBuild UP-TO-DATE
+> Task :react-native-push-notification:preDebugBuild UP-TO-DATE
+> Task :react-native-push-notification:compileDebugAidl NO-SOURCE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:compileDebugAidl NO-SOURCE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preDebugBuild UP-TO-DATE
+> Task :react-native-screens:compileDebugAidl NO-SOURCE
+> Task :react-native-svg:preBuild UP-TO-DATE
+> Task :react-native-svg:preDebugBuild UP-TO-DATE
+> Task :react-native-svg:compileDebugAidl NO-SOURCE
+> Task :app:compileDebugAidl NO-SOURCE
+> Task :react-native-fs:packageDebugRenderscript NO-SOURCE
+> Task :react-native-gesture-handler:packageDebugRenderscript NO-SOURCE
+> Task :react-native-image-crop-picker:packageDebugRenderscript NO-SOURCE
+> Task :react-native-image-resizer:packageDebugRenderscript NO-SOURCE
+> Task :react-native-mmkv:packageDebugRenderscript NO-SOURCE
+> Task :react-native-push-notification:packageDebugRenderscript NO-SOURCE
+> Task :react-native-safe-area-context:packageDebugRenderscript NO-SOURCE
+> Task :react-native-screens:packageDebugRenderscript NO-SOURCE
+> Task :react-native-svg:packageDebugRenderscript NO-SOURCE
+> Task :app:compileDebugRenderscript NO-SOURCE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :react-native-fs:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-gesture-handler:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-image-crop-picker:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-image-resizer:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-mmkv:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-push-notification:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-screens:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-svg:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata
+> Task :app:checkDebugAarMetadata FAILED
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+See https://docs.gradle.org/7.3.3/userguide/command_line_interface.html#sec:command_line_warnings
+19 actionable tasks: 2 executed, 17 up-to-date
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:checkDebugAarMetadata'.
+> Could not resolve all files for configuration ':app:debugRuntimeClasspath'.
+   > Failed to transform ucrop-2.2.6-native.aar (com.github.yalantis:ucrop:2.2.6-native) to match attributes {artifactType=android-aar-metadata, org.gradle.category=library, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download ucrop-2.2.6-native.aar (com.github.yalantis:ucrop:2.2.6-native)
+         > Could not get resource 'https://www.jitpack.io/com/github/yalantis/ucrop/2.2.6-native/ucrop-2.2.6-native.aar'.
+            > Read timed out
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 2m 10s
+
+Error: Command failed: gradlew.bat app:installDebug -PreactNativeDevServerPort=8081
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:checkDebugAarMetadata'.
+> Could not resolve all files for configuration ':app:debugRuntimeClasspath'.
+   > Failed to transform ucrop-2.2.6-native.aar (com.github.yalantis:ucrop:2.2.6-native) to match attributes {artifactType=android-aar-metadata, org.gradle.category=library, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download ucrop-2.2.6-native.aar (com.github.yalantis:ucrop:2.2.6-native)
+         > Could not get resource 'https://www.jitpack.io/com/github/yalantis/ucrop/2.2.6-native/ucrop-2.2.6-native.aar'.
+            > Read timed out
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 2m 10s
+
+    at makeError (E:\urbniversity-main\node_modules\execa\index.js:174:9)
+    at E:\urbniversity-main\node_modules\execa\index.js:278:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async runOnAllDevices (E:\urbniversity-main\node_modules\@react-native-community\cli-platform-android\build\commands\runAndroid\runOnAllDevices.js:109:5)
+    at async Command.handleAction (E:\urbniversity-main\node_modules\@react-native-community\cli\build\index.js:192:9)
+info Run CLI with --verbose flag for more details.

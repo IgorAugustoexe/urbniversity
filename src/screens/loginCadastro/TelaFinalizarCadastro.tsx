@@ -470,18 +470,6 @@ export default function TelaFinalizarCadastro() {
         </Fragment>
     )
 
-    const EnvioImagem = () => (
-        <View style={{ alignItems: 'center', paddingTop: config.windowWidth / 10, marginHorizontal: config.windowWidth / 20 }}>
-            <Image
-                style={styles.imgUser}
-                source={{ uri: imagem }}
-            />
-            <TouchableOpacity onPress={() => acessarGaleria()} style={styles.btnEnviarImagem}>
-                <Text style={{ padding: 10, color: cores.branco }}>Enviar Imagem</Text>
-            </TouchableOpacity>
-        </View>
-    )
-
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <NavBar titulo='Finalizar Cadastro' botaoEsquerdo={true} backgroundColor={cores.backgroundPadrao} />
@@ -499,7 +487,16 @@ export default function TelaFinalizarCadastro() {
                     :
                     DadosEstudante()
                 }
-                <EnvioImagem />
+                <View style={{ alignItems: 'center', paddingTop: 15 }}>
+                    <TouchableOpacity onPress={() => acessarGaleria()} style={{ paddingBottom: 10 }}>
+                        <Text>Enviar Imagem</Text>
+                    </TouchableOpacity>
+                    <Image
+                        style={styles.imgUser}
+                        source={{ uri: imagem }}
+                    />
+                </View>
+
                 <TouchableOpacity onPress={() => finalizarCadastro()} disabled={loaderReq} style={styles.btnRodape}>
                     <BtnBlue
                         text={'FINALIZAR CADASTRO'}
@@ -530,20 +527,12 @@ const styles = StyleSheet.create({
     },
 
     imgUser: {
-        width: 120,
-        height: 120,
+        width: 80,
+        height: 80,
         resizeMode: 'cover',
         borderWidth: 2,
         borderColor: cores.branco,
         borderRadius: 3
     },
-
-    btnEnviarImagem: {
-        marginTop: config.windowWidth / 20,
-        borderWidth: 1,
-        borderRadius: 5,
-        backgroundColor: cores.azulBtn,
-        borderColor: cores.azulBtn
-    }
 
 })
