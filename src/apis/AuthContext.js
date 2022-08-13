@@ -25,9 +25,13 @@ export const AuthProvider = ({ children }) => {
     const register = (entity, object, complemento) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
+        console.log(`${entity}   ${JSON.stringify(object)}`)
         axios.post(`/${entity}`, object)
         .then(() => {
-                login(object.email, object.password).then(() => {
+            return new Promise((resolve, reject) => {
+                login(object.email, object.password); 
+                resolve();
+            }).then(() => {
                     if(entity == 'driver'){
                         complement('vehicle', complemento);
                     } })

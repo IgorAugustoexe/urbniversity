@@ -25,11 +25,11 @@ import { AuthContext } from '../../apis/AuthContext';
 type navigation = {
     props: {
         isDrive: boolean,
-        id: String,
-        email: String,
-        nome: String,
-        telefone: String,
-        senha: String,
+        id: string,
+        email: string,
+        nome: string,
+        telefone: string,
+        senha: string,
     }
 }
 
