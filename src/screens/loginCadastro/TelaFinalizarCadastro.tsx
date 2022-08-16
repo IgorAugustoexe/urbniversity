@@ -155,13 +155,14 @@ export default function TelaFinalizarCadastro() {
         if (!validarCpf()) {
             controleMotorista = false
         }
-
-        if (cnh.length <= 13) {
+        //Mudei pra 11, cnh com 13 é loucura
+        if (cnh.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CNH Inválida')
             controleMotorista = false
         }
-        if (crlv.length <= 13) {
+        //Mudei pra 11, acredito que senha o Renavan que também tem 11 digitos
+        if (crlv.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CRLV Inválido')
             controleMotorista = false
@@ -217,13 +218,14 @@ export default function TelaFinalizarCadastro() {
             crlv:crlv,
             brand:marca,
             model:modelo,
-            year:ano,
+            year:parseInt(ano),
             color:corPredominante,
             seats:assentos
         }
         :
         {}
         
+        console.log(complement)
         route.params.isDrive? register('driver', object, complement):register('student',object,complement)
 
         setLoaderReq(false)

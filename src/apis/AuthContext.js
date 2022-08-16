@@ -13,50 +13,52 @@ export function navigate(name, params) {
   navigationRef.current?.navigate(name, params);
 }
 
+
 export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState({});
+    const [complemento, setComplemento] = useState({})
+    const [awaitDriver, setAwaitDriver] = useState(false)
     const [splashLoading, setSplashLoading] = useState(false);
+
+    
+    
 
     //The axios configs
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 //REGISTER
-    const register = (entity, object, complemento) => {
+    const register = (entity, object, comp) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
-        console.log(`${entity}   ${JSON.stringify(object)}`)
+        if(entity == 'driver'){
+            setComplemento(comp)
+            setAwaitDriver(true)
+        }
+        
         axios.post(`/${entity}`, object)
-        .then(() => {
-            return new Promise((resolve, reject) => {
-                login(object.email, object.password); 
-                resolve();
-            }).then(() => {
-                    if(entity == 'driver'){
-                        complement('vehicle', complemento);
-                    } })
-                    .catch(err =>{
+        .then(async () => {
+                await login(object.email, object.password); 
+            }).catch(err =>{
                     console.log(`register login error ${err}`);
                 })
-                 
-            })
-            .catch(e => {
-                console.log(`register error ${e}`);
-            });
+
     };
 
     //LOGIN
-    const complement = (entity, complement) => {
+    const complement = async (entity) => {
+        console.log(`${entity}    ${JSON.stringify(complemento)}`)
         const config = { headers: { 'Authorization': `Bearer ${userInfo.access_token}` } };
+        console.log(userInfo.access_token)
         try{
-            axios.post(`/${entity}`, complement, config)
+            await axios.post(`/${entity}`, complemento, config)
         }catch(e){
             console.log(`Register ${entity} error: ${e}`)
         }
         
-
+        setAwaitDriver(false)
     }
-    const login = (email, password) => {
+    const login = async (email, password) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type
         axios.post(`/auth`, { email, password, })
@@ -118,12 +120,17 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         isLoggedIn();
     }, []);
+
+    useEffect(() => {
+        if(userInfo.type == 'driver' && awaitDriver == true){
+            complement('vehicle', complemento )
+        } 
+    }, [userInfo.type]);
 //We return here everything we will be using
     return (
         <AuthContext.Provider
             value={{
                 userInfo,
-                splashLoading,
                 register,
                 login,
                 logout,
