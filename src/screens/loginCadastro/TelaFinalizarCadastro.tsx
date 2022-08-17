@@ -225,7 +225,6 @@ export default function TelaFinalizarCadastro() {
         :
         {}
         
-        console.log(complement)
         route.params.isDrive? register('driver', object, complement):register('student',object,complement)
 
         setLoaderReq(false)

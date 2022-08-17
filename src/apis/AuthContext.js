@@ -47,9 +47,7 @@ export const AuthProvider = ({ children }) => {
 
     //LOGIN
     const complement = async (entity) => {
-        console.log(`${entity}    ${JSON.stringify(complemento)}`)
         const config = { headers: { 'Authorization': `Bearer ${userInfo.access_token}` } };
-        console.log(userInfo.access_token)
         try{
             await axios.post(`/${entity}`, complemento, config)
         }catch(e){
