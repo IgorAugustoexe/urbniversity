@@ -19,7 +19,6 @@ import { removerAcento } from '../../helpers/FuncoesPadrao'
 import { pesquisaEndereco } from '../../apis/shearchApi'
 import { requisitarPermissaoGaleria } from '../../controllers/PermissoesController'
 import { escolherImagem } from '../../controllers/ImagemController'
-import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 
 type navigation = {
     props: {
@@ -139,14 +138,19 @@ export default function TelaFinalizarCadastro() {
     const validarDadosMotorista = () => {
         let controleMotorista = true
         txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
+        txtAnoInvalido.length > 0 && setTxtAnoInvalido('')
 
         if (!validarCpf()) {
             controleMotorista = false
         }
 
         if (cnh.length <= 13) {
-            console.log(1)
             setTxtCnhInvalida('CNH Inválida')
+            controleMotorista = false
+        }
+
+        if (ano < '1990' || ano > '2023') {
+            setTxtAnoInvalido('Ano Inválido')
             controleMotorista = false
         }
 

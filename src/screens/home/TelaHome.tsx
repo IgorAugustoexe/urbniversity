@@ -1,14 +1,12 @@
-import React, { useState, Fragment } from 'react'
+import React from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
-import { faMapLocationDot } from '@fortawesome/free-solid-svg-icons/faMapLocationDot'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
-import { faCoins } from '@fortawesome/free-solid-svg-icons/faCoins'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 
 type navigation = {
@@ -40,13 +38,13 @@ export default function TelaHome() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('cadastroVeiculo')}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo')}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
-                            <Text style={styles.txtBtn}>FINANCEIRO</Text>
-                            <FontAwesomeIcon icon={faCoins} size={config.windowWidth / 12} color={cores.branco} />
+                            <Text style={styles.txtBtn}>CALENDARIO</Text>
+                            <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -64,14 +62,15 @@ export default function TelaHome() {
                 </TouchableOpacity>
                 :
                 <View style={{ padding: config.windowWidth / 10 }}>
-                    <Text style={[styles.txtBold, { alignItems: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para encontrar seu Motorista!</Text>
+                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para encontrar seu Motorista!</Text>
                 </View>
             }
 
-
-            <TouchableOpacity style={styles.rodape}>
-                <Text style={styles.txtBtnRodape}>{route.params.isDrive ? 'Visualizar meu Veículo' : 'Encontrar Motorista'}</Text>
-            </TouchableOpacity>
+            {!route.params.isDrive &&
+                <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
+                    <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
+                </TouchableOpacity>
+            }
         </SafeAreaView>
     )
 }
