@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useContext, useEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
@@ -11,10 +11,13 @@ import { faUserGraduate } from '@fortawesome/free-solid-svg-icons/faUserGraduate
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser from '../../components/InputDadosUser'
+import { AuthContext } from '../../apis/AuthContext';
+
 
 
 export default function TelaLogin() {
     const navigation = useNavigation<any>()
+
 
     const [email, setEmail] = useState<string>('')
     const [senha, setSenha] = useState<string>('')
@@ -24,6 +27,8 @@ export default function TelaLogin() {
 
     const [loginMotorista, setLoginMotorista] = useState<boolean>(false)
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
+
+    const { userInfo, login } = useContext(AuthContext)
 
     const validarEmail = (email: string) => {
         const verificaRespostaEmail = verificaEmail(email)
@@ -49,17 +54,14 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        if (loginMotorista) {
-            navigation.navigate('home', { isDrive: true })
-        } else {
-            navigation.navigate('home', { isDrive: false })
-        }
+        // if (loginMotorista) {
+        //     navigation.navigate('home', { isDrive: true })
+        // } else {
+        //     navigation.navigate('home', { isDrive: false })
+        // }
 
 
-        setLoaderReq(false)
-
-        return
-
+        // setLoaderReq(false)
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
@@ -72,13 +74,24 @@ export default function TelaLogin() {
         }
 
         // IMPLENTAR REQUISIÇÃO
-        if (loginMotorista) {
-            navigation.navigate("home", { isDrive: true })
-        } navigation.navigate("home")
-
+        login(email, senha)
         setLoaderReq(false)
     }
 
+    useEffect(() => {
+        //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
+        //to continue the login process by verifying if the userInfo has the access token to foward the user
+        if (userInfo.access_token !== undefined && userInfo.access_token !== null) {
+            setLoaderReq(true)
+            
+            userInfo.type == 'driver' ? 
+            navigation.navigate('home', { isDrive: true }) 
+            : 
+            navigation.navigate('home', { isDrive: false })
+
+            setLoaderReq(false)
+        }
+    }, [userInfo.access_token]);
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <KeyboardAwareScrollView
