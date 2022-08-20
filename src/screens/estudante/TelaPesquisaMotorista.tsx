@@ -64,11 +64,9 @@ export default function TelaPesquisaMotorista() {
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
-            //ref={scrollRef}
             data={arrayMotoristas}
-            //keyboardShouldPersistTaps={'always'}
             ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
-            //ListFooterComponent={renderFooterComponent}
+            ListFooterComponent={<View style={{ marginBottom: config.windowWidth / 15 }} />}
             showsVerticalScrollIndicator={true}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
@@ -136,6 +134,7 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
 
+    // ErroLoader
     containerErro: {
         alignItems: 'center',
         marginTop: config.windowWidth / 2,

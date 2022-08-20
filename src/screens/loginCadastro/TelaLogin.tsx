@@ -13,14 +13,12 @@ import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser from '../../components/InputDadosUser'
 import { AuthContext } from '../../apis/AuthContext';
 
-
-
 export default function TelaLogin() {
     const navigation = useNavigation<any>()
 
 
-    const [email, setEmail] = useState<string>('')
-    const [senha, setSenha] = useState<string>('')
+    const [email, setEmail] = useState<string>('email@email.com')
+    const [senha, setSenha] = useState<string>('senha@senha')
 
     const [txtEmailInvalido, setTxtEmailInvalido] = useState<string>('')
     const [txtSenhaInvalida, setTxtSenhaInvalida] = useState<string>('')
@@ -60,8 +58,11 @@ export default function TelaLogin() {
         //     navigation.navigate('home', { isDrive: false })
         // }
 
+        // return
+
 
         // setLoaderReq(false)
+
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
@@ -72,26 +73,30 @@ export default function TelaLogin() {
             setLoaderReq(false)
             return
         }
+        try {
+            login(email, senha, setLoaderReq)
+            navigation.navigate("home", { isDrive: true })
+        } catch (error) {
+            console.log(error)
+        }
 
-        // IMPLENTAR REQUISIÇÃO
-        login(email, senha)
-        setLoaderReq(false)
     }
 
-    useEffect(() => {
-        //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
-        //to continue the login process by verifying if the userInfo has the access token to foward the user
-        if (userInfo.access_token !== undefined && userInfo.access_token !== null) {
-            setLoaderReq(true)
-            
-            userInfo.type == 'driver' ? 
-            navigation.navigate('home', { isDrive: true }) 
-            : 
-            navigation.navigate('home', { isDrive: false })
+    // useEffect(() => {
+    //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
+    //     //to continue the login process by verifying if the userInfo has the access token to foward the user
+    //     if (!userInfo.access_token) {
+    //         setLoaderReq(true)
 
-            setLoaderReq(false)
-        }
-    }, [userInfo.access_token]);
+    //         userInfo.type == 'driver' ?
+    //             navigation.navigate('home', { isDrive: true })
+    //             :
+    //             navigation.navigate('home', { isDrive: false })
+
+    //         setLoaderReq(false)
+    //     }
+    // }, [userInfo.access_token]);
+
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <KeyboardAwareScrollView

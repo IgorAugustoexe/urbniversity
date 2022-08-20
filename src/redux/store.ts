@@ -6,15 +6,14 @@ import sistemaReducer from './reducers/sistemaReducer'
 
 const userPersistConfig = {
     key: 'user',
-    storage: reduxStorage,
-    /// whitelist: ['user']
+    storage: reduxStorage
 }
 
-const cartPersistConfig = {
-    key: 'cart',
-    storage: reduxStorage,
-    blacklist: ['cupom', 'deliveryPeriod', 'deliveryDate']
-};
+// const cartPersistConfig = {
+//     key: 'cart',
+//     storage: reduxStorage,
+//     blacklist: ['cupom', 'deliveryPeriod', 'deliveryDate']
+// };
 
 export const store: any = configureStore({
     reducer: {

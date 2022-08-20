@@ -1,6 +1,6 @@
-import React, { useState, Fragment, useContext, useEffect} from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -17,25 +17,32 @@ type navigation = {
 }
 
 export default function TelaHome() {
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
+
     const { userInfo, logout } = useContext(AuthContext)
-    const [userName, setUserName] = useState<string>(null);
+    const [userName, setUserName] = useState<string>('');
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
 
     useEffect(() => {
-       
-            setUserName(userInfo.user.fullName)
- 
-    }, []);
-    console.log(route.params)
+        //setUserName(userInfo.user.fullName)
+    }, [])
+
+    useEffect(() => {
+        !store.user.access_token && navigation.popToTop()
+    }, [store.user.access_token])
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.txtBold}>Bem Vindo {userName ? userName : route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
-                    <TouchableOpacity onPress={() => logout()}>
+                    <TouchableOpacity onPress={logout}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
