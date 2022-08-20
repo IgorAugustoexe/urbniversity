@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, Linking, Alert, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -19,10 +19,17 @@ import { removerAcento } from '../../helpers/FuncoesPadrao'
 import { pesquisaEndereco } from '../../apis/shearchApi'
 import { requisitarPermissaoGaleria } from '../../controllers/PermissoesController'
 import { escolherImagem } from '../../controllers/ImagemController'
+import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
+import { AuthContext } from '../../apis/AuthContext';
 
 type navigation = {
     props: {
-        isDrive: boolean
+        isDrive: boolean,
+        id: string,
+        email: string,
+        nome: string,
+        telefone: string,
+        senha: string,
     }
 }
 
@@ -39,6 +46,7 @@ export default function TelaFinalizarCadastro() {
     const [modelo, setModelo] = useState<string>('')
     const [marca, setMarca] = useState<string>('')
     const [ano, setAno] = useState<string>('')
+    const [crlv, setCrlv] = useState<string>('')
     const [assentos, setAssentos] = useState<string>('')
     const [corPredominante, setCorPredominante] = useState<string>('')
 
@@ -46,6 +54,7 @@ export default function TelaFinalizarCadastro() {
     const [txtPlacaInvalida, setTxtPlacaInvalida] = useState<string>('')
     const [txtModeloInvalido, setTxtModeloInvalido] = useState<string>('')
     const [txtMarcaInvalida, setTxtMarcaInvalida] = useState<string>('')
+    const [txtCrlvInvalido, setTxtCrlvInvalido] = useState<string>('')
     const [txtAnoInvalido, setTxtAnoInvalido] = useState<string>('')
     const [txtAssentosInvalidos, setTxtAssentosInvalidos] = useState<string>('')
     const [txtCorPredominante, setTxtCorPredominante] = useState<string>('')
@@ -73,6 +82,9 @@ export default function TelaFinalizarCadastro() {
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
+
+    //Register Function
+    const { userInfo, register } = useContext(AuthContext)
 
     const validarCpf = () => {
         txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
@@ -138,14 +150,22 @@ export default function TelaFinalizarCadastro() {
     const validarDadosMotorista = () => {
         let controleMotorista = true
         txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
+        txtCrlvInvalido.length > 0 && setTxtCrlvInvalido('')
         txtAnoInvalido.length > 0 && setTxtAnoInvalido('')
 
         if (!validarCpf()) {
             controleMotorista = false
         }
-
-        if (cnh.length <= 13) {
+        //Mudei pra 11, cnh com 13 é loucura
+        if (cnh.length <= 10) {
+            console.log(1)
             setTxtCnhInvalida('CNH Inválida')
+            controleMotorista = false
+        }
+        //Mudei pra 11, acredito que senha o Renavan que também tem 11 digitos
+        if (crlv.length <= 10) {
+            console.log(1)
+            setTxtCnhInvalida('CRLV Inválido')
             controleMotorista = false
         }
 
@@ -159,7 +179,7 @@ export default function TelaFinalizarCadastro() {
 
     const finalizarCadastro = () => {
         setLoaderReq(true)
-
+        //console.log(`${route.params.id} ${route.params.email} ${route.params.nome} ${route.params.telefone} ${route.params.senha}`)
         if (route.params.isDrive) {
             if (!validarDadosMotorista()) {
                 setLoaderReq(false)
@@ -172,13 +192,46 @@ export default function TelaFinalizarCadastro() {
             }
         }
 
-        return
-
-        if (route.params.isDrive) {
-            navigation.navigate('home', { isDrive: true })
-        } else {
-            navigation.naviate('home', { isDrive: false })
+        // if (route.params.isDrive) {
+        //     navigation.navigate('home', { isDrive: true })
+        // } else {
+        //     navigation.naviate('home', { isDrive: false })
+        // }
+        let object = route.params.isDrive? {
+            cnh:cnh,
+            fullName:route.params.nome,
+            cpf:cpf,
+            email: route.params.email,
+            password: route.params.senha,
+            phone:route.params.telefone
+        } : {
+            fullName:route.params.nome,
+            cpf:cpf,
+            email: route.params.email,
+            password: route.params.senha,
+            phone:route.params.telefone,
+            course:curso,
+            university:faculdade,
+            street:endereco,
+            number:numero,
+            district:bairro,
+            cep:cep,
+            city:cidade,
+            state:estado
         }
+        
+        let complement = route.params.isDrive ? {
+            crlv:crlv,
+            brand:marca,
+            model:modelo,
+            year:parseInt(ano),
+            color:corPredominante,
+            seats:assentos
+        }
+        :
+        {}
+        
+        route.params.isDrive? register('driver', object, complement):register('student',object,complement)
 
         setLoaderReq(false)
     }
@@ -267,6 +320,16 @@ export default function TelaFinalizarCadastro() {
                         <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
                     </View>
                 }
+            </View>
+            <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setCrlv(text)}
+                    value={crlv}
+                    textoInput={'Crlv'}
+                    placeholder={'Digite o CRLV'}
+                    onFocus={() => txtCrlvInvalido.length > 0 && setTxtCrlvInvalido('')}
+                    txtErro={txtCrlvInvalido}
+                />
             </View>
             <View style={styles.espacoInputs}>
                 <InputDadosUser
@@ -473,6 +536,20 @@ export default function TelaFinalizarCadastro() {
             </View>
         </Fragment>
     )
+    useEffect(() => {
+        //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
+        //to continue the login process by verifying if the userInfo has the access token to foward the user
+        if (userInfo.access_token !== undefined && userInfo.access_token !== null) {
+            setLoaderReq(true)
+            
+            userInfo.type == 'driver' ? 
+            navigation.navigate('home', { isDrive: true }) 
+            : 
+            navigation.navigate('home', { isDrive: false })
+
+            setLoaderReq(false)
+        }
+    }, [userInfo.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
