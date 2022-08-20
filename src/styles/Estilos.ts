@@ -17,7 +17,7 @@ const config = {
 }
 
 const cores = {
-    backgroundPadrao: '#2b2b2b',
+    backgroundPadrao: '#060e24', //'#2b2b2b',
     azulPrimario: '#2F3F66',
     azulSecundario: '#1D2740',
     azulBtn: '#5875BF',

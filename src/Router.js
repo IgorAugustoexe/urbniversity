@@ -7,7 +7,6 @@ import TelaCadastro from './screens/loginCadastro/TelaCadastro'
 import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro'
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaCadastroVeiculo from './screens/motorista/cadastroVeiculo'
-import {navigationRef} from './apis/AuthContext';
 
 const Stack = createStackNavigator()
 
@@ -18,7 +17,6 @@ export default function App() {
     return (
         <NavigationContainer ref={navigationRef}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                
                 <Stack.Screen
                     name="login"
                     component={TelaLogin}
@@ -36,8 +34,12 @@ export default function App() {
                     component={TelaHome}
                 />
                 <Stack.Screen
-                    name="cadastroVeiculo"
-                    component={TelaCadastroVeiculo}
+                    name="veiculo"
+                    component={TelaVeiculo}
+                />
+                <Stack.Screen
+                    name="pesquisaMotorista"
+                    component={TelaPesquisaMotorista}
                 />
                 <Stack.Screen
                     name="modalErro"

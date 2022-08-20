@@ -151,6 +151,7 @@ export default function TelaFinalizarCadastro() {
         let controleMotorista = true
         txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
         txtCrlvInvalido.length > 0 && setTxtCrlvInvalido('')
+        txtAnoInvalido.length > 0 && setTxtAnoInvalido('')
 
         if (!validarCpf()) {
             controleMotorista = false
@@ -165,6 +166,11 @@ export default function TelaFinalizarCadastro() {
         if (crlv.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CRLV Inválido')
+            controleMotorista = false
+        }
+
+        if (ano < '1990' || ano > '2023') {
+            setTxtAnoInvalido('Ano Inválido')
             controleMotorista = false
         }
 
