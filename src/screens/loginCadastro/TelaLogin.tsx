@@ -52,16 +52,7 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        // if (loginMotorista) {
-        //     navigation.navigate('home', { isDrive: true })
-        // } else {
-        //     navigation.navigate('home', { isDrive: false })
-        // }
-
-        // return
-
-
-        // setLoaderReq(false)
+        navigation.navigate('home', { isDrive: true })
 
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')

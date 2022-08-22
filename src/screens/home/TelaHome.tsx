@@ -42,7 +42,7 @@ export default function TelaHome() {
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.txtBold}>Bem Vindo {userName ? userName : route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
-                    <TouchableOpacity onPress={logout}>
+                    <TouchableOpacity onPress={() => logout}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
@@ -66,7 +66,7 @@ export default function TelaHome() {
             </View>
 
             {route.params.isDrive ?
-                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8}>
+                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
                     <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
                     <View style={styles.containerRota}>
                         <Text style={styles.txtNomeRota}>UNIFAE - Centro Universitário das Faculdades Associadas de Ensino - FAE</Text>

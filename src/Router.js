@@ -8,6 +8,7 @@ import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
+import TelaMapa from './screens/TelaMapa'
 
 const Stack = createStackNavigator()
 
@@ -41,6 +42,10 @@ export default function App() {
                 <Stack.Screen
                     name="pesquisaMotorista"
                     component={TelaPesquisaMotorista}
+                />
+                <Stack.Screen
+                    name="mapa"
+                    component={TelaMapa}
                 />
                 <Stack.Screen
                     name="modalErro"
