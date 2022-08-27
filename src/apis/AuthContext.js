@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
     })
 
     const dispatch = useDispatch()
-    const [userInfo, setUserInfo] = useState({});
     const [complemento, setComplemento] = useState({})
     const [awaitDriver, setAwaitDriver] = useState(false)
     const [splashLoading, setSplashLoading] = useState(false);
@@ -38,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
 
     //REGISTER
-    const register = (entity, object, comp) => {
+    const register = (entity, object, comp, callback) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
         if (entity == 'driver') {
@@ -48,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
         axios.post(`/${entity}`, object)
             .then(async () => {
-                await login(object.email, object.password);
+               await login(object.email, object.password, callback);
             }).catch(err => {
                 console.log(`register login error ${err}`);
             })
@@ -57,7 +56,17 @@ export const AuthProvider = ({ children }) => {
 
     //LOGIN
     const complement = async (entity) => {
-        const config = { headers: { 'Authorization': `Bearer ${userInfo.access_token}` } };
+        axios.interceptors.request.use(function (config) {
+            // Do something before request is sent
+            console.log(config)
+            return config;
+          }, function (error) {
+            // Do something with request error
+            return Promise.reject(error);
+          });
+        const config = { headers: { 'Authorization': `Bearer ${store.access_token}` } };
+        console.log(store.accessToken)
+        console.log(complemento)
         try {
             await axios.post(`/${entity}`, complemento, config)
         } catch (e) {
@@ -69,80 +78,81 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password, callback) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type
-        axios.post(`/auth`, { email, password, })
-            .then(res => {
+        axios.post(`/auth`, { email, password, }).then(res => {
                 const config = { headers: { 'Authorization': `Bearer ${res.data.access_token}` } };
                 //The get request to the address /{type} results in the user that needs a token to be retrieved
-                axios.get(`/${res.data.type}/`, config)
-                    .then(resLogin => {
+                axios.get(`/${res.data.type}/`, config).then(resLogin => {
                         //Once we have the info, we store it in a storage (By now, AsyncStorage) and set the state userInfo to use it as the state don't need to be awaited 
                         let userInfo = resLogin.data;
                         userInfo["access_token"] = res.data.access_token;
                         userInfo["type"] = res.data.type;
-
-                        setUserInfo(userInfo);
                         dispatch(setInfo(userInfo))
+    
                     }).catch(e => {
-                        console.log(`login error ${e}`);
+                        console.log(`login 2 error ${e}`);
                     });
             }).catch(e => {
-                console.log(`login error ${e}`);
-            }).finally(callback(false))
+                console.log(`login 1 error ${e}`);
+            }).finally(() => {
+                try{
+                    callback(false)
+                }catch(e){
+                    console.log(`Login Finaly error: ${e}`)
+                }
+               
+            })
+            
     };
     //LOGOUT
     const logout = () => {
         // The logout is simple as we don't delete the token from the API. So we just remove the item from the storage 
         // and set the state userInfo as {}. Finaly, we send the user to the login screen
         dispatch(resetUser())
-        setUserInfo({})
     };
 
     //ISLOGGEDIN
     //Here is the code responsible for mantain the user logged if and only if exists a valid token in the API
-    const isLoggedIn = async () => {
+    const isLoggedIn = async (target, navigateTo) => {
+    if (store.accessToken) {
+        store.type == 'driver' ? navigateTo(target, { isDrive: true }) : navigateTo(target, { isDrive: false })
         try {
-            //Firstly we check if the userInfo item in the storage exists, because, if not, we just know that the user isn't logged
-            let userInfo = null//{ store.access_token, store.type, store.user }
-            userInfo = JSON.parse(userInfo);
-
-
-            if (userInfo) {
-                // If the userInfo is in fact in the storage,  then we check if the token is valid and 
-                // if true, we save it in the state. if not, the token isn't valid anymore and we will know same as above
-                axios.defaults.headers.get['Authorization'] = `Bearer ${userInfo?.access_token}`;
-                axios.get(`/${userInfo.type}`).then(resLogin => {
-                    setUserInfo(userInfo);
-                    userInfo.type == 'driver' ? navigate('home', { isDrive: true }) : navigate('home', { isDrive: false })
-                }).catch(e => {
-                    console.log(`login error ${e}`);
-                    logout()
-                });
-            }
-
+            // If the userInfo is in fact in the storage,  then we check if the token is valid and 
+            // if true, we save it in the state. if not, the token isn't valid anymore and we will know same as above
+            axios.defaults.headers.get['Authorization'] = `Bearer ${store.accessToken}`;
+            axios.get(`/${store.type}`).then(resLogin => { 
+            }).catch(e => {
+                console.log(`login error ${e}`);
+                logout()
+            });
         } catch (e) {
             console.log(`is logged in error ${e}`);
         }
-    };
-    //The magic that triggers the function above
-    useEffect(() => {
-        //isLoggedIn();
-    }, []);
+    
+    }
 
-    useEffect(() => {
-        if (userInfo.type == 'driver' && awaitDriver == true) {
-            complement('vehicle', complemento)
-        }
-    }, [userInfo.type]);
-    //We return here everything we will be using
-    return (
-        <AuthContext.Provider
-            value={{
-                userInfo,
-                register,
-                login,
-                logout,
-            }}>
-            {children}
-        </AuthContext.Provider>
-    );
+};
+// //The magic that triggers the function above
+// useEffect(() => {
+    
+//     isLoggedIn();
+    
+// }, []);
+
+useEffect(() => {
+    if (store.type == 'driver' && awaitDriver == true) {
+        complement('vehicle', complemento)
+    }
+}, [store.type]);
+//We return here everything we will be using
+return (
+    <AuthContext.Provider
+        value={{
+            isLoggedIn,
+            register,
+            login,
+            logout,
+        }}>
+        {children}
+    </AuthContext.Provider>
+);
 };

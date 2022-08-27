@@ -8,28 +8,24 @@ import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
+import { useSelector } from 'react-redux'
 
 const Stack = createStackNavigator()
 
 export default function App() {
+    const store = useSelector(({ user }) => {
+        return {
+            user: user
+        }
+    })
     //Usar o token guardado na store para validar o usuario
     //Caso logado, ir para home
     //Caso deslogado, ir para login/registrar
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="login"
-                    component={TelaLogin}
-                />
-                <Stack.Screen
-                    name="cadastro"
-                    component={TelaCadastro}
-                />
-                <Stack.Screen
-                    name="finalizarCadastro"
-                    component={TelaFinalizarCadastro}
-                />
+                {store.user.access_token ? 
+                <>
                 <Stack.Screen
                     name="home"
                     component={TelaHome}
@@ -42,6 +38,24 @@ export default function App() {
                     name="pesquisaMotorista"
                     component={TelaPesquisaMotorista}
                 />
+            </>: 
+            <>
+                <Stack.Screen
+                    name="login"
+                    component={TelaLogin}
+                />
+                <Stack.Screen
+                    name="cadastro"
+                    component={TelaCadastro}
+                />
+                <Stack.Screen
+                    name="finalizarCadastro"
+                    component={TelaFinalizarCadastro}
+                /> 
+                </>
+                }
+                
+                
                 <Stack.Screen
                     name="modalErro"
                     component={ModalErroGenerico}

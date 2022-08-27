@@ -23,25 +23,24 @@ export default function TelaHome() {
         }
     })
 
-    const { userInfo, logout } = useContext(AuthContext)
-    const [userName, setUserName] = useState<string>('');
+    const {userInfo, logout } = useContext(AuthContext)
+    const [userName, setUserName] = useState<string>('')
+    const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
 
     useEffect(() => {
-        //setUserName(userInfo.user.fullName)
+        setUserName(store.user.user.fullName)
+        let driver = store.user.user.type == 'driver' ? true : false 
+        setIsDriver(driver)
     }, [])
-
-    useEffect(() => {
-        !store.user.access_token && navigation.popToTop()
-    }, [store.user.access_token])
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.txtBold}>Bem Vindo {userName ? userName : route.params.isDrive ? 'Motorista' : 'Estudante'}!</Text>
+                    <Text style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={logout}>
                         <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
@@ -65,7 +64,7 @@ export default function TelaHome() {
                 </View>
             </View>
 
-            {route.params.isDrive ?
+            {isDriver ?
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8}>
                     <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
                     <View style={styles.containerRota}>
@@ -81,7 +80,7 @@ export default function TelaHome() {
                 </View>
             }
 
-            {!route.params.isDrive &&
+            {!isDriver &&
                 <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
                     <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
                 </TouchableOpacity>
