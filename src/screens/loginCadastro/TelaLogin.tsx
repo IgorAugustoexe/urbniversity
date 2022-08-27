@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useContext, useEffect } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, Alert, PermissionsAndroid, Linking } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -12,6 +12,7 @@ import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser from '../../components/InputDadosUser'
 import { AuthContext } from '../../apis/AuthContext';
+import { requisitarPermissaoArmazenamento, requisitarPermissaoLocalizacao } from '../../controllers/PermissoesController'
 
 export default function TelaLogin() {
     const navigation = useNavigation<any>()
@@ -28,6 +29,48 @@ export default function TelaLogin() {
 
     const { userInfo, login } = useContext(AuthContext)
 
+    useEffect(() => {
+        didMount()
+    }, [])
+
+    const didMount = () => {
+        solicitarLocalizacao()
+        solicitarArmazenamento()
+    }
+
+    const solicitarLocalizacao = async () => {
+        const permissaoLocalizacao = await requisitarPermissaoLocalizacao()
+        if (permissaoLocalizacao != PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+                "Permissão da Localização",
+                "Libere o acesso ao Urbniversity para acessar sua localização.",
+                [
+                    {
+                        text: "Cancelar"
+                    },
+                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+                ]
+            )
+        }
+    }
+
+    const solicitarArmazenamento = async () => {
+        const permissaoArmazenamento = await requisitarPermissaoArmazenamento()
+        if (permissaoArmazenamento != PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+                "Permissão de armazenamento",
+                "Libere o acesso ao Urbniversity para acessar seu armazenamento.",
+                [
+                    {
+                        text: "Cancelar"
+                    },
+                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+                ]
+            )
+            return
+        }
+    }
+
     const validarEmail = (email: string) => {
         const verificaRespostaEmail = verificaEmail(email)
         if (!verificaRespostaEmail) {
@@ -43,6 +86,7 @@ export default function TelaLogin() {
             return false
         }
         return true
+
     }
 
     const alternarFormaLogin = () => {
@@ -52,8 +96,9 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        navigation.navigate('home', { isDrive: true })
-
+        navigation.navigate('mapa')
+        setLoaderReq(false)
+        return
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
