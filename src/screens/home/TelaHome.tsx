@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
@@ -30,9 +30,9 @@ export default function TelaHome() {
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
-        let driver = store.user.user.type == 'driver' ? true : false 
+        let driver = store.user.type == 'driver' ? true : false 
         setIsDriver(driver)
     }, [])
 

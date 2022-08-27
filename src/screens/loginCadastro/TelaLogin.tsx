@@ -104,7 +104,7 @@ export default function TelaLogin() {
                 <View style={styles.header}>
                     <Text style={styles.txtLogo}>URBNiversity</Text>
                     <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
-                        <Text style={styles.txtTipoLogin}>{loginMotorista ? 'MOTORISTA' : 'ESTUDANTE'}</Text>
+                         <Text style={styles.txtTipoLogin}>{loginMotorista ? 'MOTORISTA' : 'ESTUDANTE'}</Text>
                         <FontAwesomeIcon icon={loginMotorista ? faVanShuttle : faUserGraduate} size={config.windowWidth / 16} color={cores.azulBtn} style={{ left: 10 }} />
                     </View>
                 </View>
@@ -157,12 +157,12 @@ export default function TelaLogin() {
                             <Text style={[styles.txt, { color: cores.fonteBranco }]}> Cadastre-se</Text>
                         </Text>
                     </TouchableOpacity>
-                    <View style={styles.bordaDivisoria}>
+                   <View style={styles.bordaDivisoria}>
                         <Text style={styles.txtBordaDivisoria}>OU</Text>
                     </View>
-                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => alternarFormaLogin()} hitSlop={styles.hitSlopBtns}>
+                   { <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => alternarFormaLogin()} hitSlop={styles.hitSlopBtns}>
                         <Text style={styles.txtUnderline}>Entrar como {loginMotorista ? 'Estudante' : 'Motorista'}</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>} 
                 </View>
             </KeyboardAwareScrollView>
         </SafeAreaView >
@@ -172,6 +172,7 @@ export default function TelaLogin() {
 const styles = StyleSheet.create({
     header: {
         paddingTop: config.windowWidth / 10, paddingHorizontal: config.windowWidth / 4
+        //paddingTop: config.windowWidth / 10, alignSelf: 'center'
     },
 
     txtLogo: {
