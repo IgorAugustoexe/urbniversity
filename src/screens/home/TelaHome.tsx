@@ -23,7 +23,7 @@ export default function TelaHome() {
         }
     })
 
-    const {userInfo, logout } = useContext(AuthContext)
+    const {logout } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()

@@ -92,7 +92,7 @@ export default function TelaFinalizarCadastro() {
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
 
     //Register Function
-    const { userInfo, register } = useContext(AuthContext)
+    const {register } = useContext(AuthContext)
 
     const validarCpf = () => {
         txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
@@ -544,20 +544,20 @@ export default function TelaFinalizarCadastro() {
             </View>
         </Fragment>
     )
-    useEffect(() => {
-        //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
-        //to continue the login process by verifying if the userInfo has the access token to foward the user
-        if (store.user.access_token) {
-            setLoaderReq(true)
+    // useEffect(() => {
+    //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
+    //     //to continue the login process by verifying if the userInfo has the access token to foward the user
+    //     if (store.user.access_token) {
+    //         setLoaderReq(true)
 
-            store.user.type == 'driver' ?
-                navigation.navigate('home', { isDrive: true })
-                :
-                navigation.navigate('home', { isDrive: false })
+    //         store.user.type == 'driver' ?
+    //             navigation.navigate('home', { isDrive: true })
+    //             :
+    //             navigation.navigate('home', { isDrive: false })
 
-            setLoaderReq(false)
-        }
-    }, [store.user.access_token]);
+    //         setLoaderReq(false)
+    //     }
+    // }, [store.user.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
