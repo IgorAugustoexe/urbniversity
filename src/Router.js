@@ -8,7 +8,7 @@ import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
-import TelaMapa from './screens/TelaMapa'
+import TelaMapa from './screens/mapa/TelaMapa'
 
 const Stack = createStackNavigator()
 
