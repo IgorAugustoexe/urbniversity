@@ -104,9 +104,9 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        navigation.navigate('mapa')
-        setLoaderReq(false)
-        return
+        // navigation.navigate('mapa')
+        // setLoaderReq(false)
+        // return
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 

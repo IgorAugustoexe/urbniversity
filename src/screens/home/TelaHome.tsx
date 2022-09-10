@@ -61,7 +61,6 @@ export default function TelaHome() {
 
             {isDriver && store.user.route ?
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
-
                     <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
                     <View style={styles.containerRota}>
                         <Text style={styles.txtNomeRota}>UNIFAE - Centro Universitário das Faculdades Associadas de Ensino - FAE</Text>
