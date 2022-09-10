@@ -17,9 +17,10 @@ export const navigationRef = React.createRef();
 export const AuthProvider = ({ children }) => {
     const store = useSelector(({ user }) => {
         return {
+            userDebug:user,
             user: user.user,
             accessToken: user.access_token,
-            type: user.type
+            type: user.type,
 
         }
     })
@@ -78,15 +79,22 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password, callback) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type
-        axios.post(`/auth`, { email, password, }).then(res => {
+
+        await axios.post(`/auth`, { email, password, }).then(async res => {
             setIsLogged(true)
             const config = { headers: { 'Authorization': `Bearer ${res.data.access_token}` } };
             //The get request to the address /{type} results in the user that needs a token to be retrieved
-            axios.get(`/${res.data.type}/`, config).then(resLogin => {
+            await axios.get(`/${res.data.type}/`, config).then(async resLogin => {
                 //Once we have the info, we store it in a storage (By now, AsyncStorage) and set the state userInfo to use it as the state don't need to be awaited 
                 let userInfo = resLogin.data;
                 userInfo["access_token"] = res.data.access_token;
                 userInfo["type"] = res.data.type;
+                if(resLogin.data.driverId){
+                    const aux = await axios.get(`${res.data.type}/driver`,config);
+                    userInfo['driver'] = aux.data;
+                }
+                
+               
                 dispatch(setInfo(userInfo))
             }).catch(e => {
                 console.log(`login 2 error ${e}`);
@@ -118,7 +126,6 @@ export const AuthProvider = ({ children }) => {
         
         if (store.accessToken) {
             try {
-                console.log('456')
                 // If the userInfo is in fact in the storage,  then we check if the token is valid and 
                 // if true, we save it in the state. if not, the token isn't valid anymore and we will know same as above
                 axios.defaults.headers.get['Authorization'] = `Bearer ${store.accessToken}`;
