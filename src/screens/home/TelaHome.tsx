@@ -70,7 +70,7 @@ export default function TelaHome() {
                     </View>
                 </TouchableOpacity>
                 :!isDriver && store.user.driverId ?
-                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8}>
+                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.university}</Text>
                     <View style={styles.containerRota}>
                         <View style={styles.containerInfoRota}>

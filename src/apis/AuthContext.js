@@ -36,14 +36,19 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     //Para verificar a request, basta dar Ctrl+K+U no código abaixo
-    // axios.interceptors.request.use(function (config) {
-    //     // Do something before request is sent
-    //     console.log(config)
-    //     return config;
-    //   }, function (error) {
-    //     // Do something with request error
-    //     return Promise.reject(error);
-    //   });
+    //  axios.interceptors.request.use(function (request ) {
+    //      console.log('Starting Request', JSON.stringify(request, null, 2))
+    //      return request;
+	//  }, function (error) {
+	//  	 return Promise.reject(error);
+	//  });
+
+	//   axios.interceptors.response.use(function (response) {
+    //      console.log('Response:', JSON.stringify(response, null, 2))
+	//  	 return response;
+	//  }, function (error) {
+	//  	 return Promise.reject(error);
+	//  });
 
 
     //REGISTER
@@ -64,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
     };
 
-    //LOGIN
+    //REGISTRAR PT2
     const complement = async (entity) => {
 
         const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
@@ -76,6 +81,21 @@ export const AuthProvider = ({ children }) => {
 
         setAwaitDriver(false)
     }
+    const getRoutesByStudent = async () =>{     
+        try{
+          const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+          const aux = await axios.get(`student/routes`,config);
+          
+           const resp = await aux.data //store.type
+           return resp;
+           
+          
+        }catch(e){
+          console.log(e);
+          return e;
+        }
+        
+      }
     const login = async (email, password, callback) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type
@@ -163,6 +183,7 @@ export const AuthProvider = ({ children }) => {
                 register,
                 login,
                 logout,
+                getRoutesByStudent,
             }}>
             {children}
         </AuthContext.Provider>
