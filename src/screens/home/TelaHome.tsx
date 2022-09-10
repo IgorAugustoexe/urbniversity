@@ -10,12 +10,6 @@ import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import { AuthContext } from '../../apis/AuthContext';
 
-type navigation = {
-    props: {
-        isDrive: boolean
-    }
-}
-
 export default function TelaHome() {
     const store: any = useSelector<any>(({ user }) => {
         return {
@@ -66,7 +60,8 @@ export default function TelaHome() {
             </View>
 
             {isDriver && store.user.route ?
-                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8}>
+                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
+
                     <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
                     <View style={styles.containerRota}>
                         <Text style={styles.txtNomeRota}>UNIFAE - Centro Universitário das Faculdades Associadas de Ensino - FAE</Text>
