@@ -1,24 +1,32 @@
 import React, { useState, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
 import { controleAlerta } from '../../redux/reducers/sistemaReducer'
 
 export default function TelaVeiculo() {
+
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
     const navigation = useNavigation<any>()
     const dispatch = useDispatch()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
     const [loaderBtn, setLoaderBtn] = useState<boolean>(false)
     const [solicitar, setSolicitar] = useState<boolean>(false)
+    const assentos = store.user.driver ? parseInt(store.user.driver.vehicle.seats) - 2 : parseInt(store.user.vehicle.seats) - 2
 
     const solicitarMotorista = () => {
         dispatch(controleAlerta('Solicitação com sucesso!'))
         navigation.goBack()
     }
+    
 
     // componentes
 
@@ -29,41 +37,82 @@ export default function TelaVeiculo() {
         />
     )
 
-    const DadosVeiculo = () => (
+     const DadosVeiculo = () => (
+        !store.user.driver ?
         <View style={{ padding: config.windowWidth / 30 }}>
             <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
-                <Text style={{ color: cores.fonteBranco, fontSize: 16, fontWeight: 'bold', paddingVertical: 10 }}>Nome Motorista</Text>
-                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Contato</Text>
-                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor</Text>
+                <Text style={{ color: cores.fonteBranco, fontSize: 16, fontWeight: 'bold', paddingVertical: 10 }}>{store.user.user.fullName}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.user.phone}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
             </View>
             <View style={{ backgroundColor: cores.azulSecundario, padding: config.windowWidth / 20, borderRadius: 10 }}>
                 {loaderReq ?
                     <ActivityIndicator size={'large'} color={cores.branco} style={{ paddingVertical: config.windowWidth / 5 }} />
                     :
                     <Fragment>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca e Modelo:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Marca e Modelo</Text>
+                        <View style={{ flexDirection: 'row',  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.vehicle.brand}</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20 }}>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Modelo:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }} numberOfLines={1} ellipsizeMode="tail">{store.user.vehicle.model}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
                             <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Cor Veículo:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Cor</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.vehicle.color}</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20 }}>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
                             <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Placa:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Numero da Placa</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>PLACA</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20 }}>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
                             <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Ano veiculo</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.vehicle.year}</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20 }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>Ano veiculo</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20 }}>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%'}}>
                             <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Assentos Disponíveis:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>10/20</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{assentos}/{store.user.vehicle.seats}</Text>
+                        </View>
+                    </Fragment>
+                }
+            </View>
+        </View >
+        :
+        <View style={{ padding: config.windowWidth / 30 }}>
+            <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
+                <Text style={{ color: cores.fonteBranco, fontSize: 16, fontWeight: 'bold', paddingVertical: 10 }}>{store.user.driver.fullName}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.phone}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
+            </View>
+            <View style={{ backgroundColor: cores.azulSecundario, padding: config.windowWidth / 20, borderRadius: 10 }}>
+                {loaderReq ?
+                    <ActivityIndicator size={'large'} color={cores.branco} style={{ paddingVertical: config.windowWidth / 5 }} />
+                    :
+                    <Fragment>
+                        <View style={{ flexDirection: 'row',  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.brand}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Modelo:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }} numberOfLines={1} ellipsizeMode="tail">{store.user.driver.vehicle.model}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Cor Veículo:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.color}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Placa:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>PLACA</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.year}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%'}}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Assentos Disponíveis:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{assentos}/{store.user.driver.vehicle.seats}</Text>
                         </View>
                     </Fragment>
                 }

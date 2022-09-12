@@ -10,6 +10,7 @@ import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
 import { useSelector } from 'react-redux'
 import TelaMapa from './screens/TelaMapa'
+import TelaRota from './screens/motorista/TelaRota'
 
 
 const Stack = createStackNavigator()
@@ -43,6 +44,10 @@ export default function App() {
                  <Stack.Screen
                     name="mapa"
                     component={TelaMapa}
+                />
+                <Stack.Screen
+                    name="telaRota"
+                    component={TelaRota}
                 />
             </>: 
             <>
