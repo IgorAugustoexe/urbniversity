@@ -8,7 +8,7 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
 import { AuthContext } from '../../apis/AuthContext'
-import {Routes} from '../../types/types'
+import {Driver} from '../../types/types'
 
 // const arrayMotoristas = [
 //     {
@@ -55,7 +55,7 @@ export default function TelaPesquisaMotorista() {
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [rotas,setRotas] = useState<Routes>();
+    const [rotas,setRotas] = useState<Driver>();
     const [erroReq, setErroReq] = useState<boolean>(false)
     const {getRoutesByStudent} = useContext(AuthContext)
 

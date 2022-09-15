@@ -61,9 +61,12 @@ export default function TelaHome() {
 
             {isDriver && store.user.route ?
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('telaRota')}>
-                    <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
+                    <Text style={styles.txtCodigoRota}>Rota: {store.user.route.university.name}</Text>
                     <View style={styles.containerRota}>
-                        <Text style={styles.txtNomeRota}>UNIFAE - Centro Universitário das Faculdades Associadas de Ensino - FAE</Text>
+                    <View style={styles.containerInfoRota}>
+                        <Text style={styles.txtNomeRota}>Motorista: {store.user.user.fullName}</Text>
+                        <Text style={styles.txtNomeRota}>Cidade: {store.user.route.city.name} - {store.user.route.city.state}</Text>
+                    </View>
                         <View style={{ width: '10%', justifyContent: 'center' }}>
                             <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                         </View>
@@ -71,11 +74,11 @@ export default function TelaHome() {
                 </TouchableOpacity>
                 :!isDriver && store.user.driverId ?
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.university}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.route.university.name}</Text>
                     <View style={styles.containerRota}>
                         <View style={styles.containerInfoRota}>
-                        <Text style={styles.txtNomeRota}>Motorista: {store.user.driver.fullName}</Text>
-                        <Text style={styles.txtNomeRota}>Cidade: {store.user.driver.city} - {store.user.driver.state}</Text>
+                            <Text style={styles.txtNomeRota}>Motorista: {store.user.driver.user.fullName}</Text>
+                            <Text style={styles.txtNomeRota}>Cidade: {store.user.driver.route.city.name} - {store.user.driver.route.city.state}</Text>
                         </View>
                         <View style={{ width: '10%', justifyContent: 'center' }}>
                             <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />

@@ -20,8 +20,9 @@ export default function TelaVeiculo() {
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
     const [loaderBtn, setLoaderBtn] = useState<boolean>(false)
     const [solicitar, setSolicitar] = useState<boolean>(false)
-    const assentos = store.user.driver ? parseInt(store.user.driver.vehicle.seats) - 2 : parseInt(store.user.vehicle.seats) - 2
-
+    
+    const assentos = store.user.driver ? parseInt(store.user.driver.vehicle.seats) - 2 : store.user.vehicle ? parseInt(store.user.vehicle.seats) - 2 : 0
+    const nomeMotorista = store.user.driver ? store.user.driver.user.fullName : store.user.vehicle ? store.user.user.fullName : ""
     const solicitarMotorista = () => {
         dispatch(controleAlerta('Solicitação com sucesso!'))
         navigation.goBack()
@@ -38,10 +39,48 @@ export default function TelaVeiculo() {
     )
 
      const DadosVeiculo = () => (
-        !store.user.driver ?
+        store.user.driver ? //Visão do motorista
         <View style={{ padding: config.windowWidth / 30 }}>
             <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
-                <Text style={{ color: cores.fonteBranco, fontSize: 16, fontWeight: 'bold', paddingVertical: 10 }}>{store.user.user.fullName}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.user.phone}</Text>
+                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
+            </View>
+            <View style={{ backgroundColor: cores.azulSecundario, padding: config.windowWidth / 20, borderRadius: 10 }}>
+                {loaderReq ?
+                    <ActivityIndicator size={'large'} color={cores.branco} style={{ paddingVertical: config.windowWidth / 5 }} />
+                    :
+                    <Fragment>
+                        <View style={{ flexDirection: 'row',  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.brand}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Modelo:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }} numberOfLines={1} ellipsizeMode="tail">{store.user.driver.vehicle.model}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Cor Veículo:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.color}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Placa:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>PLACA</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.year}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%'}}>
+                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Assentos Disponíveis:</Text>
+                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{assentos}/{store.user.driver.vehicle.seats}</Text>
+                        </View>
+                    </Fragment>
+                }
+            </View>
+        </View >
+        : !store.user.user.studentId ? //Visao do estudante
+        <View style={{ padding: config.windowWidth / 30 }}>
+            <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
                 <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.user.phone}</Text>
                 <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
             </View>
@@ -78,51 +117,15 @@ export default function TelaVeiculo() {
                 }
             </View>
         </View >
-        :
-        <View style={{ padding: config.windowWidth / 30 }}>
-            <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
-                <Text style={{ color: cores.fonteBranco, fontSize: 16, fontWeight: 'bold', paddingVertical: 10 }}>{store.user.driver.fullName}</Text>
-                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.phone}</Text>
-                <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
-            </View>
-            <View style={{ backgroundColor: cores.azulSecundario, padding: config.windowWidth / 20, borderRadius: 10 }}>
-                {loaderReq ?
-                    <ActivityIndicator size={'large'} color={cores.branco} style={{ paddingVertical: config.windowWidth / 5 }} />
-                    :
-                    <Fragment>
-                        <View style={{ flexDirection: 'row',  maxWidth:'80%' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.brand}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, maxWidth:'80%' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Modelo:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }} numberOfLines={1} ellipsizeMode="tail">{store.user.driver.vehicle.model}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Cor Veículo:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.color}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Placa:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>PLACA</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{store.user.driver.vehicle.year}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%'}}>
-                            <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Assentos Disponíveis:</Text>
-                            <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{assentos}/{store.user.driver.vehicle.seats}</Text>
-                        </View>
-                    </Fragment>
-                }
-            </View>
-        </View >
+        : //Caso o estudante ainda não esteja cadastrado
+        <View style={{ backgroundColor: cores.azulPrimario, margin: config.windowWidth / 20, alignItems: 'center', padding: 5, borderRadius: 5 }}>
+            <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Você ainda não está cadastrado em nenhuma rota :(</Text>
+        </View>
     )
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
-            <NavBar titulo='Nome Motorista' botaoEsquerdo={false} backgroundColor={cores.backgroundPadrao} />
+            <NavBar titulo={nomeMotorista} botaoEsquerdo={false} backgroundColor={cores.backgroundPadrao} />
             <ScrollView>
                 <ImagemVeiculo />
                 {DadosVeiculo()}

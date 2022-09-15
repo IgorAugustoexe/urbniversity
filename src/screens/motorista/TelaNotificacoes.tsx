@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, Linking} from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator} from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -8,6 +8,8 @@ import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import BtnBlue from '../../components/BtnBlue'
@@ -58,35 +60,22 @@ function TelaMostraEstudante() {
     const [estudantes,setEstudantes] = useState<Student>();
     const [erroReq, setErroReq] = useState<boolean>(false)
     const {getStudentsByDriver} = useContext(AuthContext)
-    const [load,setLoad] = useState(true)
+    const [requests, setRequests] = useState<Requests[]>();
+    const {getRequestsByDriver, acceptRequest, removeRequest} = useContext(AuthContext)
+    useEffect(() => {
+        didMount()
+    }, [])
 
-    useEffect(()=>{
-            didMount()
-            navigation.addListener('focus', ()=>setLoad(!load))
-    },[load, navigation])
-   
-
-    const didMount = async () => {
-         const dtStudents = await getStudentsByDriver();
-         setEstudantes(await dtStudents);
-    }
-    const callWhatsapp = (number:string) =>{
-        let url = "whatsapp://send?text=" +
-        "" +
-        "&phone=55" +
-        number;
-      Linking.openURL(url)
-        .then(data => {
-          console.log("WhatsApp Opened successfully " + data);  //<---Success
-        })
-        .catch((e) => {
-          console.log(e); //<---Error
-        });
+    const didMount = async () => { 
+        setRequests(undefined);      
+         const dtRequests = await getRequestsByDriver();
+         setRequests(dtRequests);
+         //console.log(JSON.stringify(dtRequests, null, "\t"));
     }
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
-            data={estudantes}
+            data={requests}
             ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
             ListFooterComponent={<View style={{ marginBottom: config.windowWidth / 15 }} />}
             showsVerticalScrollIndicator={true}
@@ -102,13 +91,16 @@ function TelaMostraEstudante() {
                         </View>
                         <View style={{flex:1, alignItems:'center',justifyContent:'flex-start',flexDirection:'row', marginHorizontal: 15 }}>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
-                                {item.user.fullName}    
+                                {item.student.user.fullName}    
                             </Text>        
-                            <View style={{flex:1}}>
-                                <TouchableOpacity onPress={() => callWhatsapp(item.user.phone)}>
-                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faWhatsapp} size={config.windowWidth / 12} color={cores.branco} />
+                            <View style={{flex:1, flexDirection:'row' ,justifyContent:'flex-end'}}>
+                                <TouchableOpacity onPress = {() => {acceptRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                                </View>                
+                                <TouchableOpacity onPress = {() => {removeRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
+                                </TouchableOpacity>
+                            </View>                 
                         </View>
                     </TouchableOpacity>
                 )
@@ -163,31 +155,16 @@ export default function TelaRota() {
     const {logout } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
-    const [requests, setRequests] = useState<Requests[]>();
-    const {getRequestsByDriver} = useContext(AuthContext)
-    const navigation = useNavigation<any>() 
+    const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
-    const [load,setLoad] = useState(true)
 
-    useEffect(()=>{
-            didMount()
-            navigation.addListener('focus', ()=>setLoad(!load))
-    },[load, navigation])
-
-    const didMount = async () => {
-         const dtRequests = await getRequestsByDriver();
-         setRequests(await dtRequests);
-         //console.log(JSON.stringify(dtRequests, null, "\t"));
-    }
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
         let driver = store.user.type == 'driver' ? true : false 
         setIsDriver(driver)
         //console.log(store.user.driver)
     }, [])
-    
-    
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -212,14 +189,6 @@ export default function TelaRota() {
                         <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
                             <Text style={styles.txtBtn}>CALENDARIO</Text>
                             <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('notificacoes')}>
-                        <Text style={styles.txtBtn}>NOTIFICAÇÕES</Text>
-                            <View style={styles.reqContainer}>
-                            <Text style={styles.reqCounter}>{requests ? requests.length : '0'}</Text>  
-                            </View>
-                           
-                            
                         </TouchableOpacity>
                     </View>
                 </View>

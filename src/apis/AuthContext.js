@@ -17,7 +17,7 @@ export const navigationRef = React.createRef();
 export const AuthProvider = ({ children }) => {
     const store = useSelector(({ user }) => {
         return {
-            userDebug:user,
+            userDebug: user,
             user: user.user,
             accessToken: user.access_token,
             type: user.type,
@@ -39,16 +39,16 @@ export const AuthProvider = ({ children }) => {
     //  axios.interceptors.request.use(function (request ) {
     //      console.log('Starting Request', JSON.stringify(request, null, 2))
     //      return request;
-	//  }, function (error) {
-	//  	 return Promise.reject(error);
-	//  });
+    //  }, function (error) {
+    //  	 return Promise.reject(error);
+    //  });
 
-	//   axios.interceptors.response.use(function (response) {
+    //   axios.interceptors.response.use(function (response) {
     //      console.log('Response:', JSON.stringify(response, null, 2))
-	//  	 return response;
-	//  }, function (error) {
-	//  	 return Promise.reject(error);
-	//  });
+    //  	 return response;
+    //  }, function (error) {
+    //  	 return Promise.reject(error);
+    //  });
 
 
     //REGISTER
@@ -67,54 +67,152 @@ export const AuthProvider = ({ children }) => {
                 console.log(`register login error ${err}`);
             })
 
+        // const respCadastro = await axios.post(`${entity}`, object);
+        // await login(object.email, object.password,callback)
+        // const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+        // if(entity == 'driver'){
+        //     const respComplemento = await axios.post(`${entity}`,comp, config)
+        // }
+
     };
 
     //REGISTRAR PT2
-    const complement = async (entity) => {
+    const complement = async (entity, object) => {
+
 
         const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
         try {
-            await axios.post(`/${entity}`, complemento, config)
+            await axios.post(`/${entity}`, object, config)
         } catch (e) {
             console.log(`Register ${entity} error: ${e}`)
         }
 
         setAwaitDriver(false)
     }
-    const getRoutesByStudent = async () =>{     
-        try{
-          const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-          const aux = await axios.get(`student/routes`,config);
-          
-           const resp = await aux.data //store.type
-           return resp;
-           
-          
-        }catch(e){
-          console.log(e);
-          return e;
+    const getRoutesByStudent = async () => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.get(`student/routes`, config);
+
+            const resp = await aux.data //store.type
+            return resp;
+
+
+        } catch (e) {
+            console.log(e);
+            return e;
         }
-        
-      }
+
+    }
+    const getStudentsByDriver = async () => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.get(`driver/students`, config);
+
+            const resp = await aux.data //store.type
+            return resp;
+
+
+        } catch (e) {
+            console.log(e);
+            return e;
+        }
+
+    }
+    const getRequestsByDriver = async () => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.get(`request/driver`, config);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            console.log(e);
+            return e;
+        }
+
+    }
+
+    const acceptRequest = async (idRoute) => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.patch(`request`, {id:idRoute}, config);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            console.log(`Error while accepting request ${e}`);
+            return e;
+        }
+
+    }
+    const removeRequest = async (idRoute) => {
+
+        try {
+            const options = {
+                method: 'DELETE',
+                url: `${BASE_URL}/request/`,
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${store.accessToken}`
+                },
+                data: {id: idRoute}
+              };
+              
+              const aux = axios.request(options).then(function (response) {
+                console.log(response.data);
+              }).catch(function (error) {
+                console.error(error);
+              });
+
+            // const config = { headers: { 'Authorization': `Bearer ${store.accessToken}`,'Content-Type': 'application/json'}, { data:{id:idRoute}}};
+
+            // const aux = await axios.delete(`/request/`,config);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            console.log(`Error while deleting request ${e}`);
+            return e;
+        }
+
+    }
+
     const login = async (email, password, callback) => {
         //Request returns the user, a token and a type {driver, student}
         //The Post request to the address /auth results in a token with the user type
 
         await axios.post(`/auth`, { email, password, }).then(async res => {
             setIsLogged(true)
-            const config = { headers: { 'Authorization': `Bearer ${res.data.access_token}` } };
+            const config = { headers: { 'Authorization': `Bearer ${res.data.access_token}`} };
             //The get request to the address /{type} results in the user that needs a token to be retrieved
             await axios.get(`/${res.data.type}/`, config).then(async resLogin => {
                 //Once we have the info, we store it in a storage (By now, AsyncStorage) and set the state userInfo to use it as the state don't need to be awaited 
                 let userInfo = resLogin.data;
                 userInfo["access_token"] = res.data.access_token;
                 userInfo["type"] = res.data.type;
-                if(resLogin.data.driverId){
-                    const aux = await axios.get(`${res.data.type}/driver`,config);
+                if (resLogin.data.driverId) {
+                    const aux = await axios.get(`${res.data.type}/driver`, config);
                     userInfo['driver'] = aux.data;
                 }
-                
-               
+                if (resLogin.data.route) {
+                    const aux = await axios.get(`/route`, config);
+                    userInfo['route'] = aux.data;
+                }
+
+
                 dispatch(setInfo(userInfo))
             }).catch(e => {
                 console.log(`login 2 error ${e}`);
@@ -143,7 +241,7 @@ export const AuthProvider = ({ children }) => {
     //ISLOGGEDIN
     //Here is the code responsible for mantain the user logged if and only if exists a valid token in the API
     const isLoggedIn = async () => {
-        
+
         if (store.accessToken) {
             try {
                 // If the userInfo is in fact in the storage,  then we check if the token is valid and 
@@ -164,15 +262,27 @@ export const AuthProvider = ({ children }) => {
 
     };
     // //The magic that triggers the function above
-     useEffect(() => {
-        if(store.accessToken && !isLogged){
+    useEffect(() => {
+        if (store.accessToken && !isLogged) {
             isLoggedIn();
         }
-     }, [store.accessToken]);
+    }, [store.accessToken]);
 
     useEffect(() => {
         if (store.type == 'driver' && awaitDriver == true) {
-            complement('vehicle', complemento)
+            complement('vehicle', {
+                crlv: complemento.crlv,
+                brand: complemento.brand,
+                model: complemento.model,
+                year: complemento.year,
+                color: complemento.color,
+                seats: complemento.seats,
+            })
+            complement('route', {
+                city: complemento.city,
+                state: complemento.state,
+                university: complemento.university
+            })
         }
     }, [store.type]);
     //We return here everything we will be using
@@ -184,6 +294,10 @@ export const AuthProvider = ({ children }) => {
                 login,
                 logout,
                 getRoutesByStudent,
+                getStudentsByDriver,
+                getRequestsByDriver,
+                acceptRequest,
+                removeRequest,
             }}>
             {children}
         </AuthContext.Provider>
