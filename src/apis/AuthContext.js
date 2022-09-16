@@ -154,6 +154,23 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
+    const createRequest = async (idRoute) => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.post(`request`, {driverId:idRoute}, config);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            console.log(`Error while accepting request ${e}`);
+            return e;
+        }
+
+    }
     const removeRequest = async (idRoute) => {
 
         try {
@@ -167,11 +184,7 @@ export const AuthProvider = ({ children }) => {
                 data: {id: idRoute}
               };
               
-              const aux = axios.request(options).then(function (response) {
-                console.log(response.data);
-              }).catch(function (error) {
-                console.error(error);
-              });
+              const aux = axios.request(options)
 
             // const config = { headers: { 'Authorization': `Bearer ${store.accessToken}`,'Content-Type': 'application/json'}, { data:{id:idRoute}}};
 
@@ -201,8 +214,7 @@ export const AuthProvider = ({ children }) => {
             await axios.get(`/${res.data.type}/`, config).then(async resLogin => {
                 //Once we have the info, we store it in a storage (By now, AsyncStorage) and set the state userInfo to use it as the state don't need to be awaited 
                 let userInfo = resLogin.data;
-                userInfo["access_token"] = res.data.access_token;
-                userInfo["type"] = res.data.type;
+                
                 if (resLogin.data.driverId) {
                     const aux = await axios.get(`${res.data.type}/driver`, config);
                     userInfo['driver'] = aux.data;
@@ -211,7 +223,8 @@ export const AuthProvider = ({ children }) => {
                     const aux = await axios.get(`/route`, config);
                     userInfo['route'] = aux.data;
                 }
-
+                userInfo["access_token"] = res.data.access_token;
+                userInfo["type"] = res.data.type;
 
                 dispatch(setInfo(userInfo))
             }).catch(e => {
@@ -298,6 +311,7 @@ export const AuthProvider = ({ children }) => {
                 getRequestsByDriver,
                 acceptRequest,
                 removeRequest,
+                createRequest,
             }}>
             {children}
         </AuthContext.Provider>

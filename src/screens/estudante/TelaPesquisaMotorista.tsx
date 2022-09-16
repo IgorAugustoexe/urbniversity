@@ -78,7 +78,8 @@ export default function TelaPesquisaMotorista() {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}>
+                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
+                    onPress={() => navigation.navigate('veiculo',{driver:item})}>
                         <View>
                             <Image
                                 style={styles.imgMotorista}

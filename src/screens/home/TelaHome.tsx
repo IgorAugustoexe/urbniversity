@@ -47,7 +47,7 @@ export default function TelaHome() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo')}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', {driver:null})}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>

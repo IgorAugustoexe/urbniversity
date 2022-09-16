@@ -166,7 +166,7 @@ export default function TelaRota() {
     const [requests, setRequests] = useState<Requests[]>();
     const {getRequestsByDriver} = useContext(AuthContext)
     const navigation = useNavigation<any>() 
-    const route = useRoute<RouteProp<navigation, 'props'>>()
+    //const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
     const [load,setLoad] = useState(true)
 
@@ -205,7 +205,7 @@ export default function TelaRota() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo')}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo',{driver:null})}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>

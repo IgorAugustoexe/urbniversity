@@ -94,10 +94,10 @@ function TelaMostraEstudante() {
                                 {item.student.user.fullName}    
                             </Text>        
                             <View style={{flex:1, flexDirection:'row' ,justifyContent:'flex-end'}}>
-                                <TouchableOpacity onPress = {() => {acceptRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                <TouchableOpacity onPress = {async () => {const response = await acceptRequest(item.id); requests?.splice(index,1); didMount()}} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress = {() => {removeRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                <TouchableOpacity onPress = {async () => {const response = await removeRequest(item.id); requests?.splice(index,1); didMount()}} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
                             </View>                 
@@ -182,7 +182,7 @@ export default function TelaRota() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo')}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo',{driver:null})}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>

@@ -47,7 +47,7 @@ export type Vehicle = {
     model: String,
     year: Number,
     color: String,
-    seats: String,
+    seats: string,
     driverId: String
 }
 export type Address = {
