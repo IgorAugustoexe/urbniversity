@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux'
 import TelaMapa from './screens/TelaMapa'
 import TelaRota from './screens/motorista/TelaRota'
 import TelaNotificacoes from './screens/motorista/TelaNotificacoes'
+import {navigationRef} from './apis/AuthContext';
 
 
 const Stack = createStackNavigator()
@@ -26,7 +27,7 @@ export default function App() {
     //Caso logado, ir para home
     //Caso deslogado, ir para login/registrar
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {store.user.access_token ? 
                 <>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
+import BtnBlue from '../../components/BtnBlue'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
@@ -17,7 +18,7 @@ export default function TelaHome() {
         }
     })
 
-    const {logout } = useContext(AuthContext)
+    const {logout,refreshUser } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()
@@ -30,7 +31,12 @@ export default function TelaHome() {
         setIsDriver(driver)
         //console.log(store.user.driver)
     }, [])
-
+    const updateScreen = async() =>{
+        if(!store.user.route && !store.user.driverId){
+            console.log('show')
+            refreshUser()
+        }
+    }
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
@@ -86,20 +92,22 @@ export default function TelaHome() {
                     </View>
                 </TouchableOpacity>
                 : isDriver ?
-                <View style={{ padding: config.windowWidth / 10 }}>
-                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para criar uma!</Text>
-                </View>  
+                <View style={styles.containerErro} >
+                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                    <TouchableOpacity onPress={async() => await updateScreen()}>
+                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                    </TouchableOpacity>
+                </View> 
                 : 
-                <View style={{ padding: config.windowWidth / 10 }}>
-                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para encontrar seu Motorista!</Text>
+                <View style={styles.containerErro} >
+                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                    <TouchableOpacity onPress={async() => await updateScreen()}>
+                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                    </TouchableOpacity>
                 </View> 
             }
 
-            {isDriver && !store.user.route ?
-            <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
-                 <Text style={styles.txtBtnRodape}>Criar uma Rota</Text>
-            </TouchableOpacity>
-                :!isDriver && !store.user.driverId ?
+            {!isDriver && !store.user.driverId ?
             <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
                 <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
             </TouchableOpacity>
@@ -208,5 +216,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: cores.fonteBranco,
         textAlign: 'center'
+    }, containerErro: {
+        alignItems: 'center',
+        marginTop: config.windowWidth / 2,
+        marginHorizontal: 10,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        borderRadius: 10
     },
 })

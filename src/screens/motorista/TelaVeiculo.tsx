@@ -9,6 +9,7 @@ import { controleAlerta } from '../../redux/reducers/sistemaReducer'
 import { produceWithPatches } from 'immer'
 import {Driver} from '../../types/types'
 import { AuthContext } from '../../apis/AuthContext'
+import ModalErroGenerico from '../ModalErroGenerico'
 
 type navigation = {
     props: {
@@ -44,7 +45,6 @@ export default function TelaVeiculo() {
     route.params.driver.user.fullName :""
 
     const solicitarMotorista = async() => {
-        dispatch(controleAlerta('Solicitação com sucesso!'))
         await createRequest(route.params.driver?.id)
         navigation.goBack()
     }
@@ -111,7 +111,7 @@ export default function TelaVeiculo() {
     }
      const DadosVeiculo = () => (
         
-        store.user.driver ? //Visão do motorista
+        store.user.driver ? //Visão do estudante
             <Dados 
             phone = {store.user.user.phone} 
             brand={store.user.driver.vehicle.brand} 
@@ -119,7 +119,7 @@ export default function TelaVeiculo() {
             color = {store.user.driver.vehicle.color} 
             year = {store.user.driver.vehicle.year}
             seats = {store.user.driver.vehicle.seats} />
-        : !store.user.user.studentId ? //Visao do estudante
+        : store.user.vehicle && !store.user.user.studentId ? //Visao do motorista
         <Dados 
             phone = {store.user.user.phone} 
             brand={store.user.vehicle.brand} 

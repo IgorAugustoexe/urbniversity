@@ -4,15 +4,17 @@ import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
 import { BASE_URL } from './config';
 import { useDispatch, useSelector } from 'react-redux';
+import popUpErroGenerico from '../screens/PopUpErroGenerico';
+import ModalErroGenerico from '../screens/ModalErroGenerico';
 
 export const AuthContext = createContext();
 
 //To make possible the navigation outside the Navigation component. we must create a ref.
 export const navigationRef = React.createRef();
 
-// function navigate(name, params) {
-//     navigationRef.current?.navigate(name, params);
-// }
+function navigate(name, params) {
+    navigationRef.current?.navigate(name, params);
+}
 
 export const AuthProvider = ({ children }) => {
     const store = useSelector(({ user }) => {
@@ -36,59 +38,78 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     //Para verificar a request, basta dar Ctrl+K+U no código abaixo
-    //  axios.interceptors.request.use(function (request ) {
-    //      console.log('Starting Request', JSON.stringify(request, null, 2))
-    //      return request;
-    //  }, function (error) {
-    //  	 return Promise.reject(error);
-    //  });
+    axios.interceptors.request.use(function (request) {
+        //console.log('Starting Request', JSON.stringify(request, null, 2))
+        return request;
+    }, function (error) {
+        return Promise.reject(error);
+    });
 
-    //   axios.interceptors.response.use(function (response) {
-    //      console.log('Response:', JSON.stringify(response, null, 2))
-    //  	 return response;
-    //  }, function (error) {
-    //  	 return Promise.reject(error);
-    //  });
+    axios.interceptors.response.use(function (response) {
+        //console.log('Response:', JSON.stringify(response, null, 2))
+        return response;
+    }, function (error) {
+        return Promise.reject(error);
+    });
 
 
     //REGISTER
-    const register = (entity, object, comp, callback) => {
+    const register = async (entity, object, comp, callback) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
-        if (entity == 'driver') {
-            setComplemento(comp)
-            setAwaitDriver(true)
+        callback(true)
+        let userInfo = {}
+        try {
+            const res = await axios.post(`/${entity}`, object)
+            const aux = await res.data;
+            const authentication = await auth(object.email, object.password)
+            const config = { headers: { 'Authorization': `Bearer ${authentication.access_token}` } };
+            setIsLogged(true)
+
+            const registerVehivle = await registerComplement('vehicle', {
+                crlv: comp.crlv,
+                brand: comp.brand,
+                model: comp.model,
+                year: comp.year,
+                color: comp.color,
+                seats: comp.seats,
+            }, authentication.access_token)
+
+            const registerRoute = await registerComplement('route', {
+                city: comp.city,
+                state: comp.state,
+                university: comp.university
+            }, authentication.access_token)
+
+            const user = await getUser(authentication.type, config)
+            userInfo = user;
+            userInfo['access_token'] = authentication.access_token
+            userInfo['type'] = authentication.type
+            console.log(JSON.stringify(userInfo, null, "\t"));
+
+
+        } catch (e) {
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
+            setIsLogged(false)
+        } finally {
+            callback(false)
+            dispatch(setInfo(userInfo))
+            popUpErroGenerico({ type: 'success', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
         }
-
-        axios.post(`/${entity}`, object)
-            .then(async () => {
-                await login(object.email, object.password, callback);
-            }).catch(err => {
-                console.log(`register login error ${err}`);
-            })
-
-        // const respCadastro = await axios.post(`${entity}`, object);
-        // await login(object.email, object.password,callback)
-        // const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-        // if(entity == 'driver'){
-        //     const respComplemento = await axios.post(`${entity}`,comp, config)
-        // }
 
     };
 
     //REGISTRAR PT2
-    const complement = async (entity, object) => {
-
-
-        const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+    const registerComplement = async (entity, object, token) => {
+        const config = { headers: { 'Authorization': `Bearer ${token}` } };
         try {
             await axios.post(`/${entity}`, object, config)
         } catch (e) {
             console.log(`Register ${entity} error: ${e}`)
         }
-
-        setAwaitDriver(false)
     }
+
+
     const getRoutesByStudent = async () => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
@@ -99,7 +120,8 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            console.log(e);
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRoutesByStudent })
             return e;
         }
 
@@ -114,8 +136,9 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            console.log(e);
-            return e;
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver })
+            return;
         }
 
     }
@@ -131,8 +154,9 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            console.log(e);
-            return e;
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRequestsByDriver })
+            return;
         }
 
     }
@@ -140,34 +164,48 @@ export const AuthProvider = ({ children }) => {
     const acceptRequest = async (idRoute) => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.patch(`request`, {id:idRoute}, config);
+            const aux = await axios.patch(`request`, { id: idRoute }, config);
 
             const resp = await aux.data //store.type
             //console.log(JSON.stringify(resp, null, "\t"));
             //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            popUpErroGenerico({ type: 'success', text1: 'Solicitação aceitada com sucesso', text2: `O usuário foi inserido em sua rota` })
             return resp;
 
 
         } catch (e) {
-            console.log(`Error while accepting request ${e}`);
-            return e;
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            return;
+        }
+
+    }
+    const refreshUser = async () => {
+        popUpErroGenerico({ type: 'success', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const user = await getUser(`${store.type}`, config)
+            dispatch(setInfo(user))
+            return resp;
+        } catch (e) {
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            return;
         }
 
     }
     const createRequest = async (idRoute) => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.post(`request`, {driverId:idRoute}, config);
+            const aux = await axios.post(`/request`, { driverId: idRoute }, config);
 
-            const resp = await aux.data //store.type
-            //console.log(JSON.stringify(resp, null, "\t"));
-            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            const resp = await aux.data
+            popUpErroGenerico({ type: 'success', text1: 'Solicitação enviada com sucesso', text2: `Por favor aguarde a confirmação do motorista` })
             return resp;
 
 
         } catch (e) {
-            console.log(`Error while accepting request ${e}`);
-            return e;
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            console.log(`Error while creating request ${e}`);
+            return;
         }
 
     }
@@ -178,94 +216,105 @@ export const AuthProvider = ({ children }) => {
                 method: 'DELETE',
                 url: `${BASE_URL}/request/`,
                 headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${store.accessToken}`
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${store.accessToken}`
                 },
-                data: {id: idRoute}
-              };
-              
-              const aux = axios.request(options)
+                data: { id: idRoute }
+            };
 
-            // const config = { headers: { 'Authorization': `Bearer ${store.accessToken}`,'Content-Type': 'application/json'}, { data:{id:idRoute}}};
+            const aux = axios.request(options)
+            const resp = await aux.data
+            popUpErroGenerico({ type: 'success', text1: 'Solicitação removida com sucesso', text2: `` })
 
-            // const aux = await axios.delete(`/request/`,config);
-
-            const resp = await aux.data //store.type
-            //console.log(JSON.stringify(resp, null, "\t"));
-            //console.log(JSON.stringify(resp[0].student, null, "\t"));
             return resp;
 
-
         } catch (e) {
+            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             console.log(`Error while deleting request ${e}`);
-            return e;
+            return;
         }
 
     }
+    const mediador = (text, funcao, params) => {
+        navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params })
+    }
+    const auth = async (email, password) => {
+        try {
+            const aux = await axios.post(`/auth`, { email, password, })
+            const resp = await aux.data;
+            return resp
+        } catch (e) {
+            console.log(`Error while Auth: ${e}`);
+            return;
+        }
+    }
 
+    const getUser = async (type, config) => {
+        let userInfo = {}
+        try {
+            const aux = await axios.get(`/${type}/`, config)
+            const resp = await aux.data;
+            userInfo = resp;
+            if (resp.driverId) {
+                const aux = await axios.get(`${type}/driver`, config);
+                userInfo['driver'] = await aux.data;
+            }
+            if (resp.route) {
+                const aux = await axios.get(`/route`, config);
+                userInfo['route'] = await aux.data;
+            }
+
+            return userInfo;
+        } catch (e) {
+            console.log(`Error while getting user: ${e}`)
+            return;
+        }
+
+    }
     const login = async (email, password, callback) => {
-        //Request returns the user, a token and a type {driver, student}
-        //The Post request to the address /auth results in a token with the user type
+        logout()
+        let userInfo = {}
+        try {
+            const authentication = await auth(email, password)
+            try {
+                const config = { headers: { 'Authorization': `Bearer ${authentication.access_token}` } };
+                setIsLogged(true)
+                const user = await getUser(authentication.type, config)
+                userInfo = user;
+                userInfo['access_token'] = authentication.access_token
+                userInfo['type'] = authentication.type
+                popUpErroGenerico({ type: 'success', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
+            } catch (e) {
+                navigate('modalErro')
+            }
 
-        await axios.post(`/auth`, { email, password, }).then(async res => {
-            setIsLogged(true)
-            const config = { headers: { 'Authorization': `Bearer ${res.data.access_token}`} };
-            //The get request to the address /{type} results in the user that needs a token to be retrieved
-            await axios.get(`/${res.data.type}/`, config).then(async resLogin => {
-                //Once we have the info, we store it in a storage (By now, AsyncStorage) and set the state userInfo to use it as the state don't need to be awaited 
-                let userInfo = resLogin.data;
-                
-                if (resLogin.data.driverId) {
-                    const aux = await axios.get(`${res.data.type}/driver`, config);
-                    userInfo['driver'] = aux.data;
-                }
-                if (resLogin.data.route) {
-                    const aux = await axios.get(`/route`, config);
-                    userInfo['route'] = aux.data;
-                }
-                userInfo["access_token"] = res.data.access_token;
-                userInfo["type"] = res.data.type;
-
-                dispatch(setInfo(userInfo))
-            }).catch(e => {
-                console.log(`login 2 error ${e}`);
-                setIsLogged(false)
-            });
-        }).catch(e => {
-            console.log(`login 1 error ${e}`);
-        }).finally(() => {
+            //console.log(JSON.stringify(userInfo, null, "\t"));
+        } catch (e) {
+            navigate('modalErro')
+            console.log(`Error while logging ${e}`)
+        } finally {
             try {
                 callback(false)
+                dispatch(setInfo(userInfo))
             } catch (e) {
                 console.log(`Login Finaly error: ${e}`)
             }
-
-        })
+        }
 
     };
     //LOGOUT
     const logout = () => {
-        // The logout is simple as we don't delete the token from the API. So we just remove the item from the storage 
-        // and set the state userInfo as {}. Finaly, we send the user to the login screen
         dispatch(resetUser())
         setIsLogged(false)
     };
 
-    //ISLOGGEDIN
-    //Here is the code responsible for mantain the user logged if and only if exists a valid token in the API
     const isLoggedIn = async () => {
 
         if (store.accessToken) {
             try {
-                // If the userInfo is in fact in the storage,  then we check if the token is valid and 
-                // if true, we save it in the state. if not, the token isn't valid anymore and we will know same as above
-                axios.defaults.headers.get['Authorization'] = `Bearer ${store.accessToken}`;
-                axios.get(`/${store.type}`).then(resLogin => {
-                    setIsLogged(true)
-                }).catch(e => {
-                    console.log(`login 3 error ${e}`);
-                    logout()
-                });
+                const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+                const user = await getUser(store.type, config)
+                setIsLogged(true)
             } catch (e) {
                 console.log(`is logged in error ${e}`);
                 logout()
@@ -274,31 +323,14 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
-    // //The magic that triggers the function above
+
     useEffect(() => {
         if (store.accessToken && !isLogged) {
             isLoggedIn();
         }
     }, [store.accessToken]);
 
-    useEffect(() => {
-        if (store.type == 'driver' && awaitDriver == true) {
-            complement('vehicle', {
-                crlv: complemento.crlv,
-                brand: complemento.brand,
-                model: complemento.model,
-                year: complemento.year,
-                color: complemento.color,
-                seats: complemento.seats,
-            })
-            complement('route', {
-                city: complemento.city,
-                state: complemento.state,
-                university: complemento.university
-            })
-        }
-    }, [store.type]);
-    //We return here everything we will be using
+
     return (
         <AuthContext.Provider
             value={{
@@ -312,6 +344,8 @@ export const AuthProvider = ({ children }) => {
                 acceptRequest,
                 removeRequest,
                 createRequest,
+                refreshUser,
+                mediador,
             }}>
             {children}
         </AuthContext.Provider>
