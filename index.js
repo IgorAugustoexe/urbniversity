@@ -8,9 +8,10 @@ import { PersistGate } from 'redux-persist/integration/react'
 import Alerta from './src/components/Alerta'
 import { AuthProvider } from './src/apis/AuthContext'
 import { enableLatestRenderer } from 'react-native-maps'
-import Toast from 'react-native-toast-message';
-import toastConfig from './src/screens/PopUpErroGenerico'
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import {toastConfig} from './src/screens/PopUpErroGenerico'
 
+  
 enableLatestRenderer()
 
 const Redux = () => {

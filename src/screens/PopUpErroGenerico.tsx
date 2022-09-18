@@ -1,4 +1,5 @@
-import {View, Text} from 'react-native'
+import React from 'react';
+import {View, Text, StyleProp, ViewStyle} from 'react-native'
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { config, cores } from '../styles/Estilos'
 
@@ -10,11 +11,13 @@ export const toastConfig = {
   success: (props:any) => (
     <BaseToast
       {...props}
-      style={{borderLeftColor: 'pink' }}
+      style={{borderLeftColor: 'green' }}
       contentContainerStyle={{paddingHorizontal: 15 }}
       text1Style={{
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '400'
+      }}text2Style={{
+        fontSize: 16
       }}
     />
   ),
@@ -48,12 +51,10 @@ export const toastConfig = {
   )
 };
 
-const popUpErroGenerico = (props:any) => {
+export const popUpErroGenerico = (props:any) => {
     Toast.show({
       type: props.type,
       text1: props.text1,
-      text2: props.text2
+      text2: props.text2,
     });
 }
-
-export default popUpErroGenerico;

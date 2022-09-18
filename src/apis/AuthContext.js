@@ -4,7 +4,8 @@ import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
 import { BASE_URL } from './config';
 import { useDispatch, useSelector } from 'react-redux';
-import popUpErroGenerico from '../screens/PopUpErroGenerico';
+import {popUpErroGenerico} from '../screens/PopUpErroGenerico';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import ModalErroGenerico from '../screens/ModalErroGenerico';
 
 export const AuthContext = createContext();
@@ -65,21 +66,23 @@ export const AuthProvider = ({ children }) => {
             const authentication = await auth(object.email, object.password)
             const config = { headers: { 'Authorization': `Bearer ${authentication.access_token}` } };
             setIsLogged(true)
-
-            const registerVehivle = await registerComplement('vehicle', {
-                crlv: comp.crlv,
-                brand: comp.brand,
-                model: comp.model,
-                year: comp.year,
-                color: comp.color,
-                seats: comp.seats,
-            }, authentication.access_token)
-
-            const registerRoute = await registerComplement('route', {
-                city: comp.city,
-                state: comp.state,
-                university: comp.university
-            }, authentication.access_token)
+            if(entity == 'driver'){
+                const registerVehivle = await registerComplement('vehicle', {
+                    crlv: comp.crlv,
+                    brand: comp.brand,
+                    model: comp.model,
+                    year: comp.year,
+                    color: comp.color,
+                    seats: comp.seats,
+                }, authentication.access_token)
+    
+                const registerRoute = await registerComplement('route', {
+                    city: comp.city,
+                    state: comp.state,
+                    university: comp.university
+                }, authentication.access_token)
+            }
+            
 
             const user = await getUser(authentication.type, config)
             userInfo = user;
@@ -185,8 +188,9 @@ export const AuthProvider = ({ children }) => {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
             const user = await getUser(`${store.type}`, config)
             dispatch(setInfo(user))
-            return resp;
+            return user;
         } catch (e) {
+            console.log(e)
             popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             return;
         }
@@ -284,6 +288,7 @@ export const AuthProvider = ({ children }) => {
                 userInfo['access_token'] = authentication.access_token
                 userInfo['type'] = authentication.type
                 popUpErroGenerico({ type: 'success', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
+                
             } catch (e) {
                 navigate('modalErro')
             }

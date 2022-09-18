@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, Linking} from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, Linking } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -14,74 +14,76 @@ import BtnBlue from '../../components/BtnBlue'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { store } from '../../redux/store'
 import { AuthContext } from '../../apis/AuthContext'
-import {Student, Requests} from '../../types/types'
+import { Student, Requests } from '../../types/types'
 
 const arrayMotoristas = [
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Jorge Pereira',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     },
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Aristeu Corridas',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     },
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Everton Busão e Frete',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     },
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Thomas Turbano',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     },
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Kleberson do Uber',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     },
     {
         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
         'nomeEstudante': 'Rita Manicure e Frete',
-        'telefone':'19999810297'
+        'telefone': '19999810297'
     }
 ]
 
 function TelaMostraEstudante() {
-        
-
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [estudantes,setEstudantes] = useState<Student>();
+    const [estudantes, setEstudantes] = useState<Student>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const {getStudentsByDriver} = useContext(AuthContext)
-    const [load,setLoad] = useState(true)
+    const { getStudentsByDriver } = useContext(AuthContext)
+    const [load, setLoad] = useState(true)
 
-    useEffect(()=>{
-            didMount()
-            navigation.addListener('focus', ()=>setLoad(!load))
-    },[load, navigation])
-   
+    useEffect(() => {
+        didMount()
+        navigation.addListener('focus', () => setLoad(!load))
+    }, [load, navigation])
+
 
     const didMount = async () => {
-         const dtStudents = await getStudentsByDriver();
-         setEstudantes(await dtStudents);
+        
+        if(load){
+            const dtStudents = await getStudentsByDriver();     
+            setEstudantes(await dtStudents);
+        }
+        
     }
-    const callWhatsapp = (number:string) =>{
+    const callWhatsapp = (number: string) => {
         let url = "whatsapp://send?text=" +
-        "" +
-        "&phone=55" +
-        number;
-      Linking.openURL(url)
-        .then(data => {
-          console.log("WhatsApp Opened successfully " + data);  //<---Success
-        })
-        .catch((e) => {
-          console.log(e); //<---Error
-        });
+            "" +
+            "&phone=55" +
+            number;
+        Linking.openURL(url)
+            .then(data => {
+                console.log("WhatsApp Opened successfully " + data);  //<---Success
+            })
+            .catch((e) => {
+                console.log(e); //<---Error
+            });
     }
     const ListaMotoristas = () => (
         <FlatList
@@ -97,18 +99,18 @@ function TelaMostraEstudante() {
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri:'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
+                                source={{ uri: 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
-                        <View style={{flex:1, alignItems:'center',justifyContent:'flex-start',flexDirection:'row', marginHorizontal: 15 }}>
-                            <Text numberOfLines={1} ellipsizeMode="tail" style={{fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
-                                {item.user.fullName}    
-                            </Text>        
-                            <View style={{flex:1}}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row', marginHorizontal: 15 }}>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
+                                {item.user.fullName}
+                            </Text>
+                            <View style={{ flex: 1 }}>
                                 <TouchableOpacity onPress={() => callWhatsapp(item.user.phone)}>
-                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faWhatsapp} size={config.windowWidth / 12} color={cores.branco} />
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faWhatsapp} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                                </View>                
+                            </View>
                         </View>
                     </TouchableOpacity>
                 )
@@ -160,34 +162,34 @@ export default function TelaRota() {
         }
     })
 
-    const {logout } = useContext(AuthContext)
+    const { logout } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const [requests, setRequests] = useState<Requests[]>();
-    const {getRequestsByDriver} = useContext(AuthContext)
-    const navigation = useNavigation<any>() 
+    const { getRequestsByDriver } = useContext(AuthContext)
+    const navigation = useNavigation<any>()
     //const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
-    const [load,setLoad] = useState(true)
+    const [load, setLoad] = useState(true)
 
-    useEffect(()=>{
-            didMount()
-            navigation.addListener('focus', ()=>setLoad(!load))
-    },[load, navigation])
+    useEffect(() => {
+        didMount()
+        navigation.addListener('focus', () => setLoad(!load))
+    }, [load, navigation])
 
     const didMount = async () => {
-         const dtRequests = await getRequestsByDriver();
-         setRequests(await dtRequests);
-         //console.log(JSON.stringify(dtRequests, null, "\t"));
+        const dtRequests = await getRequestsByDriver();
+        setRequests(await dtRequests);
+        //console.log(JSON.stringify(dtRequests, null, "\t"));
     }
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
-        let driver = store.user.type == 'driver' ? true : false 
+        let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
         //console.log(store.user.driver)
     }, [])
-    
-    
+
+
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -205,7 +207,7 @@ export default function TelaRota() {
                         source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo',{driver:null})}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
@@ -214,12 +216,10 @@ export default function TelaRota() {
                             <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('notificacoes')}>
-                        <Text style={styles.txtBtn}>NOTIFICAÇÕES</Text>
+                            <Text style={styles.txtBtn}>NOTIFICAÇÕES</Text>
                             <View style={styles.reqContainer}>
-                            <Text style={styles.reqCounter}>{requests ? requests.length : '0'}</Text>  
+                                <Text style={styles.reqCounter}>{requests ? requests.length : '0'}</Text>
                             </View>
-                           
-                            
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -245,6 +245,8 @@ const styles = StyleSheet.create({
     },
 
     headerBtn: {
+        maxWidth:'85%',
+        marginLeft:'1%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -262,8 +264,8 @@ const styles = StyleSheet.create({
         padding: 13,
         flexDirection: 'row'
     },
-    containerInfoRota:{
-        width:'85%'
+    containerInfoRota: {
+        width: '85%'
     },
     btnRota: {
         backgroundColor: cores.azulBtn,
@@ -281,8 +283,8 @@ const styles = StyleSheet.create({
         left: 10,
         padding: 7,
         borderRadius: 5,
-        textTransform:'uppercase',
-        maxWidth:'50%',
+        textTransform: 'uppercase',
+        maxWidth: '50%',
     },
 
     txtNomeRota: {
@@ -292,7 +294,7 @@ const styles = StyleSheet.create({
     },
 
     txtBtn: {
-        fontSize: 14,
+        fontSize:(config.windowWidth/30),
         color: cores.fonteBranco,
         bottom: 5
     },
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         color: cores.fonteBranco,
-        width:300  
+        width: 300
     },
 
     imgUser: {
@@ -327,11 +329,11 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: cores.fonteBranco,
         textAlign: 'center'
-    },imgMotorista: {
+    }, imgMotorista: {
         width: 60,
         height: 60,
-        marginVertical:10,
-        marginLeft:5,
+        marginVertical: 10,
+        marginLeft: 5,
         borderRadius: 50
     },
 
@@ -357,18 +359,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: cores.fonteBranco,
         textAlign: 'center'
-    },reqContainer:{
-        width:config.windowWidth / 12,
-        height:config.windowWidth / 12,
-        borderWidth:2,
-        borderColor:'white',
-        borderRadius:80,
+    }, reqContainer: {
+        width: config.windowWidth / 12,
+        height: config.windowWidth / 12,
+        borderWidth: 2,
+        borderColor: 'white',
+        borderRadius: 80,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    reqCounter:{
-        fontSize:20,
-        color:'white',
-        fontWeight:'bold'
+    reqCounter: {
+        fontSize: 20,
+        color: 'white',
+        fontWeight: 'bold'
     }
 })

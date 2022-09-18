@@ -62,15 +62,25 @@ function TelaMostraEstudante() {
     const {getStudentsByDriver} = useContext(AuthContext)
     const [requests, setRequests] = useState<Requests[]>();
     const {getRequestsByDriver, acceptRequest, removeRequest} = useContext(AuthContext)
+    const [load, setLoad] = useState(true)
     useEffect(() => {
         didMount()
-    }, [])
+        navigation.addListener('focus', () => setLoad(!load))
+    }, [load, navigation])
 
     const didMount = async () => { 
-        setRequests(undefined);      
-         const dtRequests = await getRequestsByDriver();
-         setRequests(dtRequests);
-         //console.log(JSON.stringify(dtRequests, null, "\t"));
+        if(load){
+            const dtRequests = await getRequestsByDriver();
+            setRequests(dtRequests);
+            //console.log(JSON.stringify(dtRequests, null, "\t"));
+        }
+             
+    }
+
+    const refreshScreen = async() =>{
+        setRequests(undefined);  
+        const dtRequests = await getRequestsByDriver();
+        setRequests(dtRequests);
     }
     const ListaMotoristas = () => (
         <FlatList
@@ -94,10 +104,10 @@ function TelaMostraEstudante() {
                                 {item.student.user.fullName}    
                             </Text>        
                             <View style={{flex:1, flexDirection:'row' ,justifyContent:'flex-end'}}>
-                                <TouchableOpacity onPress = {async () => {const response = await acceptRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                <TouchableOpacity onPress = {async () => {const response = await acceptRequest(item.id); requests?.splice(index,1); refreshScreen()}} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress = {async () => {const response = await removeRequest(item.id); requests?.splice(index,1); didMount()}} >
+                                <TouchableOpacity onPress = {async () => {const response = await removeRequest(item.id); requests?.splice(index,1); refreshScreen()}} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
                             </View>                 

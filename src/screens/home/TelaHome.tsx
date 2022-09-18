@@ -33,7 +33,6 @@ export default function TelaHome() {
     }, [])
     const updateScreen = async() =>{
         if(!store.user.route && !store.user.driverId){
-            console.log('show')
             refreshUser()
         }
     }
