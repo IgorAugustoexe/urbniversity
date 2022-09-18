@@ -92,12 +92,12 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
             setIsLogged(false)
         } finally {
             callback(false)
             dispatch(setInfo(userInfo))
-            popUpErroGenerico({ type: 'success', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
         }
 
     };
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRoutesByStudent })
             return e;
         }
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver })
             return;
         }
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRequestsByDriver })
             return;
         }
@@ -177,13 +177,13 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             return;
         }
 
     }
     const refreshUser = async () => {
-        popUpErroGenerico({ type: 'success', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
+        popUpErroGenerico({ type: 'customSuccess', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
             const user = await getUser(`${store.type}`, config)
@@ -191,7 +191,7 @@ export const AuthProvider = ({ children }) => {
             return user;
         } catch (e) {
             console.log(e)
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             return;
         }
 
@@ -202,12 +202,12 @@ export const AuthProvider = ({ children }) => {
             const aux = await axios.post(`/request`, { driverId: idRoute }, config);
 
             const resp = await aux.data
-            popUpErroGenerico({ type: 'success', text1: 'Solicitação enviada com sucesso', text2: `Por favor aguarde a confirmação do motorista` })
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação enviada com sucesso', text2: `Por favor aguarde a confirmação do motorista` })
             return resp;
 
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             console.log(`Error while creating request ${e}`);
             return;
         }
@@ -228,12 +228,12 @@ export const AuthProvider = ({ children }) => {
 
             const aux = axios.request(options)
             const resp = await aux.data
-            popUpErroGenerico({ type: 'success', text1: 'Solicitação removida com sucesso', text2: `` })
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação removida com sucesso', text2: `` })
 
             return resp;
 
         } catch (e) {
-            popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             console.log(`Error while deleting request ${e}`);
             return;
         }
@@ -287,10 +287,10 @@ export const AuthProvider = ({ children }) => {
                 userInfo = user;
                 userInfo['access_token'] = authentication.access_token
                 userInfo['type'] = authentication.type
-                popUpErroGenerico({ type: 'success', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
+                popUpErroGenerico({ type: 'customSuccess', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
                 
             } catch (e) {
-                popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique os dados, a sua conexão e tente novamente` })
+                popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique os dados, a sua conexão e tente novamente` })
             }
 
             //console.log(JSON.stringify(userInfo, null, "\t"));
@@ -309,8 +309,12 @@ export const AuthProvider = ({ children }) => {
     };
     //LOGOUT
     const logout = () => {
+        if(isLogged){
+            popUpErroGenerico({ type: 'customInfo', text1: 'Volte Novamente', text2:'Usuário deslogado com sucesso'})
+        }
         dispatch(resetUser())
         setIsLogged(false)
+        
     };
 
     const isLoggedIn = async () => {
@@ -321,6 +325,7 @@ export const AuthProvider = ({ children }) => {
                 const user = await getUser(store.type, config)
                 setIsLogged(true)
             } catch (e) {
+                popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
                 console.log(`is logged in error ${e}`);
                 logout()
             }
