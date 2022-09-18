@@ -290,7 +290,7 @@ export const AuthProvider = ({ children }) => {
                 popUpErroGenerico({ type: 'success', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
                 
             } catch (e) {
-                navigate('modalErro')
+                popUpErroGenerico({ type: 'error', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique os dados, a sua conexão e tente novamente` })
             }
 
             //console.log(JSON.stringify(userInfo, null, "\t"));
