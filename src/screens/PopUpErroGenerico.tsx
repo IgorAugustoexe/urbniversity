@@ -128,7 +128,7 @@ notificationWrapper: {
     fontWeight:'900'
   },
   message:{
-    fontSize:config.windowWidth/28,
+    fontSize:config.windowWidth/25,
     color:'#cccccc',
     fontWeight:'600'
     

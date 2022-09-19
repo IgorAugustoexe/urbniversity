@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     reqCounter: {
-        fontSize: 20,
+        fontSize: (config.windowWidth/19.5),
         color: 'white',
         fontWeight: 'bold'
     }

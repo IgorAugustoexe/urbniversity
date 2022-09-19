@@ -10,6 +10,8 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import { AuthContext } from '../../apis/AuthContext';
+import { popUpErroGenerico } from '../PopUpErroGenerico'
+
 
 export default function TelaHome() {
     const store: any = useSelector<any>(({ user }) => {
@@ -33,7 +35,12 @@ export default function TelaHome() {
     }, [])
     const updateScreen = async() =>{
         if(!store.user.route && !store.user.driverId){
-            refreshUser()
+            const aux = store.user
+            const resp = await refreshUser()
+            
+            if(resp.driverId == aux.driverId){
+                popUpErroGenerico({ type: 'customInfo', text1: 'Dados Atualizados com sucesso', text2: `Não houve nenhuma alteração.` })
+            }
         }
     }
     return (

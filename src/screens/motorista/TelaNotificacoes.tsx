@@ -57,11 +57,11 @@ function TelaMostraEstudante() {
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [estudantes,setEstudantes] = useState<Student>();
+    const [refresh,setRefresh] = useState<boolean>(false);
     const [erroReq, setErroReq] = useState<boolean>(false)
     const {getStudentsByDriver} = useContext(AuthContext)
     const [requests, setRequests] = useState<Requests[]>();
-    const {getRequestsByDriver, acceptRequest, removeRequest} = useContext(AuthContext)
+    const {getRequestsByDriver, acceptRequest, removeRequest, mediador} = useContext(AuthContext)
     const [load, setLoad] = useState(true)
     useEffect(() => {
         didMount()
@@ -79,9 +79,13 @@ function TelaMostraEstudante() {
 
     const refreshScreen = async() =>{
         setRequests(undefined);  
-        const dtRequests = await getRequestsByDriver();
-        setRequests(dtRequests);
+        const dtRequests = await getRequestsByDriver();  
+        const aux = await dtRequests;
+        setRequests(aux);
     }
+    useEffect(() =>{
+        refreshScreen()
+    },[refresh])
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
@@ -104,10 +108,14 @@ function TelaMostraEstudante() {
                                 {item.student.user.fullName}    
                             </Text>        
                             <View style={{flex:1, flexDirection:'row' ,justifyContent:'flex-end'}}>
-                                <TouchableOpacity onPress = {async () => {const response = await acceptRequest(item.id); requests?.splice(index,1); refreshScreen()}} >
+                                <TouchableOpacity onPress = {async () => {
+                                   const response = await mediador('Deseja mesmo aceitar este estudante?', acceptRequest, item.id, setRefresh); 
+                                    }} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress = {async () => {const response = await removeRequest(item.id); requests?.splice(index,1); refreshScreen()}} >
+                                <TouchableOpacity onPress = {async () => {
+                                    const response = await mediador('Deseja mesmo recusar este estudante?', removeRequest, item.id, setRefresh); 
+                                }} >
                                     <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
                             </View>                 

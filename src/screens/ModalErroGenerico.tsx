@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { Fragment } from 'react'
-import { StyleSheet, View, TouchableOpacity, Text, Image, ImageBackground } from 'react-native'
+import React, { Fragment, useEffect, useState } from 'react'
+import { StyleSheet, View, TouchableOpacity, Text, Image, ImageBackground, ColorPropType } from 'react-native'
 import { config, cores } from '../styles/Estilos'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons/faTriangleExclamation'
@@ -15,6 +15,7 @@ type navigation = {
         btn1Func?: (...args:any) => void,
         btn2Txt?: string,
         btn2Func?: () => void,
+        refresh:typeof useState
     }
 }
 
@@ -22,13 +23,16 @@ export default function ModalErroGenerico() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    const {parameters, tipo, icone, texto, btnTxt, btn2Txt, btn1Func, btn2Func } = { ...route.params }
+    const {parameters, tipo, icone, texto, btnTxt, btn2Txt, btn1Func, btn2Func, refresh } = { ...route.params }
 
     const onPressLeft = () => {
         navigation.goBack()
         if (btn1Func) {
             if(parameters){
                 btn1Func(parameters)
+                if(refresh){
+                    refresh(true)
+                }
             }else{
                 btn1Func()
             }
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
     containerAlertErro: {
         width: config.windowWidth / 1.2,
         borderRadius: 5,
-        backgroundColor: '#ff4d4d',
+        backgroundColor: cores.azulPrimario,
         overflow: 'hidden',
     },
     containerAlertOk: {

@@ -2,6 +2,7 @@ import { setInfo, resetUser } from '../redux/reducers/usuarioReducer';
 //possivelmente retirar o asyncStorage no futuro
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
+import { LogBox } from 'react-native';
 import { BASE_URL } from './config';
 import { useDispatch, useSelector } from 'react-redux';
 import {popUpErroGenerico} from '../screens/PopUpErroGenerico';
@@ -18,6 +19,10 @@ function navigate(name, params) {
 }
 
 export const AuthProvider = ({ children }) => {
+    LogBox.ignoreLogs([
+        "Non-serializable values were found in the navigation state", 
+        // name of the error/warning here, or a regex here
+      ]);
     const store = useSelector(({ user }) => {
         return {
             userDebug: user,
@@ -119,6 +124,7 @@ export const AuthProvider = ({ children }) => {
             const aux = await axios.get(`student/routes`, config);
 
             const resp = await aux.data //store.type
+          
             return resp;
 
 
@@ -135,12 +141,13 @@ export const AuthProvider = ({ children }) => {
             const aux = await axios.get(`driver/students`, config);
 
             const resp = await aux.data //store.type
+
             return resp;
 
 
         } catch (e) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver})
             return;
         }
 
@@ -158,7 +165,7 @@ export const AuthProvider = ({ children }) => {
 
         } catch (e) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRequestsByDriver })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func:getRequestsByDriver})
             return;
         }
 
@@ -228,7 +235,7 @@ export const AuthProvider = ({ children }) => {
 
             const aux = axios.request(options)
             const resp = await aux.data
-            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação removida com sucesso', text2: `` })
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação removida com sucesso', text2: `O estudante foi removido da lista de solicitações` })
 
             return resp;
 
@@ -239,8 +246,8 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
-    const mediador = (text, funcao, params) => {
-        navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params })
+    const mediador = (text, funcao, params, refresh) => {
+            navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh:refresh})        
     }
     const auth = async (email, password) => {
         try {
@@ -320,14 +327,24 @@ export const AuthProvider = ({ children }) => {
     const isLoggedIn = async () => {
 
         if (store.accessToken) {
+            
             try {
                 const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+             
                 const user = await getUser(store.type, config)
+               if(!user){
+                popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
+                logout()
+               }else{
                 setIsLogged(true)
+               }
+              
+   
             } catch (e) {
                 popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
                 console.log(`is logged in error ${e}`);
                 logout()
+           
             }
 
         }
