@@ -28,7 +28,7 @@ export default function App() {
     //Caso deslogado, ir para login/registrar
     return (
         <NavigationContainer ref={navigationRef}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator screenOptions={{headerShown: false }}>
                 {store.user.access_token ? 
                 <>
                 <Stack.Screen
