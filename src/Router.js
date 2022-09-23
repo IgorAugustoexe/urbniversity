@@ -8,45 +8,58 @@ import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro
 import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
-import TelaMapa from './screens/mapa/TelaMapa'
+import { useSelector } from 'react-redux'
+import TelaMapa from './screens/TelaMapa'
+
 
 const Stack = createStackNavigator()
 
 export default function App() {
+    const store = useSelector(({ user }) => {
+        return {
+            user: user
+        }
+    })
     //Usar o token guardado na store para validar o usuario
     //Caso logado, ir para home
     //Caso deslogado, ir para login/registrar
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="login"
-                    component={TelaLogin}
-                />
-                <Stack.Screen
-                    name="cadastro"
-                    component={TelaCadastro}
-                />
-                <Stack.Screen
-                    name="finalizarCadastro"
-                    component={TelaFinalizarCadastro}
-                />
-                <Stack.Screen
-                    name="home"
-                    component={TelaHome}
-                />
-                <Stack.Screen
-                    name="veiculo"
-                    component={TelaVeiculo}
-                />
-                <Stack.Screen
-                    name="pesquisaMotorista"
-                    component={TelaPesquisaMotorista}
-                />
-                <Stack.Screen
-                    name="mapa"
-                    component={TelaMapa}
-                />
+                {store.user.access_token ?
+                    <>
+                        <Stack.Screen
+                            name="home"
+                            component={TelaHome}
+                        />
+                        <Stack.Screen
+                            name="veiculo"
+                            component={TelaVeiculo}
+                        />
+                        <Stack.Screen
+                            name="pesquisaMotorista"
+                            component={TelaPesquisaMotorista}
+                        />
+                        <Stack.Screen
+                            name="mapa"
+                            component={TelaMapa}
+                        />
+                    </> :
+                    <>
+                        <Stack.Screen
+                            name="login"
+                            component={TelaLogin}
+                        />
+                        <Stack.Screen
+                            name="cadastro"
+                            component={TelaCadastro}
+                        />
+                        <Stack.Screen
+                            name="finalizarCadastro"
+                            component={TelaFinalizarCadastro}
+                        />
+                    </>
+                }
                 <Stack.Screen
                     name="modalErro"
                     component={ModalErroGenerico}

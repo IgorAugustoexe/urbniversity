@@ -12,9 +12,17 @@ import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser from '../../components/InputDadosUser'
 import { AuthContext } from '../../apis/AuthContext';
+import { useSelector } from 'react-redux'
 import { requisitarPermissaoArmazenamento, requisitarPermissaoLocalizacao } from '../../controllers/PermissoesController'
 
+
 export default function TelaLogin() {
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
+
     const navigation = useNavigation<any>()
 
 
@@ -27,7 +35,7 @@ export default function TelaLogin() {
     const [loginMotorista, setLoginMotorista] = useState<boolean>(false)
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
-    const { userInfo, login } = useContext(AuthContext)
+    const { isLoggedIn, login } = useContext(AuthContext)
 
     useEffect(() => {
         didMount()
@@ -96,9 +104,9 @@ export default function TelaLogin() {
     const realizarLogin = () => {
         setLoaderReq(true)
 
-        navigation.navigate('mapa')
-        setLoaderReq(false)
-        return
+        // navigation.navigate('mapa')
+        // setLoaderReq(false)
+        // return
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
@@ -111,7 +119,6 @@ export default function TelaLogin() {
         }
         try {
             login(email, senha, setLoaderReq)
-            navigation.navigate("home", { isDrive: true })
         } catch (error) {
             console.log(error)
         }
@@ -121,17 +128,8 @@ export default function TelaLogin() {
     // useEffect(() => {
     //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
     //     //to continue the login process by verifying if the userInfo has the access token to foward the user
-    //     if (!userInfo.access_token) {
-    //         setLoaderReq(true)
-
-    //         userInfo.type == 'driver' ?
-    //             navigation.navigate('home', { isDrive: true })
-    //             :
-    //             navigation.navigate('home', { isDrive: false })
-
-    //         setLoaderReq(false)
-    //     }
-    // }, [userInfo.access_token]);
+    //     isLoggedIn('home', navigation.navigate);
+    // }, [store.user.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -143,7 +141,7 @@ export default function TelaLogin() {
                 <View style={styles.header}>
                     <Text style={styles.txtLogo}>URBNiversity</Text>
                     <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
-                        <Text style={styles.txtTipoLogin}>{loginMotorista ? 'MOTORISTA' : 'ESTUDANTE'}</Text>
+                         <Text style={styles.txtTipoLogin}>{loginMotorista ? 'MOTORISTA' : 'ESTUDANTE'}</Text>
                         <FontAwesomeIcon icon={loginMotorista ? faVanShuttle : faUserGraduate} size={config.windowWidth / 16} color={cores.azulBtn} style={{ left: 10 }} />
                     </View>
                 </View>
@@ -196,12 +194,12 @@ export default function TelaLogin() {
                             <Text style={[styles.txt, { color: cores.fonteBranco }]}> Cadastre-se</Text>
                         </Text>
                     </TouchableOpacity>
-                    <View style={styles.bordaDivisoria}>
+                   <View style={styles.bordaDivisoria}>
                         <Text style={styles.txtBordaDivisoria}>OU</Text>
                     </View>
-                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => alternarFormaLogin()} hitSlop={styles.hitSlopBtns}>
+                   { <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => alternarFormaLogin()} hitSlop={styles.hitSlopBtns}>
                         <Text style={styles.txtUnderline}>Entrar como {loginMotorista ? 'Estudante' : 'Motorista'}</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>} 
                 </View>
             </KeyboardAwareScrollView>
         </SafeAreaView >
@@ -211,6 +209,7 @@ export default function TelaLogin() {
 const styles = StyleSheet.create({
     header: {
         paddingTop: config.windowWidth / 10, paddingHorizontal: config.windowWidth / 4
+        //paddingTop: config.windowWidth / 10, alignSelf: 'center'
     },
 
     txtLogo: {

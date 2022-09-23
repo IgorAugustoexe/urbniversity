@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react'
+import React, { useEffect, useState, Fragment, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
@@ -7,64 +7,71 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
+import { AuthContext } from '../../apis/AuthContext'
+import {Routes} from '../../types/types'
 
-const arrayMotoristas = [
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Jorge Pereira',
-        'assentosDisponíveis': 10,
-        'buscaCasa': true,
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Aristeu Corridas',
-        'assentosDisponíveis': 5,
-        'buscaCasa': false,
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Everton Busão e Frete',
-        'assentosDisponíveis': 10,
-        'buscaCasa': false,
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Thomas Turbano',
-        'assentosDisponíveis': 5,
-        'buscaCasa': true,
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Kleberson do Uber',
-        'assentosDisponíveis': 20,
-        'buscaCasa': false,
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeMotorista': 'Rita Manicure e Frete',
-        'assentosDisponíveis': 50,
-        'buscaCasa': true,
-    }
-]
+// const arrayMotoristas = [
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Jorge Pereira',
+//         'assentosDisponíveis': 10,
+//         'buscaCasa': true,
+//     },
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Aristeu Corridas',
+//         'assentosDisponíveis': 5,
+//         'buscaCasa': false,
+//     },
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Everton Busão e Frete',
+//         'assentosDisponíveis': 10,
+//         'buscaCasa': false,
+//     },
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Thomas Turbano',
+//         'assentosDisponíveis': 5,
+//         'buscaCasa': true,
+//     },
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Kleberson do Uber',
+//         'assentosDisponíveis': 20,
+//         'buscaCasa': false,
+//     },
+//     {
+//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
+//         'nomeMotorista': 'Rita Manicure e Frete',
+//         'assentosDisponíveis': 50,
+//         'buscaCasa': true,
+//     }
+// ]
 
 export default function TelaPesquisaMotorista() {
+        
+
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
+    const [rotas,setRotas] = useState<Routes>();
     const [erroReq, setErroReq] = useState<boolean>(false)
+    const {getRoutesByStudent} = useContext(AuthContext)
 
     useEffect(() => {
         didMount()
     }, [])
 
-    const didMount = () => {
-        // implementar req
+    const didMount = async () => {
+        const dt = await getRoutesByStudent();
+        setRotas(await dt);    
     }
 
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
-            data={arrayMotoristas}
+            data={rotas}
             ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
             ListFooterComponent={<View style={{ marginBottom: config.windowWidth / 15 }} />}
             showsVerticalScrollIndicator={true}
@@ -75,13 +82,13 @@ export default function TelaPesquisaMotorista() {
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri: item.imgMotorista }}
+                                source={{ uri: 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
                         <View style={{ marginHorizontal: 15 }}>
-                            <Text style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>{item.nomeMotorista}</Text>
-                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item.assentosDisponíveis}</Text>
-                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Busca em Casa: {item.buscaCasa ? 'Sim' : 'Não'}</Text>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>{item.user.fullName}</Text>
+                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item.vehicle.seats}</Text>
+                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Cidade: {item.route.city.name}</Text>
                         </View>
                     </TouchableOpacity>
                 )

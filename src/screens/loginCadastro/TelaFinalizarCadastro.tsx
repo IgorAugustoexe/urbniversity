@@ -21,6 +21,7 @@ import { requisitarPermissaoGaleria } from '../../controllers/PermissoesControll
 import { escolherImagem } from '../../controllers/ImagemController'
 import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 import { AuthContext } from '../../apis/AuthContext';
+import { useSelector } from 'react-redux'
 
 type navigation = {
     props: {
@@ -34,6 +35,13 @@ type navigation = {
 }
 
 export default function TelaFinalizarCadastro() {
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
+
+
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
@@ -84,7 +92,7 @@ export default function TelaFinalizarCadastro() {
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
 
     //Register Function
-    const { userInfo, register } = useContext(AuthContext)
+    const {register } = useContext(AuthContext)
 
     const validarCpf = () => {
         txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
@@ -197,41 +205,41 @@ export default function TelaFinalizarCadastro() {
         // } else {
         //     navigation.naviate('home', { isDrive: false })
         // }
-        let object = route.params.isDrive? {
-            cnh:cnh,
-            fullName:route.params.nome,
-            cpf:cpf,
+        let object = route.params.isDrive ? {
+            cnh: cnh,
+            fullName: route.params.nome,
+            cpf: cpf,
             email: route.params.email,
             password: route.params.senha,
-            phone:route.params.telefone
+            phone: route.params.telefone
         } : {
-            fullName:route.params.nome,
-            cpf:cpf,
+            fullName: route.params.nome,
+            cpf: cpf,
             email: route.params.email,
             password: route.params.senha,
-            phone:route.params.telefone,
-            course:curso,
-            university:faculdade,
-            street:endereco,
-            number:numero,
-            district:bairro,
-            cep:cep,
-            city:cidade,
-            state:estado
+            phone: route.params.telefone,
+            course: curso,
+            university: faculdade,
+            street: endereco,
+            number: numero,
+            district: bairro,
+            cep: cep,
+            city: cidade,
+            state: estado
         }
-        
+
         let complement = route.params.isDrive ? {
-            crlv:crlv,
-            brand:marca,
-            model:modelo,
-            year:parseInt(ano),
-            color:corPredominante,
-            seats:assentos
+            crlv: crlv,
+            brand: marca,
+            model: modelo,
+            year: parseInt(ano),
+            color: corPredominante,
+            seats: assentos
         }
-        :
-        {}
-        
-        route.params.isDrive? register('driver', object, complement):register('student',object,complement)
+            :
+            {}
+
+        route.params.isDrive ? register('driver', object, complement, setLoaderReq) : register('student', object, complement, setLoaderReq)
 
         setLoaderReq(false)
     }
@@ -536,20 +544,20 @@ export default function TelaFinalizarCadastro() {
             </View>
         </Fragment>
     )
-    useEffect(() => {
-        //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
-        //to continue the login process by verifying if the userInfo has the access token to foward the user
-        if (userInfo.access_token !== undefined && userInfo.access_token !== null) {
-            setLoaderReq(true)
-            
-            userInfo.type == 'driver' ? 
-            navigation.navigate('home', { isDrive: true }) 
-            : 
-            navigation.navigate('home', { isDrive: false })
+    // useEffect(() => {
+    //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
+    //     //to continue the login process by verifying if the userInfo has the access token to foward the user
+    //     if (store.user.access_token) {
+    //         setLoaderReq(true)
 
-            setLoaderReq(false)
-        }
-    }, [userInfo.access_token]);
+    //         store.user.type == 'driver' ?
+    //             navigation.navigate('home', { isDrive: true })
+    //             :
+    //             navigation.navigate('home', { isDrive: false })
+
+    //         setLoaderReq(false)
+    //     }
+    // }, [store.user.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
