@@ -4,10 +4,16 @@ import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFlagCheckered } from '@fortawesome/free-solid-svg-icons/faFlagCheckered'
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, Polyline } from 'react-native-maps'
 import Geolocation from '@react-native-community/geolocation'
 import MapViewDirections from 'react-native-maps-directions'
 import { mapaNoite } from './estilosMapa'
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
+
+const options = {
+    enableVibrateFallBack: true,
+    ignoreAndroidSystemSettings: true
+}
 
 export default function TelaMapa() {
 
@@ -62,17 +68,20 @@ export default function TelaMapa() {
                 //showsTraffic // mostrar tráfego na região
                 customMapStyle={mapaNoite}// estilo do mapa
                 loadingEnabled
+                zoomEnabled
             >
                 <Marker
                     coordinate={origem}
                     draggable
-                    onDragEnd={(coordenada) => setOrigem(coordenada.nativeEvent.coordinate)}
+                    onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
+                    onDragEnd={(event) => setOrigem(event.nativeEvent.coordinate)}
                     image={require('../../../assets/img/onibusImage.png')}
                 />
                 <Marker
                     coordinate={destino}
                     draggable
-                    onDragEnd={(coordenada) => setDestino(coordenada.nativeEvent.coordinate)}
+                    onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
+                    onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}
                     pinColor={'pink'}
                 />
 

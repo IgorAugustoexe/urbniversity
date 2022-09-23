@@ -9,8 +9,8 @@ import ModalErroGenerico from './screens/ModalErroGenerico'
 import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
 import { useSelector } from 'react-redux'
-import TelaMapa from './screens/TelaMapa'
-
+import TelaMapa from './screens/mapa/TelaMapa'
+import TelaMapaMotorista from './screens/mapa/TelaMapaMotorista'
 
 const Stack = createStackNavigator()
 
@@ -60,6 +60,10 @@ export default function App() {
                         />
                     </>
                 }
+                <Stack.Screen
+                    name="mapaMotorista"
+                    component={TelaMapaMotorista}
+                />
                 <Stack.Screen
                     name="modalErro"
                     component={ModalErroGenerico}
