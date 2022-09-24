@@ -34,15 +34,14 @@ export default function TelaVeiculo() {
     const { createRequest } = useContext(AuthContext)
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    const image = store.user.type == 'driver' ? 
-    store.user.user.photo ? store.user.user.photo
-    :
+    const image = store.user.type == 'driver' && store.user.user.photo 
+    || 
+    route.params?.driver?.user.photo 
+    || 
+    store.user.driver?.user.photo 
+    || 
     'https://jaraguatenisclube.com.br/images/avatar.png' 
-    :
-    store.user.driver.user.photo ?
-     store.user.driver.user.photo 
-     : 
-     'https://jaraguatenisclube.com.br/images/avatar.png';
+    
 
     const assentos = store.user.driver ?
         parseInt(store.user.driver.vehicle.seats) - 2 : store.user.vehicle ?

@@ -1,15 +1,15 @@
 export type Driver = {
-    id: String,
-    cnh: String,
+    id: string,
+    cnh: string,
     route: Rota,
     user: User,
     vehicle: Vehicle
 }
 export type Student = {
-    id: String,
-	course: String,
-	universityId: String,
-	driverId?: String | undefined,
+    id: string,
+	course: string,
+	universityId: string,
+	driverId?: string | undefined,
     address?:Address,
     university?:University,
     user:User,
@@ -32,41 +32,42 @@ export type University = {
     name: string
 }
 export type User = {
-    id: String,
-    fullName: String,
-    phone: String,
-    cpf: String,
-    email: String,
-    studentId?: String | undefined,
-    driverId?: String | undefined
+    id: string,
+    fullName: string,
+    phone: string,
+    photo:string,
+    cpf: string,
+    email: string,
+    studentId?: string | undefined,
+    driverId?: string | undefined
 }
 export type Vehicle = {
-    id: String,
-    crlv: String,
-    brand: String,
-    model: String,
+    id: string,
+    crlv: string,
+    brand: string,
+    model: string,
     year: Number,
-    color: String,
+    color: string,
     seats: string,
-    driverId: String
+    driverId: string
 }
 export type Address = {
-    id: String,
-	street: String,
-	number: String,
-	district: String,
-	cep: String,
-	cityId: String,
-	studentId: String,
+    id: string,
+	street: string,
+	number: string,
+	district: string,
+	cep: string,
+	cityId: string,
+	studentId: string,
 	city: City,
 }
 export type Requests = {
-		id: String,
-		studentId: String,
-		driverId: String,
+		id: string,
+		studentId: string,
+		driverId: string,
 		driver: {
-			id: String,
-			cnh: String,
+			id: string,
+			cnh: string,
 			user: User
 		},
 		student: Student

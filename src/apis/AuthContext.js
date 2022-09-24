@@ -45,14 +45,14 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     //Para verificar a request, basta dar Ctrl+K+U no código abaixo
     axios.interceptors.request.use(function (request) {
-        console.log('Starting Request', JSON.stringify(request, null, 2))
+        //console.log('Starting Request', JSON.stringify(request, null, 2))
         return request;
     }, function (error) {
         return Promise.reject(error);
     });
 
     axios.interceptors.response.use(function (response) {
-        console.log('Response:', JSON.stringify(response, null, 2))
+        //console.log('Response:', JSON.stringify(response, null, 2))
         return response;
     }, function (error) {
         return Promise.reject(error);
@@ -268,7 +268,6 @@ export const AuthProvider = ({ children }) => {
             navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh:refresh})        
     }
     const auth = async (email, password) => {
-        console.log(email,password)
         try {
             const aux = await axios.post(`/auth`, { email, password, })
             const resp = await aux.data;

@@ -99,7 +99,7 @@ function TelaMostraEstudante() {
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri: 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
+                                source={{ uri: item.user.photo || 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row', marginHorizontal: 15 }}>

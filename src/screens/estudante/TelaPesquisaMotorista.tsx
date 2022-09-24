@@ -66,7 +66,7 @@ export default function TelaPesquisaMotorista() {
     const didMount = async () => {
         const dt = await getRoutesByStudent();
         setRotas(await dt);
-    }
+        }
 
     const ListaMotoristas = () => (
         <FlatList
@@ -83,12 +83,12 @@ export default function TelaPesquisaMotorista() {
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri: 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
+                                source={{ uri: item.user.photo || 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
                         <View style={{ marginHorizontal: 15 }}>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>{item.user.fullName}</Text>
-                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item.vehicle.seats}</Text>
+                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item?.vehicle?.seats}</Text>
                             <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Destino: {item.route.university.name} - {item.route.city.name}</Text>
                         </View>
                     </TouchableOpacity>
