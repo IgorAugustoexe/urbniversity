@@ -16,46 +16,19 @@ import { store } from '../../redux/store'
 import { AuthContext } from '../../apis/AuthContext'
 import { Student, Requests } from '../../types/types'
 
-const arrayMotoristas = [
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Jorge Pereira',
-        'telefone': '19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Aristeu Corridas',
-        'telefone': '19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Everton Busão e Frete',
-        'telefone': '19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Thomas Turbano',
-        'telefone': '19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Kleberson do Uber',
-        'telefone': '19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Rita Manicure e Frete',
-        'telefone': '19999810297'
-    }
-]
 
 function TelaMostraEstudante() {
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
     const [estudantes, setEstudantes] = useState<Student>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const { getStudentsByDriver } = useContext(AuthContext)
+    const {getData } = useContext(AuthContext)
     const [load, setLoad] = useState(true)
 
     useEffect(() => {
@@ -64,13 +37,11 @@ function TelaMostraEstudante() {
     }, [load, navigation])
 
 
-    const didMount = async () => {
-        
+    const didMount = async () => { 
         if(load){
-            const dtStudents = await getStudentsByDriver();     
+            const dtStudents = await getData(`${store.user.type}/students`)
             setEstudantes(await dtStudents);
-        }
-        
+        }     
     }
     const callWhatsapp = (number: string) => {
         let url = "whatsapp://send?text=" +
@@ -95,7 +66,7 @@ function TelaMostraEstudante() {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: 0, marginVertical: 1, flexDirection: 'row', borderRadius: 0 }}>
+                    <TouchableOpacity style={{paddingLeft:'2%', backgroundColor: cores.azulPrimario, marginHorizontal: 0, marginVertical: 1, flexDirection: 'row', borderRadius: 0 }}>
                         <View>
                             <Image
                                 style={styles.imgMotorista}
@@ -166,9 +137,8 @@ export default function TelaRota() {
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const [requests, setRequests] = useState<Requests[]>();
-    const { getRequestsByDriver } = useContext(AuthContext)
+    const { getData } = useContext(AuthContext)
     const navigation = useNavigation<any>()
-    //const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
     const [load, setLoad] = useState(true)
     const image = store.user.user ? store.user.user.photo : 'https://jaraguatenisclube.com.br/images/avatar.png'
@@ -179,15 +149,14 @@ export default function TelaRota() {
     }, [load, navigation])
 
     const didMount = async () => {
-        const dtRequests = await getRequestsByDriver();
+        //const dtRequests = await getRequestsByDriver();
+        const dtRequests = await getData(`request/${store.user.type}`);
         setRequests(await dtRequests);
-        //console.log(JSON.stringify(dtRequests, null, "\t"));
     }
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
         let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
-        //console.log(store.user.driver)
     }, [])
 
 
@@ -313,7 +282,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         borderWidth: 2,
         borderColor: cores.branco,
-        borderRadius: 3
+        borderRadius: 50,
     },
 
     rodape: {

@@ -11,7 +11,7 @@ import ModalErroGenerico from '../screens/ModalErroGenerico';
 
 export const AuthContext = createContext();
 
-//To make possible the navigation outside the Navigation component. we must create a ref.
+//Pra fazer possivel a navegação fora do navigation
 export const navigationRef = React.createRef();
 
 function navigate(name, params) {
@@ -34,23 +34,19 @@ export const AuthProvider = ({ children }) => {
     })
 
     const dispatch = useDispatch()
-    const [complemento, setComplemento] = useState({})
-    const [awaitDriver, setAwaitDriver] = useState(false)
     const [isLogged, setIsLogged] = useState(false)
-
-
 
     //The axios configs
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
-    //Para verificar a request, basta dar Ctrl+K+U no código abaixo
+    //Para verificar a requisição, basta dar remover o comentario do console.log() abaixo
     axios.interceptors.request.use(function (request) {
         //console.log('Starting Request', JSON.stringify(request, null, 2))
         return request;
     }, function (error) {
         return Promise.reject(error);
     });
-
+    //Para verificar a resposta, basta dar remover o comentario do console.log() abaixo
     axios.interceptors.response.use(function (response) {
         //console.log('Response:', JSON.stringify(response, null, 2))
         return response;
@@ -129,8 +125,7 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
-
-    //REGISTRAR PT2
+    //REGISTRAR PT2 - Complementos para cadastrar, até então, rota e veiculo
     const registerComplement = async (entity, object, token) => {
         const config = { headers: { 'Authorization': `Bearer ${token}` } };
         try {
@@ -139,61 +134,93 @@ export const AuthProvider = ({ children }) => {
             console.log(`Register ${entity} error: ${e}`)
         }
     }
+    // const getRoutesByStudent = async () => {
+    //     try {
+    //         const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+    //         const aux = await axios.get(`student/routes`, config);
 
-
-    const getRoutesByStudent = async () => {
-        try {
-            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.get(`student/routes`, config);
-
-            const resp = await aux.data //store.type
+    //         const resp = await aux.data //store.type
           
-            return resp;
+    //         return resp;
 
 
-        } catch (e) {
-            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRoutesByStudent })
-            return e;
-        }
+    //     } catch (e) {
+    //         popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+    //         navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getRoutesByStudent })
+    //         return e;
+    //     }
 
-    }
-    const getStudentsByDriver = async () => {
+    // }
+    // const getStudentsByDriver = async () => {
+    //     try {
+    //         const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+    //         const aux = await axios.get(`driver/students`, config);
+
+    //         const resp = await aux.data //store.type
+
+    //         return resp;
+
+
+    //     } catch (e) {
+    //         popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+    //         navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver})
+    //         return;
+    //     }
+
+    // }
+    // const getRequestsByDriver = async () => {
+    //     try {
+    //         const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+    //         const aux = await axios.get(`request/driver`, config);
+
+    //         const resp = await aux.data //store.type
+    //         //console.log(JSON.stringify(resp, null, "\t"));
+    //         //console.log(JSON.stringify(resp[0].student, null, "\t"));
+    //         return resp;
+
+
+    //     } catch (e) {
+    //         popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+    //         navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func:getRequestsByDriver})
+    //         return;
+    //     }
+
+    // }
+
+   
+    const refreshUser = async () => {
+        popUpErroGenerico({ type: 'customSuccess', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.get(`driver/students`, config);
-
-            const resp = await aux.data //store.type
-
-            return resp;
-
-
+            const user = await getUser(`${store.type}`, config)
+            dispatch(setInfo(user))
+            return user;
         } catch (e) {
+            console.log(e)
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func: getStudentsByDriver})
             return;
         }
 
     }
-    const getRequestsByDriver = async () => {
+    //Responsavel por criar uma solicitação
+    const createRequest = async (idRoute) => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.get(`request/driver`, config);
+            const aux = await axios.post(`/request`, { driverId: idRoute }, config);
 
-            const resp = await aux.data //store.type
-            //console.log(JSON.stringify(resp, null, "\t"));
-            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            const resp = await aux.data
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação enviada com sucesso', text2: `Por favor aguarde a confirmação do motorista` })
             return resp;
 
 
         } catch (e) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func:getRequestsByDriver})
+            console.log(`Error while creating request ${e}`);
             return;
         }
 
     }
-
+    //Responsavel por aceitar uma solicitação
     const acceptRequest = async (idRoute) => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
@@ -212,37 +239,7 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
-    const refreshUser = async () => {
-        popUpErroGenerico({ type: 'customSuccess', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
-        try {
-            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const user = await getUser(`${store.type}`, config)
-            dispatch(setInfo(user))
-            return user;
-        } catch (e) {
-            console.log(e)
-            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            return;
-        }
-
-    }
-    const createRequest = async (idRoute) => {
-        try {
-            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-            const aux = await axios.post(`/request`, { driverId: idRoute }, config);
-
-            const resp = await aux.data
-            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação enviada com sucesso', text2: `Por favor aguarde a confirmação do motorista` })
-            return resp;
-
-
-        } catch (e) {
-            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            console.log(`Error while creating request ${e}`);
-            return;
-        }
-
-    }
+    //Responsavel por remover uma solicitação
     const removeRequest = async (idRoute) => {
 
         try {
@@ -269,9 +266,11 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
+    //Serve como meio para chamada do modal de erro. Basicamente repassa uma função para o componente
     const mediador = (text, funcao, params, refresh) => {
             navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh:refresh})        
     }
+    //Responsavel pela autenticação
     const auth = async (email, password) => {
         try {
             const aux = await axios.post(`/auth`, { email, password, })
@@ -282,7 +281,25 @@ export const AuthProvider = ({ children }) => {
             return;
         }
     }
+    //Função genérica que retorna dados como rotas, estudantes em uma rota, motoristas disponiveis, etc dado a rota(request)
+    const getData = async(type) => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.get(`${type}`, config);
 
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func:getRequestsByDriver})
+            return;
+        }
+    }
+    //Retorna um usuário dada sua rota e configurações de request
     const getUser = async (type, config) => {
         let userInfo = {}
         try {
@@ -305,6 +322,7 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
+    //Converte de Json para FormData
     const returnFormData = ({file,...data}) => {
         let form_data = new FormData();
 
@@ -322,6 +340,7 @@ export const AuthProvider = ({ children }) => {
 
         return form_data
     }
+    //LOGIN
     const login = async (email, password, callback) => {
         logout()
         let userInfo = {}
@@ -364,7 +383,7 @@ export const AuthProvider = ({ children }) => {
         setIsLogged(false)
         
     };
-
+    //Função resposavel por verificar a validade do token
     const isLoggedIn = async () => {
 
         if (store.accessToken) {
@@ -392,7 +411,7 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
-
+    //Chama a função resposnavel por verificar a validade do token
     useEffect(() => {
         if (store.accessToken && !isLogged) {
             isLoggedIn();
@@ -406,9 +425,7 @@ export const AuthProvider = ({ children }) => {
                 register,
                 login,
                 logout,
-                getRoutesByStudent,
-                getStudentsByDriver,
-                getRequestsByDriver,
+                getData,
                 acceptRequest,
                 removeRequest,
                 createRequest,

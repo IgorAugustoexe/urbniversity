@@ -9,62 +9,33 @@ import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
 import { AuthContext } from '../../apis/AuthContext'
 import { Driver } from '../../types/types'
+import { store } from '../../redux/store'
+import { useDispatch, useSelector } from 'react-redux'
 
-// const arrayMotoristas = [
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Jorge Pereira',
-//         'assentosDisponíveis': 10,
-//         'buscaCasa': true,
-//     },
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Aristeu Corridas',
-//         'assentosDisponíveis': 5,
-//         'buscaCasa': false,
-//     },
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Everton Busão e Frete',
-//         'assentosDisponíveis': 10,
-//         'buscaCasa': false,
-//     },
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Thomas Turbano',
-//         'assentosDisponíveis': 5,
-//         'buscaCasa': true,
-//     },
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Kleberson do Uber',
-//         'assentosDisponíveis': 20,
-//         'buscaCasa': false,
-//     },
-//     {
-//         'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-//         'nomeMotorista': 'Rita Manicure e Frete',
-//         'assentosDisponíveis': 50,
-//         'buscaCasa': true,
-//     }
-// ]
+
+
 
 export default function TelaPesquisaMotorista() {
-
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
 
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
     const [rotas, setRotas] = useState<Driver>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const { getRoutesByStudent } = useContext(AuthContext)
+    const {getData } = useContext(AuthContext)
 
     useEffect(() => {
         didMount()
     }, [])
 
     const didMount = async () => {
-        const dt = await getRoutesByStudent();
+        //const dt = await getRoutesByStudent();
+        const dt = await getData(`${store.user.type}/routes`)
         setRotas(await dt);
         }
 
@@ -78,7 +49,7 @@ export default function TelaPesquisaMotorista() {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
+                    <TouchableOpacity style={{paddingLeft:'2%', backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
                         onPress={() => navigation.navigate('veiculo', { driver: item })}>
                         <View>
                             <Image
@@ -139,7 +110,7 @@ const styles = StyleSheet.create({
     imgMotorista: {
         width: 80,
         height: 80,
-        borderRadius: 5
+        borderRadius: 50,
     },
 
     // ErroLoader

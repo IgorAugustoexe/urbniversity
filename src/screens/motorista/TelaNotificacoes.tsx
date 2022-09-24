@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator} from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -16,52 +16,22 @@ import BtnBlue from '../../components/BtnBlue'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { store } from '../../redux/store'
 import { AuthContext } from '../../apis/AuthContext'
-import {Student, Requests} from '../../types/types'
-
-const arrayMotoristas = [
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Jorge Pereira',
-        'telefone':'19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Aristeu Corridas',
-        'telefone':'19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Everton Busão e Frete',
-        'telefone':'19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Thomas Turbano',
-        'telefone':'19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Kleberson do Uber',
-        'telefone':'19999810297'
-    },
-    {
-        'imgMotorista': 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-        'nomeEstudante': 'Rita Manicure e Frete',
-        'telefone':'19999810297'
-    }
-]
+import { Requests } from '../../types/types'
 
 function TelaMostraEstudante() {
-        
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
 
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [refresh,setRefresh] = useState<boolean>(false);
+    const [refresh, setRefresh] = useState<boolean>(false);
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const {getStudentsByDriver} = useContext(AuthContext)
     const [requests, setRequests] = useState<Requests[]>();
-    const {getRequestsByDriver, acceptRequest, removeRequest, mediador} = useContext(AuthContext)
+    const {acceptRequest, removeRequest, mediador, getData } = useContext(AuthContext)
     const [load, setLoad] = useState(true)
 
     useEffect(() => {
@@ -69,24 +39,23 @@ function TelaMostraEstudante() {
         navigation.addListener('focus', () => setLoad(!load))
     }, [load, navigation])
 
-    const didMount = async () => { 
-        if(load){
-            const dtRequests = await getRequestsByDriver();
+    const didMount = async () => {
+        if (load) {
+            const dtRequests = await getData(`request/${store.user.type}`)
             setRequests(dtRequests);
-            //console.log(JSON.stringify(dtRequests, null, "\t"));
         }
-             
+
     }
 
-    const refreshScreen = async() =>{
-        setRequests(undefined);  
-        const dtRequests = await getRequestsByDriver();  
+    const refreshScreen = async () => {
+        setRequests(undefined);
+        const dtRequests = await getData(`request/${store.user.type}`)
         const aux = await dtRequests;
         setRequests(aux);
     }
-    useEffect(() =>{
+    useEffect(() => {
         refreshScreen()
-    },[refresh])
+    }, [refresh])
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
@@ -101,25 +70,25 @@ function TelaMostraEstudante() {
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri: item.student.user.photo || 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg'}}
+                                source={{ uri: item.student.user.photo || 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
-                        <View style={{flex:1, alignItems:'center',justifyContent:'flex-start',flexDirection:'row', marginHorizontal: 15 }}>
-                            <Text numberOfLines={1} ellipsizeMode="tail" style={{fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
-                                {item.student.user.fullName}    
-                            </Text>        
-                            <View style={{flex:1, flexDirection:'row' ,justifyContent:'flex-end'}}>
-                                <TouchableOpacity onPress = {async () => {
-                                   const response = await mediador('Deseja mesmo aceitar este estudante?', acceptRequest, item.id, setRefresh); 
-                                    }} >
-                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress = {async () => {
-                                    const response = await mediador('Deseja mesmo recusar este estudante?', removeRequest, item.id, setRefresh); 
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row', marginHorizontal: 15 }}>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
+                                {item.student.user.fullName}
+                            </Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <TouchableOpacity onPress={async () => {
+                                    const response = await mediador('Deseja mesmo aceitar este estudante?', acceptRequest, item.id, setRefresh);
                                 }} >
-                                    <FontAwesomeIcon style={{alignSelf:'flex-end'}} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
                                 </TouchableOpacity>
-                            </View>                 
+                                <TouchableOpacity onPress={async () => {
+                                    const response = await mediador('Deseja mesmo recusar este estudante?', removeRequest, item.id, setRefresh);
+                                }} >
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 )
@@ -171,7 +140,7 @@ export default function TelaRota() {
         }
     })
 
-    const {logout } = useContext(AuthContext)
+    const { logout } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()
@@ -181,7 +150,7 @@ export default function TelaRota() {
 
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
-        let driver = store.user.type == 'driver' ? true : false 
+        let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
         //console.log(store.user.driver)
     }, [])
@@ -202,7 +171,7 @@ export default function TelaRota() {
                         source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo',{driver:null})}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
@@ -251,8 +220,8 @@ const styles = StyleSheet.create({
         padding: 13,
         flexDirection: 'row'
     },
-    containerInfoRota:{
-        width:'85%'
+    containerInfoRota: {
+        width: '85%'
     },
     btnRota: {
         backgroundColor: cores.azulBtn,
@@ -270,8 +239,8 @@ const styles = StyleSheet.create({
         left: 10,
         padding: 7,
         borderRadius: 5,
-        textTransform:'uppercase',
-        maxWidth:'50%',
+        textTransform: 'uppercase',
+        maxWidth: '50%',
     },
 
     txtNomeRota: {
@@ -290,7 +259,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         color: cores.fonteBranco,
-        width:300  
+        width: 300
     },
 
     imgUser: {
@@ -316,11 +285,11 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: cores.fonteBranco,
         textAlign: 'center'
-    },imgMotorista: {
+    }, imgMotorista: {
         width: 60,
         height: 60,
-        marginVertical:10,
-        marginLeft:5,
+        marginVertical: 10,
+        marginLeft: 5,
         borderRadius: 50
     },
 
@@ -346,18 +315,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: cores.fonteBranco,
         textAlign: 'center'
-    },reqContainer:{
-        width:config.windowWidth / 12,
-        height:config.windowWidth / 12,
-        borderWidth:2,
-        borderColor:'white',
-        borderRadius:80,
+    }, reqContainer: {
+        width: config.windowWidth / 12,
+        height: config.windowWidth / 12,
+        borderWidth: 2,
+        borderColor: 'white',
+        borderRadius: 80,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    reqCounter:{
-        fontSize:20,
-        color:'white',
-        fontWeight:'bold'
+    reqCounter: {
+        fontSize: 20,
+        color: 'white',
+        fontWeight: 'bold'
     }
 })
