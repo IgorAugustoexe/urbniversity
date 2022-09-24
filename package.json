@@ -8,13 +8,14 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "emulator-nexus": "emulator -avd Nexus_5X_API_29"
+    "emulator-nexus": "emulator -avd Nexus_5X_API_29",
+    "emulator-pixel": "emulator -avd Pixel_4_API_29"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
-    "@fortawesome/free-brands-svg-icons": "^6.1.1",
-    "@fortawesome/free-regular-svg-icons": "^6.1.1",
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-native-fontawesome": "^0.3.0",
     "@react-native-async-storage/async-storage": "^1.17.8",
     "@react-native-community/geolocation": "^2.1.0",
@@ -43,6 +44,7 @@
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.11.1",
     "react-native-svg": "^12.3.0",
+    "react-native-toast-message": "^2.1.5",
     "react-redux": "^7.2.8",
     "redux-persist": "^6.0.0"
   },

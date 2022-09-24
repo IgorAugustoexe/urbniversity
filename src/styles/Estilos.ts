@@ -18,11 +18,14 @@ const config = {
 
 const cores = {
     backgroundPadrao: '#060e24', //'#2b2b2b',
+    backgroundToast:'#192136',
     azulPrimario: '#2F3F66',
     azulSecundario: '#1D2740',
     azulBtn: '#5875BF',
     azulDisabled: 'rgba(29, 39, 64, 0.3)',
     disabled: 'rgba(255,255,255, 0.3)',
+    verde:'#29a329',
+    vermelho:'#ff6666',
     branco: '#FFFFFF',
     fonteBranco: '#F5F2F2',
     fonteCinza: '#7C7979',

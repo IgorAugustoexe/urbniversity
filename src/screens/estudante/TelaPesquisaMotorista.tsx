@@ -8,7 +8,7 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
 import { AuthContext } from '../../apis/AuthContext'
-import {Routes} from '../../types/types'
+import { Driver } from '../../types/types'
 
 // const arrayMotoristas = [
 //     {
@@ -50,14 +50,14 @@ import {Routes} from '../../types/types'
 // ]
 
 export default function TelaPesquisaMotorista() {
-        
+
 
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [rotas,setRotas] = useState<Routes>();
+    const [rotas, setRotas] = useState<Driver>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const {getRoutesByStudent} = useContext(AuthContext)
+    const { getRoutesByStudent } = useContext(AuthContext)
 
     useEffect(() => {
         didMount()
@@ -65,8 +65,8 @@ export default function TelaPesquisaMotorista() {
 
     const didMount = async () => {
         const dt = await getRoutesByStudent();
-        setRotas(await dt);    
-    }
+        setRotas(await dt);
+        }
 
     const ListaMotoristas = () => (
         <FlatList
@@ -78,17 +78,18 @@ export default function TelaPesquisaMotorista() {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}>
+                    <TouchableOpacity style={{ backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
+                        onPress={() => navigation.navigate('veiculo', { driver: item })}>
                         <View>
                             <Image
                                 style={styles.imgMotorista}
-                                source={{ uri: 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
+                                source={{ uri: item.user.photo || 'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg' }}
                             />
                         </View>
                         <View style={{ marginHorizontal: 15 }}>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>{item.user.fullName}</Text>
-                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item.vehicle.seats}</Text>
-                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Cidade: {item.route.city.name}</Text>
+                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Assentos Disp: {item?.vehicle?.seats}</Text>
+                            <Text style={{ fontSize: 15, color: cores.fonteBranco, paddingVertical: 3 }}>Destino: {item.route.university.name} - {item.route.city.name}</Text>
                         </View>
                     </TouchableOpacity>
                 )
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: cores.fonteBranco,
         textAlign: 'center'
-    }
+    },
+
 
 })

@@ -90,7 +90,7 @@ export default function TelaFinalizarCadastro() {
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
-
+    const [file, setFile] = useState<object>()
     //Register Function
     const {register } = useContext(AuthContext)
 
@@ -211,7 +211,8 @@ export default function TelaFinalizarCadastro() {
             cpf: cpf,
             email: route.params.email,
             password: route.params.senha,
-            phone: route.params.telefone
+            phone: route.params.telefone,
+            file:file
         } : {
             fullName: route.params.nome,
             cpf: cpf,
@@ -225,16 +226,20 @@ export default function TelaFinalizarCadastro() {
             district: bairro,
             cep: cep,
             city: cidade,
-            state: estado
+            state: estado,
+            file:file
         }
 
         let complement = route.params.isDrive ? {
-            crlv: crlv,
+            plate: placa,
             brand: marca,
             model: modelo,
             year: parseInt(ano),
             color: corPredominante,
-            seats: assentos
+            seats: assentos,
+            city: cidade,
+            state: estado,
+            university: faculdade
         }
             :
             {}
@@ -273,8 +278,9 @@ export default function TelaFinalizarCadastro() {
         }
     }
 
-    const callBackImagem = (img: string) => {
+    const callBackImagem = (img: string, image:any) => {
         setImagem(img)
+        setFile(image)
     }
 
     const acessarGaleria = async () => {
@@ -297,6 +303,44 @@ export default function TelaFinalizarCadastro() {
 
     const DadosMotorista = () => (
         <Fragment>
+             <View style={[{ paddingTop: 15, flexDirection: 'row' }]}>
+                <View style={{ width: '65%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Cidade atendida</Text>
+                    <TextInput
+                         onChangeText={(text) => setCidade(text)}
+                         value={cidade}
+                         placeholder={'Nome da Cidade'}
+                         icon={faSchool}
+                         style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
+                         placeholderTextColor={cores.fonteCinza}
+                         editable={true}
+                    />
+                    <FontAwesomeIcon icon={faTreeCity} size={config.windowWidth / 16} color={cores.branco} style={stylesInput.styleIcon} />
+                </View>
+                <View style={{ width: '20%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Estado</Text>
+                    <TextInput
+                        onChangeText={(text) => setEstado(text)}
+                        style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
+                        value={estado}
+                        placeholder={'UF'}
+                        placeholderTextColor={cores.fonteCinza}
+                        editable={true}
+                        maxLength={2}
+                    />
+                </View>
+            </View>
+             <View style={styles.espacoInputs}>
+                <InputDadosUser
+                    onChangeText={(text) => setFaculdade(text)}
+                    value={faculdade}
+                    textoInput={'Faculdade'}
+                    placeholder={'Digite o nome da sua Faculdade de destino'}
+                    onFocus={() => txtFaculdadeInvalida.length > 0 && setTxtFaculdadeInvalida('')}
+                    txtErro={txtFaculdadeInvalida}
+                    icon={faSchool}
+                />
+            </View>
             <View style={styles.espacoInputs}>
                 <InputDadosUser
                     onChangeText={(text) => setCnh(text)}

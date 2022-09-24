@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
+import BtnBlue from '../../components/BtnBlue'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
@@ -9,6 +10,8 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import { AuthContext } from '../../apis/AuthContext';
+import { popUpErroGenerico } from '../PopUpErroGenerico'
+
 
 export default function TelaHome() {
     const store: any = useSelector<any>(({ user }) => {
@@ -17,19 +20,28 @@ export default function TelaHome() {
         }
     })
 
-    const { logout } = useContext(AuthContext)
+    const { logout, refreshUser } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()
     const dispatch = useDispatch()
-
+    const image = store.user.user ? store.user.user.photo : 'https://jaraguatenisclube.com.br/images/avatar.png'
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
         let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
         //console.log(store.user.driver)
     }, [])
+    const updateScreen = async () => {
+        if (!store.user.route && !store.user.driverId) {
+            const aux = store.user
+            const resp = await refreshUser()
 
+            if (resp.driverId == aux.driverId) {
+                popUpErroGenerico({ type: 'customInfo', text1: 'Dados Atualizados com sucesso', text2: `Não houve nenhuma alteração.` })
+            }
+        }
+    }
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
@@ -43,10 +55,10 @@ export default function TelaHome() {
                 <View style={styles.containerHeader}>
                     <Image
                         style={styles.imgUser}
-                        source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
+                        source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo')}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
@@ -59,15 +71,19 @@ export default function TelaHome() {
             </View>
 
             {isDriver && store.user.route ?
-                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
-                    <Text style={styles.txtCodigoRota}>Rota: 1874</Text>
+                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('telaRota')}>
+                    <Text style={styles.txtCodigoRota}>Rota: {store.user.route.university.name}</Text>
                     <View style={styles.containerRota}>
-                        <Text style={styles.txtNomeRota}>UNIFAE - Centro Universitário das Faculdades Associadas de Ensino - FAE</Text>
+                        <View style={styles.containerInfoRota}>
+                            <Text style={styles.txtNomeRota}>Motorista: {store.user.user.fullName}</Text>
+                            <Text style={styles.txtNomeRota}>Cidade: {store.user.route.city.name} - {store.user.route.city.state}</Text>
+                        </View>
                         <View style={{ width: '10%', justifyContent: 'center' }}>
                             <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                         </View>
                     </View>
                 </TouchableOpacity>
+<<<<<<< HEAD
                 : !isDriver && store.user.driverId ?
                     <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
                         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.university}</Text>
@@ -79,45 +95,82 @@ export default function TelaHome() {
                             <View style={{ width: '10%', justifyContent: 'center' }}>
                                 <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                             </View>
-                        </View>
+=======
+                :!isDriver && store.user.driverId ?
+                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
+                                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.route.university.name}</Text>
+                                <View style={styles.containerRota}>
+                                    <View style={styles.containerInfoRota}>
+                                        <Text style={styles.txtNomeRota}>Motorista: {store.user.driver.user.fullName}</Text>
+                                        <Text style={styles.txtNomeRota}>Cidade: {store.user.driver.route.city.name} - {store.user.driver.route.city.state}</Text>
+>>>>>>> temp_fotos
+                                    </View>
+                            </TouchableOpacity>
+                            : isDriver ?
+                            <View style={{ padding: config.windowWidth / 10 }}>
+                                <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para criar uma!</Text>
+                            </View>
+                            :
+                            <View style={{ padding: config.windowWidth / 10 }}>
+                                <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para encontrar seu Motorista!</Text>
+                            </View>
+<<<<<<< HEAD
+}
+
+{
+    isDriver && !store.user.route ?
+    <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
+        <Text style={styles.txtBtnRodape}>Criar uma Rota</Text>
+    </TouchableOpacity>
+    : !isDriver && !store.user.driverId ?
+        <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
+            <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
+        </TouchableOpacity>
+        :
+        <></>
+=======
+                    </View>
+                </TouchableOpacity>
+                : isDriver ?
+                <View style={styles.containerErro} >
+                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                    <TouchableOpacity onPress={async() => await updateScreen()}>
+                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
                     </TouchableOpacity>
-                    : isDriver ?
-                        <View style={{ padding: config.windowWidth / 10 }}>
-                            <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para criar uma!</Text>
-                        </View>
-                        :
-                        <View style={{ padding: config.windowWidth / 10 }}>
-                            <Text style={[styles.txtBold, { textAlign: 'center' }]}>Você não está cadastrado em nenhuma rota, clique no botão abaixo para encontrar seu Motorista!</Text>
-                        </View>
+                </View>
+                :
+                <View style={styles.containerErro} >
+                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                    <TouchableOpacity onPress={async() => await updateScreen()}>
+                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                    </TouchableOpacity>
+                </View>
             }
 
-            {isDriver && !store.user.route ?
-                <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
-                    <Text style={styles.txtBtnRodape}>Criar uma Rota</Text>
-                </TouchableOpacity>
-                : !isDriver && !store.user.driverId ?
-                    <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
-                        <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
-                    </TouchableOpacity>
-                    :
-                    <></>
-            }
+            {!isDriver && !store.user.driverId ?
+            <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
+                <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
+            </TouchableOpacity>
+                :
+                <></>
+>>>>>>> temp_fotos
+}
 
-            <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, justifyContent: 'space-around' }}>
-                <TouchableOpacity
-                    style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
-                    onPress={() => navigation.navigate('mapa')}
-                >
-                    <Text>Mapa Estudante</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
-                    onPress={() => navigation.navigate('mapaMotorista')}
-                >
-                    <Text>Mapa Motorista</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+<View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, justifyContent: 'space-around' }}>
+    <TouchableOpacity
+        style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
+        onPress={() => navigation.navigate('mapa')}
+    >
+        <Text>Mapa Estudante</Text>
+    </TouchableOpacity>
+    <TouchableOpacity
+        style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
+        onPress={() => navigation.navigate('mapaMotorista')}
+    >
+        <Text>Mapa Motorista</Text>
+    </TouchableOpacity>
+</View>
+        </SafeAreaView >
     )
 }
 
@@ -219,5 +272,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: cores.fonteBranco,
         textAlign: 'center'
+    }, containerErro: {
+        alignItems: 'center',
+        marginTop: config.windowWidth / 2,
+        marginHorizontal: 10,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        borderRadius: 10
     },
 })

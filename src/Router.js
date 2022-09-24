@@ -10,6 +10,9 @@ import TelaVeiculo from './screens/motorista/TelaVeiculo'
 import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
 import { useSelector } from 'react-redux'
 import TelaMapa from './screens/mapa/TelaMapa'
+import TelaRota from './screens/motorista/TelaRota'
+import TelaNotificacoes from './screens/motorista/TelaNotificacoes'
+import {navigationRef} from './apis/AuthContext';
 import TelaMapaMotorista from './screens/mapa/TelaMapaMotorista'
 
 const Stack = createStackNavigator()
@@ -24,41 +27,49 @@ export default function App() {
     //Caso logado, ir para home
     //Caso deslogado, ir para login/registrar
     return (
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {store.user.access_token ?
-                    <>
-                        <Stack.Screen
-                            name="home"
-                            component={TelaHome}
-                        />
-                        <Stack.Screen
-                            name="veiculo"
-                            component={TelaVeiculo}
-                        />
-                        <Stack.Screen
-                            name="pesquisaMotorista"
-                            component={TelaPesquisaMotorista}
-                        />
-                        <Stack.Screen
-                            name="mapa"
-                            component={TelaMapa}
-                        />
-                    </> :
-                    <>
-                        <Stack.Screen
-                            name="login"
-                            component={TelaLogin}
-                        />
-                        <Stack.Screen
-                            name="cadastro"
-                            component={TelaCadastro}
-                        />
-                        <Stack.Screen
-                            name="finalizarCadastro"
-                            component={TelaFinalizarCadastro}
-                        />
-                    </>
+        <NavigationContainer ref={navigationRef}>
+            <Stack.Navigator screenOptions={{headerShown: false }}>
+                {store.user.access_token ? 
+                <>
+                <Stack.Screen
+                    name="home"
+                    component={TelaHome}
+                />
+                <Stack.Screen
+                    name="veiculo"
+                    component={TelaVeiculo}
+                />
+                <Stack.Screen
+                    name="pesquisaMotorista"
+                    component={TelaPesquisaMotorista}
+                />
+                 <Stack.Screen
+                    name="mapa"
+                    component={TelaMapa}
+                />
+                <Stack.Screen
+                    name="telaRota"
+                    component={TelaRota}
+                />
+                <Stack.Screen
+                    name="notificacoes"
+                    component={TelaNotificacoes}
+                />
+            </>: 
+            <>
+                <Stack.Screen
+                    name="login"
+                    component={TelaLogin}
+                />
+                <Stack.Screen
+                    name="cadastro"
+                    component={TelaCadastro}
+                />
+                <Stack.Screen
+                    name="finalizarCadastro"
+                    component={TelaFinalizarCadastro}
+                /> 
+                </>
                 }
                 <Stack.Screen
                     name="mapaMotorista"

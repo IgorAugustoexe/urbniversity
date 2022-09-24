@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     navBar: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginHorizontal: config.windowWidth / 20,
+        marginHorizontal: 0,
         paddingVertical: config.windowWidth / 20,
         borderBottomWidth: 1,
         borderBottomColor: cores.branco
