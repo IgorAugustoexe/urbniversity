@@ -90,7 +90,7 @@ export default function TelaFinalizarCadastro() {
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
-
+    const [file, setFile] = useState<object>()
     //Register Function
     const {register } = useContext(AuthContext)
 
@@ -211,7 +211,8 @@ export default function TelaFinalizarCadastro() {
             cpf: cpf,
             email: route.params.email,
             password: route.params.senha,
-            phone: route.params.telefone
+            phone: route.params.telefone,
+            file:file
         } : {
             fullName: route.params.nome,
             cpf: cpf,
@@ -225,11 +226,12 @@ export default function TelaFinalizarCadastro() {
             district: bairro,
             cep: cep,
             city: cidade,
-            state: estado
+            state: estado,
+            file:file
         }
 
         let complement = route.params.isDrive ? {
-            crlv: crlv,
+            plate: placa,
             brand: marca,
             model: modelo,
             year: parseInt(ano),
@@ -276,8 +278,9 @@ export default function TelaFinalizarCadastro() {
         }
     }
 
-    const callBackImagem = (img: string) => {
+    const callBackImagem = (img: string, image:any) => {
         setImagem(img)
+        setFile(image)
     }
 
     const acessarGaleria = async () => {

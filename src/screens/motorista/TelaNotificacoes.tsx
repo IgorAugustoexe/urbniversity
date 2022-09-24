@@ -63,6 +63,7 @@ function TelaMostraEstudante() {
     const [requests, setRequests] = useState<Requests[]>();
     const {getRequestsByDriver, acceptRequest, removeRequest, mediador} = useContext(AuthContext)
     const [load, setLoad] = useState(true)
+
     useEffect(() => {
         didMount()
         navigation.addListener('focus', () => setLoad(!load))
@@ -176,6 +177,7 @@ export default function TelaRota() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
+    const image = store.user.user ? store.user.user.photo : 'https://jaraguatenisclube.com.br/images/avatar.png'
 
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
@@ -197,7 +199,7 @@ export default function TelaRota() {
                 <View style={styles.containerHeader}>
                     <Image
                         style={styles.imgUser}
-                        source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
+                        source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo',{driver:null})}>

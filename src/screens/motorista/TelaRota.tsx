@@ -171,6 +171,7 @@ export default function TelaRota() {
     //const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
     const [load, setLoad] = useState(true)
+    const image = store.user.user ? store.user.user.photo : 'https://jaraguatenisclube.com.br/images/avatar.png'
 
     useEffect(() => {
         didMount()
@@ -204,7 +205,7 @@ export default function TelaRota() {
                 <View style={styles.containerHeader}>
                     <Image
                         style={styles.imgUser}
-                        source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
+                        source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>

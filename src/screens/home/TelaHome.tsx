@@ -26,7 +26,7 @@ export default function TelaHome() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
     const dispatch = useDispatch()
-
+    const image = store.user.user ? store.user.user.photo : 'https://jaraguatenisclube.com.br/images/avatar.png'
     useLayoutEffect(() => {
         setUserName(store.user.user.fullName)
         let driver = store.user.type == 'driver' ? true : false 
@@ -56,7 +56,7 @@ export default function TelaHome() {
                 <View style={styles.containerHeader}>
                     <Image
                         style={styles.imgUser}
-                        source={{ uri: 'https://jaraguatenisclube.com.br/images/avatar.png' }}
+                        source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', {driver:null})}>

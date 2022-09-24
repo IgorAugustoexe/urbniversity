@@ -28,6 +28,6 @@ export const escolherImagem = (callback: any) => {
 const tratarImagem = (imagem: any, callback: any) => {
     let pathImagemReduzida = imagem.path
     ImageResizer.createResizedImage(pathImagemReduzida, 1280, 720, 'JPEG', 100).then((img) => {
-        callback(img.uri)
+        callback(img.uri, img)
     })
 }

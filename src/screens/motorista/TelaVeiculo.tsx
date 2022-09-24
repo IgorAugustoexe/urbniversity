@@ -34,6 +34,16 @@ export default function TelaVeiculo() {
     const { createRequest } = useContext(AuthContext)
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
+    const image = store.user.type == 'driver' ? 
+    store.user.user.photo ? store.user.user.photo
+    :
+    'https://jaraguatenisclube.com.br/images/avatar.png' 
+    :
+    store.user.driver.user.photo ?
+     store.user.driver.user.photo 
+     : 
+     'https://jaraguatenisclube.com.br/images/avatar.png';
+
     const assentos = store.user.driver ?
         parseInt(store.user.driver.vehicle.seats) - 2 : store.user.vehicle ?
             parseInt(store.user.vehicle.seats) - 2 : route.params.driver ?
@@ -60,7 +70,7 @@ export default function TelaVeiculo() {
     const ImagemVeiculo = () => (
         <Image
             style={styles.imgVeiculo}
-            source={{ uri: 'https://images.pexels.com/photos/543605/pexels-photo-543605.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' }}
+            source={{ uri: `${image}` }}
         />
     )
     const Dados = (props: any) => {
