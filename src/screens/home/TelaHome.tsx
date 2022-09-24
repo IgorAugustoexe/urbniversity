@@ -120,7 +120,7 @@ export default function TelaHome() {
                 <></>   
             }
 
-           <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, justifyContent: 'space-around' }}>
+           {/* <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, justifyContent: 'space-around' }}>
                 <TouchableOpacity
                     style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
                     onPress={() => navigation.navigate('mapa')}
@@ -133,7 +133,7 @@ export default function TelaHome() {
                 >
                     <Text>Mapa Motorista</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
         </SafeAreaView>
     )
 }

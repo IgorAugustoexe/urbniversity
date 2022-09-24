@@ -24,9 +24,17 @@ export default function TelaLogin() {
     })
 
     const navigation = useNavigation<any>()
+    //Estudante
+    //oliveira.luiz85@gmail.cm -> com motorista
+    //vonishope.0134@gmail.com -> sem motorista
 
+    //Motorista
+    //email@email.com -> sem veiculo e sem rota
+    //email@andrephoto.com -> com rota, com veiculo e com estudante
 
-    const [email, setEmail] = useState<string>('email@email.com')
+    //Todos os logins acima tem como senha: senha@senha
+
+    const [email, setEmail] = useState<string>('oliveira.luiz85@gmail.cm')
     const [senha, setSenha] = useState<string>('senha@senha')
 
     const [txtEmailInvalido, setTxtEmailInvalido] = useState<string>('')

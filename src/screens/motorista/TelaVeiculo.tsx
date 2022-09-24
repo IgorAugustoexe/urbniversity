@@ -34,14 +34,14 @@ export default function TelaVeiculo() {
     const { createRequest } = useContext(AuthContext)
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    const image = store.user.type == 'driver' && store.user.user.photo 
-    || 
-    route.params?.driver?.user.photo 
-    || 
-    store.user.driver?.user.photo 
-    || 
-    'https://jaraguatenisclube.com.br/images/avatar.png' 
-    
+    const image = store.user.type == 'driver' && store.user.user.photo
+        ||
+        route.params?.driver?.user.photo
+        ||
+        store.user.driver?.user.photo
+        ||
+        'https://jaraguatenisclube.com.br/images/avatar.png'
+
 
     const assentos = store.user.driver ?
         parseInt(store.user.driver.vehicle.seats) - 2 : store.user.vehicle ?
@@ -154,52 +154,7 @@ export default function TelaVeiculo() {
             </View>
         )
     }
-     
-    // const Dados = (props:any) =>{
 
-    //     return(
-    //         <View style={{ padding: config.windowWidth / 30 }}>
-    //         <View style={{ alignItems: 'center', paddingBottom: config.windowWidth / 20 }}>
-    //             <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{props.phone}</Text>
-    //             <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500', paddingTop: 5 }}>Valor: R$</Text>
-    //         </View>
-    //         <View style={{ backgroundColor: cores.azulSecundario, padding: config.windowWidth / 20, borderRadius: 10 }}>
-    //             {loaderReq ?
-    //                 <ActivityIndicator size={'large'} color={cores.branco} style={{ paddingVertical: config.windowWidth / 5 }} />
-    //                 :
-    //                 <Fragment>
-    //                     <View style={{ flexDirection: 'row',  maxWidth:'80%' }}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Marca:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{props.brand}</Text>
-    //                     </View>
-    //                     <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, maxWidth:'80%' }}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Modelo:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }} numberOfLines={1} ellipsizeMode="tail">{props.model}</Text>
-    //                     </View>
-    //                     <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Cor Veículo:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{props.color}</Text>
-    //                     </View>
-    //                     <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Placa:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>PLACA</Text>
-    //                     </View>
-    //                     <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%' }}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Ano:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{props.year}</Text>
-    //                     </View>
-    //                     <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20,  maxWidth:'80%'}}>
-    //                         <Text style={{ color: cores.fonteCinza, fontSize: 16, fontWeight: 'bold', paddingRight: config.windowWidth / 20 }}>Assentos Disponíveis:</Text>
-    //                         <Text style={{ color: cores.branco, fontSize: 16, fontWeight: '500' }}>{assentos}/{props.seats}</Text>
-    //                     </View>
-    //                 </Fragment>
-    //             }
-    //         </View>
-    //     </View >
-
-    //     );
-
-    // }
     const DadosVeiculo = () => (
 
         store.user.driver ? //Visão do estudante
@@ -232,14 +187,37 @@ export default function TelaVeiculo() {
                         <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Você ainda não está cadastrado em nenhuma rota :(</Text>
                     </View>
     )
+    const BtnRota = (props:any) => {
+        console.log(store.user)
+        return (
+            <TouchableOpacity
+                style={styles.btnRodape}
+                onPress={() => navigation.navigate(`${props.tela}`)}
+            >
+                <BtnBlue
+                    text={`${props.texto}`}
+                    loader={loaderBtn}
+                />
+
+            </TouchableOpacity>)
+    }
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
-            <NavBar titulo={nomeMotorista} botaoEsquerdo={false} 
-        />
+            <NavBar titulo={nomeMotorista} botaoEsquerdo={false}
+            />
             <ScrollView>
-            {DadosVeiculo()}
+                {DadosVeiculo()}
             </ScrollView>
+            {!store.user.driver && store.user.route?
+               <BtnRota tela='mapaMotorista' texto='Consultar Rota'/>
+               :
+               store.user.driver ? 
+               <BtnRota tela='mapa' texto='Consultar Rota'/>
+               :
+               <></>
+            }
+             
             {solicitar &&
                 <TouchableOpacity onPress={() => solicitarMotorista()} disabled={loaderBtn} style={styles.btnRodape}>
                     <BtnBlue
@@ -261,13 +239,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 5,
         marginBottom: '2%',
-        borderWidth:2,
-        borderColor:'white'
+        borderWidth: 2,
+        borderColor: 'white'
     },
 
     btnRodape: {
-        flex:5,
-        alignSelf:'center',
+        flex: 5,
+        alignSelf: 'center',
     },
     cabecalho: {
         flex: 1,
@@ -282,7 +260,7 @@ const styles = StyleSheet.create({
         fontSize: (config.windowWidth / 12),
         color: cores.branco,
         fontWeight: '900'
-    }, 
+    },
     telefoneMotorista: {
         fontSize: (config.windowWidth / 18),
         color: cores.branco,
@@ -301,7 +279,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 4,
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
-        paddingBottom:6
+        paddingBottom: 6
     },
     containerInfo: {
         flex: 1,
@@ -313,7 +291,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 5,
         paddingBottom: 5,
-        maxWidth:'90%'
+        maxWidth: '90%'
     },
     containerTotais: {
         flex: 1,
@@ -322,14 +300,14 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         alignItems: 'center'
 
-    }, 
+    },
     containerDisponiveis: {
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
         alignContent: 'center',
         alignItems: 'center'
-    }, 
+    },
     subtitulo: {
         fontSize: (config.windowWidth / 21),
         fontWeight: '900',
@@ -343,24 +321,24 @@ const styles = StyleSheet.create({
         alignContent: 'flex-start',
         alignItems: 'flex-start',
         width: '95%',
-        maxWidth:'95%'
-        
+        maxWidth: '95%'
+
     },
     txtInfo: {
         fontSize: (config.windowWidth / 18),
         fontWeight: '900',
         color: cores.branco,
         marginBottom: '2%'
-    }, 
+    },
     containerTxt: {
         flex: 1,
         flexDirection: 'row'
-    }, 
+    },
     txtInfoDB: {
         fontSize: (config.windowWidth / 18),
         fontWeight: '400',
         color: cores.branco,
         marginLeft: '2%',
-        width:'75%'
+        width: '75%'
     },
 })

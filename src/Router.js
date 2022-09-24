@@ -48,6 +48,10 @@ export default function App() {
                     component={TelaMapa}
                 />
                 <Stack.Screen
+                    name="mapaMotorista"
+                    component={TelaMapaMotorista}
+                />
+                <Stack.Screen
                     name="telaRota"
                     component={TelaRota}
                 />
@@ -71,10 +75,7 @@ export default function App() {
                 /> 
                 </>
                 }
-                <Stack.Screen
-                    name="mapaMotorista"
-                    component={TelaMapaMotorista}
-                />
+                
                 <Stack.Screen
                     name="modalErro"
                     component={ModalErroGenerico}
