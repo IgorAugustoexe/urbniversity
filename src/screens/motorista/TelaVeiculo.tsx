@@ -188,7 +188,6 @@ export default function TelaVeiculo() {
                     </View>
     )
     const BtnRota = (props:any) => {
-        console.log(store.user)
         return (
             <TouchableOpacity
                 style={styles.btnRodape}

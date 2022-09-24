@@ -66,8 +66,6 @@ export const AuthProvider = ({ children }) => {
         callback(true)
         let userInfo = {}
         const form = returnFormData(object);
-        
-        console.log(form)
         const options = {
           method: 'POST',
           url: `${BASE_URL}/${type}`,
@@ -80,8 +78,6 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.request(options)
             const aux = await res.data;
             const authentication = await auth(object.email, object.password)
-            console.log(aux)
-            console.log(authentication)
 
             config = { 
                 headers: { 
@@ -90,7 +86,7 @@ export const AuthProvider = ({ children }) => {
             };
             setIsLogged(true)
             if(type == 'driver'){
-                const registerVehivle = await registerComplement('vehicle', {
+                const registerVehicle = await registerComplement('vehicle', {
                     plate: comp.plate,
                     brand: comp.brand,
                     model: comp.model,
@@ -104,14 +100,23 @@ export const AuthProvider = ({ children }) => {
                     state: comp.state,
                     university: comp.university
                 }, authentication.access_token)
+                
+                if(!registerRoute || !registerVehicle){
+                    return
+                }
             }
             
 
             const user = await getUser(authentication.type, config)
             userInfo = user;
+
+            if(!user){
+                return
+            }
+            
             userInfo['access_token'] = authentication.access_token
             userInfo['type'] = authentication.type
-            console.log(JSON.stringify(userInfo, null, "\t"));
+            //console.log(JSON.stringify(userInfo, null, "\t"));
 
 
         } catch (e) {
