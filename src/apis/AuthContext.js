@@ -45,14 +45,14 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     //Para verificar a request, basta dar Ctrl+K+U no código abaixo
     axios.interceptors.request.use(function (request) {
-        //console.log('Starting Request', JSON.stringify(request, null, 2))
+        console.log('Starting Request', JSON.stringify(request, null, 2))
         return request;
     }, function (error) {
         return Promise.reject(error);
     });
 
     axios.interceptors.response.use(function (response) {
-        //console.log('Response:', JSON.stringify(response, null, 2))
+        console.log('Response:', JSON.stringify(response, null, 2))
         return response;
     }, function (error) {
         return Promise.reject(error);
@@ -60,20 +60,38 @@ export const AuthProvider = ({ children }) => {
 
 
     //REGISTER
-    const register = async (entity, object, comp, callback) => {
+    const register = async (type, object, comp, callback) => {
         //Just a basic Create. we send the object and the API does the magic
         //I'll possibly use this as a login variation
         callback(true)
         let userInfo = {}
+        const form = returnFormData(object);
+        
+        console.log(form)
+        const options = {
+          method: 'POST',
+          url: `${BASE_URL}/${type}`,
+          headers: {'Content-Type': 'multipart/form-data'},
+          data: form,
+        };
+
         try {
-            const res = await axios.post(`/${entity}`, object)
+              
+            const res = await axios.request(options)
             const aux = await res.data;
             const authentication = await auth(object.email, object.password)
-            const config = { headers: { 'Authorization': `Bearer ${authentication.access_token}` } };
+            console.log(aux)
+            console.log(authentication)
+
+            config = { 
+                headers: { 
+                    'Authorization': `Bearer ${authentication.access_token}` 
+                } 
+            };
             setIsLogged(true)
-            if(entity == 'driver'){
+            if(type == 'driver'){
                 const registerVehivle = await registerComplement('vehicle', {
-                    crlv: comp.crlv,
+                    plate: comp.plate,
                     brand: comp.brand,
                     model: comp.model,
                     year: comp.year,
@@ -250,6 +268,7 @@ export const AuthProvider = ({ children }) => {
             navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh:refresh})        
     }
     const auth = async (email, password) => {
+        console.log(email,password)
         try {
             const aux = await axios.post(`/auth`, { email, password, })
             const resp = await aux.data;
@@ -282,6 +301,23 @@ export const AuthProvider = ({ children }) => {
         }
 
     }
+    const returnFormData = ({file,...data}) => {
+        let form_data = new FormData();
+
+        for ( var key in data ) {   
+            form_data.append(key, data[key]);
+        }
+        if(file){
+            form_data.append('file',{ 
+                uri: file.uri,
+                name: `${file.name}`,
+                type: 'image/jpeg',
+            })
+        }
+       
+
+        return form_data
+    }
     const login = async (email, password, callback) => {
         logout()
         let userInfo = {}
@@ -294,7 +330,8 @@ export const AuthProvider = ({ children }) => {
                 userInfo = user;
                 userInfo['access_token'] = authentication.access_token
                 userInfo['type'] = authentication.type
-                popUpErroGenerico({ type: 'customSuccess', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${user.user.fullName}` })
+                fullName = user.user.fullName.split(' ')
+                popUpErroGenerico({ type: 'customSuccess', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${fullName[0]}` })
                 
             } catch (e) {
                 popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique os dados, a sua conexão e tente novamente` })
@@ -330,13 +367,14 @@ export const AuthProvider = ({ children }) => {
             
             try {
                 const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
-             
                 const user = await getUser(store.type, config)
                if(!user){
                 popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
                 logout()
                }else{
                 setIsLogged(true)
+                fullName = store.user.fullName.split(' ')
+                popUpErroGenerico({ type: 'customInfo', text1: `Bem vindo de volta ${fullName[0]}` , text2:'A equipe urbniversity te deseja um bom dia'})
                }
               
    
@@ -356,7 +394,6 @@ export const AuthProvider = ({ children }) => {
             isLoggedIn();
         }
     }, [store.accessToken]);
-
 
     return (
         <AuthContext.Provider
