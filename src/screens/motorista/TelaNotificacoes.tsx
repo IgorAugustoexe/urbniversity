@@ -98,7 +98,7 @@ function TelaMostraEstudante() {
 
     const RenderListaVazia = () => (
         <View style={{ backgroundColor: cores.azulPrimario, margin: config.windowWidth / 20, alignItems: 'center', padding: 5, borderRadius: 5 }}>
-            <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Não há estudantes cadastrados na sua rota :(</Text>
+            <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Não há novas notificações para a sua rota :(</Text>
         </View>
     )
 

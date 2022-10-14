@@ -5,7 +5,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { LogBox } from 'react-native';
 import { BASE_URL } from './config';
 import { useDispatch, useSelector } from 'react-redux';
-import {popUpErroGenerico} from '../screens/PopUpErroGenerico';
+import { popUpErroGenerico } from '../screens/PopUpErroGenerico';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import ModalErroGenerico from '../screens/ModalErroGenerico';
 
@@ -20,9 +20,11 @@ function navigate(name, params) {
 
 export const AuthProvider = ({ children }) => {
     LogBox.ignoreLogs([
-        "Non-serializable values were found in the navigation state", 
+        "Non-serializable values were found in the navigation state",
+        "Warning: Failed prop type: Invalid prop `origin` supplied to `MapViewDirections`, expected one of type [string].",
+        "Warning: Failed prop type: Invalid prop `destination` supplied to `MapViewDirections`, expected one of type [string].",
         // name of the error/warning here, or a regex here
-      ]);
+    ]);
     const store = useSelector(({ user }) => {
         return {
             userDebug: user,
@@ -63,25 +65,25 @@ export const AuthProvider = ({ children }) => {
         let userInfo = {}
         const form = returnFormData(object);
         const options = {
-          method: 'POST',
-          url: `${BASE_URL}/${type}`,
-          headers: {'Content-Type': 'multipart/form-data'},
-          data: form,
+            method: 'POST',
+            url: `${BASE_URL}/${type}`,
+            headers: { 'Content-Type': 'multipart/form-data' },
+            data: form,
         };
 
         try {
-              
+
             const res = await axios.request(options)
             const aux = await res.data;
             const authentication = await auth(object.email, object.password)
 
-            config = { 
-                headers: { 
-                    'Authorization': `Bearer ${authentication.access_token}` 
-                } 
+            config = {
+                headers: {
+                    'Authorization': `Bearer ${authentication.access_token}`
+                }
             };
             setIsLogged(true)
-            if(type == 'driver'){
+            if (type == 'driver') {
                 const registerVehicle = await registerComplement('vehicle', {
                     plate: comp.plate,
                     brand: comp.brand,
@@ -90,26 +92,26 @@ export const AuthProvider = ({ children }) => {
                     color: comp.color,
                     seats: comp.seats,
                 }, authentication.access_token)
-    
+
                 const registerRoute = await registerComplement('route', {
                     city: comp.city,
                     state: comp.state,
                     university: comp.university
                 }, authentication.access_token)
-                
-                if(!registerRoute || !registerVehicle){
+
+                if (!registerRoute || !registerVehicle) {
                     return
                 }
             }
-            
+
 
             const user = await getUser(authentication.type, config)
             userInfo = user;
 
-            if(!user){
+            if (!user) {
                 return
             }
-            
+
             userInfo['access_token'] = authentication.access_token
             userInfo['type'] = authentication.type
             //console.log(JSON.stringify(userInfo, null, "\t"));
@@ -140,7 +142,7 @@ export const AuthProvider = ({ children }) => {
     //         const aux = await axios.get(`student/routes`, config);
 
     //         const resp = await aux.data //store.type
-          
+
     //         return resp;
 
 
@@ -187,7 +189,7 @@ export const AuthProvider = ({ children }) => {
 
     // }
 
-   
+
     const refreshUser = async () => {
         popUpErroGenerico({ type: 'customSuccess', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
         try {
@@ -268,7 +270,52 @@ export const AuthProvider = ({ children }) => {
     }
     //Serve como meio para chamada do modal de erro. Basicamente repassa uma função para o componente
     const mediador = (text, funcao, params, refresh) => {
-            navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh:refresh})        
+        navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh: refresh })
+    }
+    const getSpots = async () => {
+        try {
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            const aux = await axios.get(`spot/${store.type}`, config);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+           
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            return;
+        }
+    }
+    const setSpots = async (body) => {
+        try {
+            let spots = []
+            body.forEach(element => {
+                spots.push({
+                    lat: element.latitude.toString(),
+                    lng: element.longitude.toString()
+                })
+            });
+            const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
+            let promises = [];
+            spots.forEach(element => {
+                promises.push(axios.post(`spot`, element, config))
+            });
+
+            const aux = await Promise.all(promises);
+
+            const resp = await aux.data //store.type
+            //console.log(JSON.stringify(resp, null, "\t"));
+            //console.log(JSON.stringify(resp[0].student, null, "\t"));
+            return resp;
+
+
+        } catch (e) {
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            return;
+        }
     }
     //Responsavel pela autenticação
     const auth = async (email, password) => {
@@ -282,7 +329,8 @@ export const AuthProvider = ({ children }) => {
         }
     }
     //Função genérica que retorna dados como rotas, estudantes em uma rota, motoristas disponiveis, etc dado a rota(request)
-    const getData = async(type) => {
+    const getData = async (type) => {
+        console.log(type)
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
             const aux = await axios.get(`${type}`, config);
@@ -294,8 +342,8 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
+            console.log(e)
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
-            navigate('modalErro', { btnTxt: 'Tentar Novamente', btn1Func:getRequestsByDriver})
             return;
         }
     }
@@ -323,20 +371,20 @@ export const AuthProvider = ({ children }) => {
 
     }
     //Converte de Json para FormData
-    const returnFormData = ({file,...data}) => {
+    const returnFormData = ({ file, ...data }) => {
         let form_data = new FormData();
 
-        for ( var key in data ) {   
+        for (var key in data) {
             form_data.append(key, data[key]);
         }
-        if(file){
-            form_data.append('file',{ 
+        if (file) {
+            form_data.append('file', {
                 uri: file.uri,
                 name: `${file.name}`,
                 type: 'image/jpeg',
             })
         }
-       
+
 
         return form_data
     }
@@ -355,7 +403,7 @@ export const AuthProvider = ({ children }) => {
                 userInfo['type'] = authentication.type
                 fullName = user.user.fullName.split(' ')
                 popUpErroGenerico({ type: 'customSuccess', text1: 'Sessão Iniciada com sucesso', text2: `Bem-Vindo{a) de volta ${fullName[0]}` })
-                
+
             } catch (e) {
                 popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique os dados, a sua conexão e tente novamente` })
             }
@@ -376,36 +424,36 @@ export const AuthProvider = ({ children }) => {
     };
     //LOGOUT
     const logout = () => {
-        if(isLogged){
-            popUpErroGenerico({ type: 'customInfo', text1: 'Volte Novamente', text2:'Usuário deslogado com sucesso'})
+        if (isLogged) {
+            popUpErroGenerico({ type: 'customInfo', text1: 'Volte Novamente', text2: 'Usuário deslogado com sucesso' })
         }
         dispatch(resetUser())
         setIsLogged(false)
-        
+
     };
     //Função resposavel por verificar a validade do token
     const isLoggedIn = async () => {
 
         if (store.accessToken) {
-            
+
             try {
                 const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
                 const user = await getUser(store.type, config)
-               if(!user){
-                popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
-                logout()
-               }else{
-                setIsLogged(true)
-                fullName = store.user.fullName.split(' ')
-                popUpErroGenerico({ type: 'customInfo', text1: `Bem vindo de volta ${fullName[0]}` , text2:'A equipe urbniversity te deseja um bom dia'})
-               }
-              
-   
+                if (!user) {
+                    popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2: 'A sua sessão expirou, por favor, realize o login novamente' })
+                    logout()
+                } else {
+                    setIsLogged(true)
+                    fullName = store.user.fullName.split(' ')
+                    popUpErroGenerico({ type: 'customInfo', text1: `Bem vindo de volta ${fullName[0]}`, text2: 'A equipe urbniversity te deseja um bom dia' })
+                }
+
+
             } catch (e) {
-                popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2:'A sua sessão expirou, por favor, realize o login novamente'})
+                popUpErroGenerico({ type: 'customInfo', text1: 'Usuário Deslogado', text2: 'A sua sessão expirou, por favor, realize o login novamente' })
                 console.log(`is logged in error ${e}`);
                 logout()
-           
+
             }
 
         }
@@ -431,6 +479,8 @@ export const AuthProvider = ({ children }) => {
                 createRequest,
                 refreshUser,
                 mediador,
+                setSpots,
+                getSpots
             }}>
             {children}
         </AuthContext.Provider>

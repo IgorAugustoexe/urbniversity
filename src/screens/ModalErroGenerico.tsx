@@ -26,21 +26,27 @@ export default function ModalErroGenerico() {
     const {parameters, tipo, icone, texto, btnTxt, btn2Txt, btn1Func, btn2Func, refresh } = { ...route.params }
 
     const onPressLeft = () => {
-        navigation.goBack()
-        if (btn1Func) {
-            if(parameters){
-                btn1Func(parameters)
-                if(refresh){
-                    refresh(true)
+        try{
+            navigation.goBack()
+            if (btn1Func) {
+                if(parameters){
+                    btn1Func(parameters)
+                    if(refresh){
+                        refresh(true)
+                    }
+                }else{
+                    btn1Func()
                 }
-            }else{
-                btn1Func()
-            }
+            } 
+         } catch(e){
+            console.log(e)
+        }
+       
             
             
            
         }
-    }
+    
 
     const onPressRight = () => {
         navigation.goBack()
