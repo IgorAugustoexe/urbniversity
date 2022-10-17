@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react'
+import React, {useContext, useState, useEffect, useRef, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -13,6 +13,7 @@ import { mapaNoite } from './estilosMapa'
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
 import { navigationRef } from '../../apis/AuthContext'
 import { width } from '@fortawesome/free-solid-svg-icons/faGear'
+import { AuthContext } from '../../apis/AuthContext'
 
 const options = {
     enableVibrateFallBack: true,
@@ -27,11 +28,23 @@ export default function TelaMapaMotorista() {
     const [origem, setOrigem] = useState<any>({})
     const [destino, setDestino] = useState<any>({})
     const [ativarMarcadores, setAtivarMarcadores] = useState<boolean>(false)
-
+    const [loading, setLoading] = useState(false)
+    const {getSpots} = useContext(AuthContext)
     useEffect(() => {
         pegarLocalizacaoUser()
     }, [])
 
+    const recuperaPontos = async () => {
+        let aux = await getSpots();
+        let spots:any = []
+        aux.forEach((element:any) => {
+            spots.push({latitude:Number(element.lat),longitude:Number(element.lng)})
+        });
+        setPontos(spots)
+        setOrigem(spots[0])
+        setDestino(spots[spots.length - 1])
+        
+    }
     const pegarLocalizacaoUser = () => {
         Geolocation.getCurrentPosition(info => {
             setRegiao({
@@ -45,6 +58,7 @@ export default function TelaMapaMotorista() {
             enableHighAccuracy: true,
             timeout: 2000
         })
+
     }
 
     const adicionarMarcador = (coordenada: any) => {
@@ -60,8 +74,12 @@ export default function TelaMapaMotorista() {
         setAtivarMarcadores(false)
     }
 
+    if(!loading){
+        setLoading(true)
+        recuperaPontos()
+    }   
     // COMPONENTES
-
+    
     const Btnvoltar = () => (
         <View style={styles.btnVoltar}>
             <TouchableOpacity
