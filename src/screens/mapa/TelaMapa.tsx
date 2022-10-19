@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext} from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import { mapaNoite } from './estilosMapa'
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
 import { AuthContext } from '../../apis/AuthContext'
 import { useDispatch, useSelector } from 'react-redux'
+import { selection_sort } from '../../helpers/FuncoesPadrao'
 
 const options = {
     enableVibrateFallBack: true,
@@ -18,12 +19,14 @@ const options = {
 }
 
 export default function TelaMapa() {
+
     const store: any = useSelector<any>(({ user }) => {
         return {
             user: user
         }
     })
     const [regiao, setRegiao] = useState<any>({})
+    const [pontos, setPontos] = useState<any>([])
 
     const [origem, setOrigem] = useState<any>({
         latitude: -21.977346,
@@ -35,14 +38,14 @@ export default function TelaMapa() {
         longitude: -46.791870
     })
     const [loading, setLoading] = useState(false)
-    const {getSpots} = useContext(AuthContext)
+    const { getSpots } = useContext(AuthContext)
     const unifae = {
-        latitude:-21.964652345070213,
-        longitude:-46.791549417993124
-}
+        latitude: -21.964652345070213,
+        longitude: -46.791549417993124
+    }
     const unifeob = {
-        latitude:-21.969815466912234,
-        longitude:-46.793406003040985
+        latitude: -21.969815466912234,
+        longitude: -46.793406003040985
     }
     useEffect(() => {
         pegarLocalizacaoUser()
@@ -50,18 +53,35 @@ export default function TelaMapa() {
 
     const recuperaPontos = async () => {
         let aux = await getSpots();
-        let spots:any = []
-        aux.forEach((element:any) => {
-            spots.push({latitude:Number(element.lat),longitude:Number(element.lng)})
-        });
-        setOrigem(spots[0])
-        if(store.user.university.name.toUpperCase() === "UNIFAE"){
+        if (aux.length > 0) {
+            console.log("Tem")
+            let spots: any = []
+            aux.forEach((element: any) => {
+                spots.push({ latitude: Number(element.lat), longitude: Number(element.lng) })
+            });
+
+            var unifaeComp = Math.pow(unifae.latitude + unifae.longitude, 2)
+            var unifeobComp = Math.pow(unifeob.latitude + unifeob.longitude, 2)
+
+
+            setOrigem(spots[0])
+            if (store.user.university.name.toUpperCase() === "UNIFAE") {
+                selection_sort(spots, unifaeComp)
+                setPontos(spots)
+                setOrigem(spots[0])
+            } else {
+                selection_sort(spots, unifeobComp)
+                setPontos(spots)
+                setOrigem(spots[0])
+            }
+        }
+
+        if (store.user.university.name.toUpperCase() === "UNIFAE") {
             setDestino(unifae)
-        }else{
+        } else {
             setDestino(unifeob)
         }
-        
-        
+
     }
 
     const pegarLocalizacaoUser = () => {
@@ -78,11 +98,11 @@ export default function TelaMapa() {
             timeout: 2000
         })
     }
-    
-    if(!loading){
+
+    if (!loading) {
         setLoading(true)
         recuperaPontos()
-    }   
+    }
 
     return (
         <View style={styles.container}>
@@ -106,6 +126,13 @@ export default function TelaMapa() {
                 loadingEnabled
                 zoomEnabled
             >
+                {
+                pontos.length > 0 &&
+                pontos.map((item: any, index: number) => (
+                    <Marker key={index} coordinate={item} />
+                ))
+            }
+
                 <Marker
                     coordinate={origem}
                     draggable
@@ -120,14 +147,26 @@ export default function TelaMapa() {
                     onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}
                     pinColor={'pink'}
                 />
+                {pontos.length >= 0 ?
 
-                <MapViewDirections
-                    apikey={'AIzaSyCff_T9kaWmUkjKtS37Me0ypoIL--Nxksg'}
-                    origin={origem}
-                    destination={destino}
-                    strokeColor="#3399CC" // cor da linha
-                    strokeWidth={3} // grossura da linha
-                />
+                    <MapViewDirections
+                        apikey={'AIzaSyCff_T9kaWmUkjKtS37Me0ypoIL--Nxksg'}
+                        origin={origem}
+                        waypoints={pontos}
+                        destination={destino}
+                        strokeColor="#3399CC" // cor da linha
+                        strokeWidth={3} // grossura da linha
+                    />
+                    :
+
+                    <MapViewDirections
+                        apikey={'AIzaSyCff_T9kaWmUkjKtS37Me0ypoIL--Nxksg'}
+                        origin={origem}
+                        destination={destino}
+                        strokeColor="#3399CC" // cor da linha
+                        strokeWidth={3} // grossura da linha
+                    />
+                }
             </MapView>
         </View >
     )

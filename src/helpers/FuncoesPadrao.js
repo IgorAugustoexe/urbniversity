@@ -32,3 +32,26 @@ export const verificaEmail = (email) => {
     }
     return true
 }
+
+export const selection_sort = (A, comp) => {
+    var len = A.length;
+    for (var i = 0; i < len - 1; i = i + 1) {
+        var j_min = i;
+        for (var j = i + 1; j < len; j = j + 1) {
+            let n1 = Math.pow(A[j].latitude + A[j].longitude,2) 
+            let n2 = Math.pow(A[j_min].latitude + A[j_min].longitude,2) 
+            if (n1 < n2) {
+                j_min = j;
+            } else {}
+        }
+        if (j_min !== i) {
+            swap(A, i, j_min);
+        } else {}
+    }
+    A.reverse();
+}
+function swap(A, x, y) {
+    var temp = A[x];
+    A[x] = A[y];
+    A[y] = temp;
+}

@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useRef, Fragment } from 'react'
+import React, { useContext, useState, useEffect, useRef, Fragment } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -14,6 +14,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
 import { navigationRef } from '../../apis/AuthContext'
 import { width } from '@fortawesome/free-solid-svg-icons/faGear'
 import { AuthContext } from '../../apis/AuthContext'
+import { selection_sort } from '../../helpers/FuncoesPadrao'
+import { useDispatch, useSelector } from 'react-redux'
 
 const options = {
     enableVibrateFallBack: true,
@@ -21,6 +23,11 @@ const options = {
 }
 
 export default function TelaMapaMotorista() {
+    const store: any = useSelector<any>(({ user }) => {
+        return {
+            user: user
+        }
+    })
     const navigation = useNavigation<any>()
 
     const [regiao, setRegiao] = useState<any>({})
@@ -29,21 +36,53 @@ export default function TelaMapaMotorista() {
     const [destino, setDestino] = useState<any>({})
     const [ativarMarcadores, setAtivarMarcadores] = useState<boolean>(false)
     const [loading, setLoading] = useState(false)
-    const {getSpots} = useContext(AuthContext)
+    const { getSpots } = useContext(AuthContext)
+    const unifae = {
+        latitude: -21.964652345070213,
+        longitude: -46.791549417993124
+    }
+    const unifeob = {
+        latitude: -21.969815466912234,
+        longitude: -46.793406003040985
+    }
+
+
     useEffect(() => {
         pegarLocalizacaoUser()
     }, [])
 
     const recuperaPontos = async () => {
         let aux = await getSpots();
-        let spots:any = []
-        aux.forEach((element:any) => {
-            spots.push({latitude:Number(element.lat),longitude:Number(element.lng)})
-        });
-        setPontos(spots)
-        setOrigem(spots[0])
-        setDestino(spots[spots.length - 1])
-        
+        if (aux.length > 0) {
+            let spots: any = []
+            aux.forEach((element: any) => {
+                spots.push({ latitude: Number(element.lat), longitude: Number(element.lng) })
+            });
+
+
+            var unifaeComp = Math.pow(unifae.latitude + unifae.longitude, 2)
+            var unifeobComp = Math.pow(unifeob.latitude + unifeob.longitude, 2)
+
+            if (store.user.route.university.name.toUpperCase() === "UNIFAE") {
+                selection_sort(pontos, unifaeComp)
+                setPontos(spots)
+                setOrigem(spots[0])
+            } else {
+                selection_sort(pontos, unifeobComp)
+                setPontos(spots)
+                setOrigem(spots[0])
+            }
+        }
+        if (store.user.route.university.name.toUpperCase() === "UNIFAE") {
+            setDestino(unifae)
+        } else {
+            setDestino(unifeob)
+        }
+
+
+
+        //setDestino(spots[spots.length - 1])
+
     }
     const pegarLocalizacaoUser = () => {
         Geolocation.getCurrentPosition(info => {
@@ -67,19 +106,37 @@ export default function TelaMapaMotorista() {
         }
         return
     }
-
+    const handelSave = async () => {
+       
+        
+    }
     const salvarMarcadores = () => {
+        var unifaeComp = Math.pow(unifae.latitude + unifae.longitude, 2)
+        var unifeobComp = Math.pow(unifeob.latitude + unifeob.longitude, 2)
         setOrigem(pontos[0])
-        setDestino(pontos[pontos.length - 1])
+        if (store.user.route.university.name.toUpperCase() === "UNIFAE") {
+
+            selection_sort(pontos, unifaeComp)
+            setPontos(pontos)
+            setOrigem(pontos[0])
+            setDestino(unifae)
+        } else {
+            selection_sort(pontos, unifeobComp)
+            setPontos(pontos)
+            setOrigem(pontos[0])
+            setDestino(unifeob)
+        }
+        handelSave()
+        //setDestino(pontos[pontos.length - 1])
         setAtivarMarcadores(false)
     }
 
-    if(!loading){
+    if (!loading) {
         setLoading(true)
         recuperaPontos()
-    }   
+    }
     // COMPONENTES
-    
+
     const Btnvoltar = () => (
         <View style={styles.btnVoltar}>
             <TouchableOpacity
