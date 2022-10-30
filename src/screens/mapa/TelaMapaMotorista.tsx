@@ -30,13 +30,14 @@ export default function TelaMapaMotorista() {
     })
     const navigation = useNavigation<any>()
 
-    const [regiao, setRegiao] = useState<any>({})
+    const [regiao, setRegiao] = useState<any>({"latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421})
     const [pontos, setPontos] = useState<any>([])
-    const [origem, setOrigem] = useState<any>({})
-    const [destino, setDestino] = useState<any>({})
+    const [origem, setOrigem] = useState<any>({"latitude": -21.969815466912234, "longitude": -46.793406003040985})
+    const [destino, setDestino] = useState<any>({"latitude": -21.964652345070213, "longitude": -46.791549417993124})
     const [ativarMarcadores, setAtivarMarcadores] = useState<boolean>(false)
     const [loading, setLoading] = useState(false)
-    const { getSpots } = useContext(AuthContext)
+    const { getSpots, setSpots } = useContext(AuthContext)
+    const [newSpots, setNewSpots] = useState<any>([])
     const unifae = {
         latitude: -21.964652345070213,
         longitude: -46.791549417993124
@@ -48,7 +49,8 @@ export default function TelaMapaMotorista() {
 
 
     useEffect(() => {
-        pegarLocalizacaoUser()
+      pegarLocalizacaoUser()
+        
     }, [])
 
     const recuperaPontos = async () => {
@@ -86,6 +88,7 @@ export default function TelaMapaMotorista() {
     }
     const pegarLocalizacaoUser = () => {
         Geolocation.getCurrentPosition(info => {
+           
             setRegiao({
                 latitude: info.coords.latitude,
                 longitude: info.coords.longitude,
@@ -103,11 +106,13 @@ export default function TelaMapaMotorista() {
     const adicionarMarcador = (coordenada: any) => {
         if (ativarMarcadores) {
             setPontos([...pontos, coordenada])
+            setNewSpots([...newSpots, coordenada])
         }
         return
     }
     const handelSave = async () => {
        
+        setSpots(newSpots)
         
     }
     const salvarMarcadores = () => {
@@ -136,7 +141,6 @@ export default function TelaMapaMotorista() {
         recuperaPontos()
     }
     // COMPONENTES
-
     const Btnvoltar = () => (
         <View style={styles.btnVoltar}>
             <TouchableOpacity
@@ -196,7 +200,12 @@ export default function TelaMapaMotorista() {
                         console.log('aceitou')
                     })
             }} // função chamada ao renderizar o mapa
-            initialRegion={regiao} // região inicial
+            initialRegion={regiao.length > 0 ? regiao : 
+                {"latitude": -21.96981, 
+                "latitudeDelta": 0.0922, 
+                "longitude": -46.79850499999999, 
+                "longitudeDelta": 0.0421}
+            } // região inicial
             //minZoomLevel={14} // minimo de zoom no mapa
             showsUserLocation // mostrar localização do user
             showsMyLocationButton // precisa do Shows userLocation
@@ -209,22 +218,27 @@ export default function TelaMapaMotorista() {
         >
             {
                 pontos.length > 0 &&
-                pontos.map((item: any, index: number) => (
+                pontos.map((item: any, index: number) => {
+                    return (
                     <Marker key={index} coordinate={item} />
-                ))
+                )})
             }
 
             {!ativarMarcadores && pontos.length >= 2 &&
                 <Fragment>
                     <Marker
-                        coordinate={origem}
+                        coordinate={origem.length  ? origem : {
+                            latitude: -21.964652345070213,
+                            longitude: -46.791549417993124}}
                         draggable
                         onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                         onDragEnd={(event) => setOrigem(event.nativeEvent.coordinate)}
                         image={require('../../../assets/img/onibusImage.png')}
                     />
                     <Marker
-                        coordinate={destino}
+                        coordinate={destino.length > 0 ? destino : {
+                            latitude: -21.96981,
+                            longitude: -46.79850499999999} }
                         draggable
                         onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                         onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}

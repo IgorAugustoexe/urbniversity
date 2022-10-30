@@ -25,7 +25,7 @@ export default function TelaMapa() {
             user: user
         }
     })
-    const [regiao, setRegiao] = useState<any>({})
+    const [regiao, setRegiao] = useState<any>({"latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421})
     const [pontos, setPontos] = useState<any>([])
 
     const [origem, setOrigem] = useState<any>({
@@ -115,7 +115,11 @@ export default function TelaMapa() {
                             console.log('aceitou')
                         })
                 }} // função chamada ao renderizar o mapa
-                initialRegion={regiao} // região inicial
+                initialRegion={regiao.length > 0 ? regiao : 
+                    {"latitude": -21.96981, 
+                    "latitudeDelta": 0.0922, 
+                    "longitude": -46.79850499999999, 
+                    "longitudeDelta": 0.0421}} // região inicial
                 //minZoomLevel={14} // minimo de zoom no mapa
                 showsUserLocation // mostrar localização do user
                 showsMyLocationButton // precisa do Shows userLocation
@@ -134,14 +138,18 @@ export default function TelaMapa() {
             }
 
                 <Marker
-                    coordinate={origem}
+                    coordinate={origem.length  ? origem : {
+                        latitude: -21.964652345070213,
+                        longitude: -46.791549417993124}}
                     draggable
                     onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                     onDragEnd={(event) => setOrigem(event.nativeEvent.coordinate)}
                     image={require('../../../assets/img/onibusImage.png')}
                 />
                 <Marker
-                    coordinate={destino}
+                    coordinate={destino.length > 0 ? destino : {
+                        latitude: -21.96981,
+                        longitude: -46.79850499999999} }
                     draggable
                     onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                     onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}
