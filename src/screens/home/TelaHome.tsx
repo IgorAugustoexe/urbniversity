@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
+import React, { useState, useContext, useLayoutEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import BtnBlue from '../../components/BtnBlue'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
-import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
-import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
-import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
+import { faGear, faAnglesRight, faVanShuttle } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext } from '../../apis/AuthContext';
 import { popUpErroGenerico } from '../PopUpErroGenerico'
-
 
 export default function TelaHome() {
     const store: any = useSelector<any>(({ user }) => {
@@ -20,7 +16,7 @@ export default function TelaHome() {
         }
     })
 
-    const {logout,refreshUser } = useContext(AuthContext)
+    const { logout, refreshUser } = useContext(AuthContext)
     const [userName, setUserName] = useState<string>('')
     const [isDriver, setIsDriver] = useState(false)
     const navigation = useNavigation<any>()
@@ -30,21 +26,20 @@ export default function TelaHome() {
         setUserName(store.user.user.fullName)
         let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
-        //console.log(store.user.driver)
     }, [])
-    const updateScreen = async() =>{
-        if(!store.user.route && !store.user.driverId){
+    const updateScreen = async () => {
+        if (!store.user.route && !store.user.driverId) {
             const aux = store.user
             const resp = await refreshUser()
-            
-            if(resp.driverId == aux.driverId){
+
+            if (resp.driverId == aux.driverId) {
                 popUpErroGenerico({ type: 'customInfo', text1: 'Dados Atualizados com sucesso', text2: `Não houve nenhuma alteração.` })
             }
         }
     }
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
-               <View style={styles.header}>
+            <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={logout}>
@@ -58,13 +53,9 @@ export default function TelaHome() {
                         source={{ uri: `${image}` }}
                     />
                     <View style={styles.headerBtn}>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', {driver:null})}>
+                        <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
-                            <Text style={styles.txtBtn}>CALENDARIO</Text>
-                            <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -74,66 +65,50 @@ export default function TelaHome() {
                 <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('telaRota')}>
                     <Text style={styles.txtCodigoRota}>Rota: {store.user.route.university.name}</Text>
                     <View style={styles.containerRota}>
-                    <View style={styles.containerInfoRota}>
-                        <Text style={styles.txtNomeRota}>Motorista: {store.user.user.fullName}</Text>
-                        <Text style={styles.txtNomeRota}>Cidade: {store.user.route.city.name} - {store.user.route.city.state}</Text>
-                    </View>
-                        <View style={{ width: '10%', justifyContent: 'center' }}>
-                            <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                :!isDriver && store.user.driverId ?
-                <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.route.university.name}</Text>
-                    <View style={styles.containerRota}>
                         <View style={styles.containerInfoRota}>
-                            <Text style={styles.txtNomeRota}>Motorista: {store.user.driver.user.fullName}</Text>
-                            <Text style={styles.txtNomeRota}>Cidade: {store.user.driver.route.city.name} - {store.user.driver.route.city.state}</Text>
+                            <Text style={styles.txtNomeRota}>Motorista: {store.user.user.fullName}</Text>
+                            <Text style={styles.txtNomeRota}>Cidade: {store.user.route.city.name} - {store.user.route.city.state}</Text>
                         </View>
                         <View style={{ width: '10%', justifyContent: 'center' }}>
                             <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                         </View>
                     </View>
                 </TouchableOpacity>
-                : isDriver ?
-                <View style={styles.containerErro} >
-                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
-                    <TouchableOpacity onPress={async() => await updateScreen()}>
-                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                : !isDriver && store.user.driverId ?
+                    <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
+                        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtCodigoRota}>Rota: {store.user.driver.route.university.name}</Text>
+                        <View style={styles.containerRota}>
+                            <View style={styles.containerInfoRota}>
+                                <Text style={styles.txtNomeRota}>Motorista: {store.user.driver.user.fullName}</Text>
+                                <Text style={styles.txtNomeRota}>Cidade: {store.user.driver.route.city.name} - {store.user.driver.route.city.state}</Text>
+                            </View>
+                            <View style={{ width: '10%', justifyContent: 'center' }}>
+                                <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
+                            </View>
+                        </View>
                     </TouchableOpacity>
-                </View> 
-                : 
-                <View style={styles.containerErro} >
-                    <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
-                    <TouchableOpacity onPress={async() => await updateScreen()}>
-                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
-                    </TouchableOpacity>
-                </View> 
+                    : isDriver ?
+                        <View style={styles.containerErro} >
+                            <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                            <TouchableOpacity onPress={async () => await updateScreen()}>
+                                <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <View style={styles.containerErro} >
+                            <Text style={[styles.txtBold, { textAlign: 'center' }]}>Parece que você ainda não esta em uma rota.</Text>
+                            <TouchableOpacity onPress={async () => await updateScreen()}>
+                                <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='Atualizar' />
+                            </TouchableOpacity>
+                        </View>
             }
-
             {!isDriver && !store.user.driverId ?
-            <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
-                <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.rodape} onPress={() => navigation.navigate('pesquisaMotorista')}>
+                    <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
+                </TouchableOpacity>
                 :
-                <></>   
+                null
             }
-
-           {/* <View style={{ flexDirection: 'row', paddingTop: config.windowWidth / 20, justifyContent: 'space-around' }}>
-                <TouchableOpacity
-                    style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
-                    onPress={() => navigation.navigate('mapa')}
-                >
-                    <Text>Mapa Estudante</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={{ backgroundColor: cores.branco, padding: 5, borderRadius: 10 }}
-                    onPress={() => navigation.navigate('mapaMotorista')}
-                >
-                    <Text>Mapa Motorista</Text>
-                </TouchableOpacity>
-            </View> */}
         </SafeAreaView>
     )
 }
@@ -143,16 +118,14 @@ const styles = StyleSheet.create({
         padding: config.windowWidth / 20,
         backgroundColor: cores.azulPrimario,
         borderBottomWidth: 1,
-        borderColor: cores.pretoBorder,
+        borderColor: cores.pretoBorder
     },
-
     containerHeader: {
         marginTop: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingRight: config.windowWidth / 20
     },
-
     headerBtn: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -160,12 +133,10 @@ const styles = StyleSheet.create({
         backgroundColor: cores.azulDisabled,
         borderRadius: 15
     },
-
     containerBtn: {
         alignItems: 'center',
         padding: 10
     },
-
     containerRota: {
         marginTop: 10,
         padding: 13,
@@ -180,7 +151,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         borderRadius: 15
     },
-
     txtCodigoRota: {
         fontSize: 16,
         color: cores.fonteBranco,
@@ -191,28 +161,24 @@ const styles = StyleSheet.create({
         padding: 7,
         borderRadius: 5,
         textTransform: 'uppercase',
-        maxWidth: '50%',
+        maxWidth: '50%'
     },
-
     txtNomeRota: {
         fontSize: 18,
         color: cores.branco,
         width: '90%'
     },
-
     txtBtn: {
         fontSize: 14,
         color: cores.fonteBranco,
         bottom: 5
     },
-
     txtBold: {
         fontSize: 18,
         fontWeight: '700',
         color: cores.fonteBranco,
         width: 300
     },
-
     imgUser: {
         width: 80,
         height: 80,
@@ -221,27 +187,26 @@ const styles = StyleSheet.create({
         borderColor: cores.branco,
         borderRadius: 3
     },
-
     rodape: {
         position: 'absolute',
         alignSelf: 'center',
         bottom: config.windowWidth / 20,
         backgroundColor: cores.azulBtn,
         padding: 15,
-        borderRadius: 20,
+        borderRadius: 20
     },
-
     txtBtnRodape: {
         fontSize: 16,
         fontWeight: '700',
         color: cores.fonteBranco,
         textAlign: 'center'
-    }, containerErro: {
+    },
+    containerErro: {
         alignItems: 'center',
         marginTop: config.windowWidth / 2,
         marginHorizontal: 10,
         paddingHorizontal: 5,
         paddingVertical: 10,
         borderRadius: 10
-    },
+    }
 })

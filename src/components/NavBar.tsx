@@ -3,8 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-na
 import { config, cores } from '../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
+import { faChevronLeft, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {
     titulo: string,
@@ -58,26 +57,23 @@ const styles = StyleSheet.create({
     navBar: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginHorizontal: 0,
+        marginHorizontal: config.windowWidth / 20,
         paddingVertical: config.windowWidth / 20,
         borderBottomWidth: 1,
         borderBottomColor: cores.branco
     },
-
     tituloNavBar: {
         fontSize: 18,
         fontWeight: '800',
         color: cores.fonteBranco,
-        textTransform: 'uppercase',
+        textTransform: 'uppercase'
     },
-
     areaTouch: {
         top: 10,
         bottom: 10,
         left: 20,
         right: 20
     },
-
     botaoDireito: {
         overflow: 'hidden',
         position: 'absolute',
@@ -87,14 +83,13 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center'
     },
-
     botaoVoltar: {
         overflow: 'hidden',
         position: 'absolute',
         left: 0,
         top: 10,
-        width: config.windowWidth / 8,
+        width: config.windowWidth / 10,
         height: 50,
         justifyContent: 'center'
-    },
+    }
 })
