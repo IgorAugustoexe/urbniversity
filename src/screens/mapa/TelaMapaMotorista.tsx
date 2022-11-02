@@ -111,7 +111,7 @@ export default function TelaMapaMotorista() {
         return
     }
     const handelSave = async () => {
-       
+        
         setSpots(newSpots)
         
     }

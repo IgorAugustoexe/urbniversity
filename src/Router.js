@@ -18,6 +18,7 @@ import TelaMapaMotorista from './screens/mapa/TelaMapaMotorista'
 const Stack = createStackNavigator()
 
 export default function App() {
+
     const store = useSelector(({ user }) => {
         return {
             user: user
@@ -31,10 +32,18 @@ export default function App() {
             <Stack.Navigator screenOptions={{headerShown: false }}>
                 {store.user.access_token ? 
                 <>
+                {store.user.user.driverId ?  
                 <Stack.Screen
+                    name="telaRota"
+                    component={TelaRota}
+                />
+            :
+            <Stack.Screen
                     name="home"
                     component={TelaHome}
                 />
+            }
+              
                 <Stack.Screen
                     name="veiculo"
                     component={TelaVeiculo}
@@ -50,10 +59,6 @@ export default function App() {
                 <Stack.Screen
                     name="mapaMotorista"
                     component={TelaMapaMotorista}
-                />
-                <Stack.Screen
-                    name="telaRota"
-                    component={TelaRota}
                 />
                 <Stack.Screen
                     name="notificacoes"
