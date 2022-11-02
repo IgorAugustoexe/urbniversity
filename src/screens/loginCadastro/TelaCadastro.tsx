@@ -1,18 +1,14 @@
-import React, { useState, Fragment } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
+import React, { useState } from 'react'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
+import { faEnvelope, faLock, faIdCard, faPhone, faUser } from '@fortawesome/free-solid-svg-icons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { AsYouType } from 'libphonenumber-js'
 import { verificaEmail } from '../../helpers/FuncoesPadrao'
 import NavBar from '../../components/NavBar'
 import InputDadosUser from '../../components/InputDadosUser'
 import BtnBlue from '../../components/BtnBlue'
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
-import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
-import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard'
-import { faPhone } from '@fortawesome/free-solid-svg-icons/faPhone'
-import { faUser } from '@fortawesome/free-solid-svg-icons/faUser'
 
 export default function TelaCadastro() {
     const navigation = useNavigation<any>()
@@ -93,37 +89,21 @@ export default function TelaCadastro() {
         return true
     }
 
-
     const realizarCadastro = () => {
         setLoaderReq(true)
-
-        // if (tipoCadastro == 2) {
-        //     navigation.navigate('finalizarCadastro', { isDrive: true })
-        // } else {
-        //     navigation.navigate('finalizarCadastro', { isDrive: false })
-        // }
-
-
         !tipoCadastrovalido && setTipoCadastroValido(true)
         txtIdInvalido.length > 0 && setTxtIdInvalido('')
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtNomeInvalido.length > 0 && setTxtNomeInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
-        // validarTipoCadastro(tipoCadastro)
-        // validarId(id)
-        // validarEmail(email)
-        // validarNome(nome)
-        // validarTelefone(telefone)
-        // validarSenha(senha)
-
         if ((!validarTipoCadastro(tipoCadastro)) || (!validarId(id)) || (!validarEmail(email)) || (!validarNome(nome)) || (!validarTelefone(telefone)) || (!validarSenha(senha))) {
             setLoaderReq(false)
             return
         }
-          if (tipoCadastro == 2) {
+        if (tipoCadastro == 2) {
             navigation.navigate('finalizarCadastro', { isDrive: true, id, email, nome, telefone, senha })
-         } else {
+        } else {
             navigation.navigate('finalizarCadastro', { isDrive: false, id, email, nome, telefone, senha })
         }
         setLoaderReq(false)
@@ -239,13 +219,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '500'
     },
-
     containerBtnTipoCadastro: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         paddingBottom: config.windowWidth / 20
     },
-
     btn: {
         backgroundColor: cores.disabled,
         borderColor: cores.disabled,
@@ -254,21 +232,16 @@ const styles = StyleSheet.create({
         marginTop: config.windowWidth / 20,
         alignItems: 'center'
     },
-
     txtBtn: {
         fontSize: 16,
         color: cores.fonteBranco,
         fontWeight: '700'
     },
-
     espacoInputs: {
         paddingTop: 10
     },
-
     btnRodape: {
         marginVertical: config.windowWidth / 8,
         marginHorizontal: config.windowWidth / 4
-    },
-
-
+    }
 })

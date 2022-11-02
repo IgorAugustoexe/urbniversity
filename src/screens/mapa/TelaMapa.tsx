@@ -12,6 +12,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
 import { AuthContext } from '../../apis/AuthContext'
 import { useDispatch, useSelector } from 'react-redux'
 import { selection_sort } from '../../helpers/FuncoesPadrao'
+import BtnVoltar from '../../components/BtnVoltar'
 
 const options = {
     enableVibrateFallBack: true,
@@ -25,7 +26,7 @@ export default function TelaMapa() {
             user: user
         }
     })
-    const [regiao, setRegiao] = useState<any>({"latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421})
+    const [regiao, setRegiao] = useState<any>({ "latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421 })
     const [pontos, setPontos] = useState<any>([])
 
     const [origem, setOrigem] = useState<any>({
@@ -106,6 +107,7 @@ export default function TelaMapa() {
 
     return (
         <View style={styles.container}>
+            <BtnVoltar />
             <MapView
                 style={styles.map}
                 onMapReady={() => {
@@ -115,32 +117,34 @@ export default function TelaMapa() {
                             console.log('aceitou')
                         })
                 }} // função chamada ao renderizar o mapa
-                initialRegion={regiao.length > 0 ? regiao : 
-                    {"latitude": -21.96981, 
-                    "latitudeDelta": 0.0922, 
-                    "longitude": -46.79850499999999, 
-                    "longitudeDelta": 0.0421}} // região inicial
-                //minZoomLevel={14} // minimo de zoom no mapa
+                initialRegion={regiao.length > 0 ? regiao :
+                    {
+                        "latitude": -21.96981,
+                        "latitudeDelta": 0.0922,
+                        "longitude": -46.79850499999999,
+                        "longitudeDelta": 0.0421
+                    }} // região inicial
+                minZoomLevel={10} // minimo de zoom no mapa
                 showsUserLocation // mostrar localização do user
                 showsMyLocationButton // precisa do Shows userLocation
                 userLocationPriority='high' // precisão da localização
                 showsCompass // mostra bússola canto superiror esquerdo
-                //showsTraffic // mostrar tráfego na região
                 customMapStyle={mapaNoite}// estilo do mapa
                 loadingEnabled
                 zoomEnabled
             >
                 {
-                pontos.length > 0 &&
-                pontos.map((item: any, index: number) => (
-                    <Marker key={index} coordinate={item} />
-                ))
-            }
+                    pontos.length > 0 &&
+                    pontos.map((item: any, index: number) => (
+                        <Marker key={index} coordinate={item} />
+                    ))
+                }
 
                 <Marker
-                    coordinate={origem.length  ? origem : {
+                    coordinate={origem.length ? origem : {
                         latitude: -21.964652345070213,
-                        longitude: -46.791549417993124}}
+                        longitude: -46.791549417993124
+                    }}
                     draggable
                     onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                     onDragEnd={(event) => setOrigem(event.nativeEvent.coordinate)}
@@ -149,7 +153,8 @@ export default function TelaMapa() {
                 <Marker
                     coordinate={destino.length > 0 ? destino : {
                         latitude: -21.96981,
-                        longitude: -46.79850499999999} }
+                        longitude: -46.79850499999999
+                    }}
                     draggable
                     onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                     onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}

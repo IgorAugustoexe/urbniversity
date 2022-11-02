@@ -1,29 +1,19 @@
 import React, { Fragment, useState, useContext, useEffect } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, Alert, PermissionsAndroid, Linking } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Alert, PermissionsAndroid, Linking } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { verificaEmail } from '../../helpers/FuncoesPadrao'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
-import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
-import { faUserGraduate } from '@fortawesome/free-solid-svg-icons/faUserGraduate'
-import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
+import { faEnvelope, faLock, faUserGraduate, faVanShuttle } from '@fortawesome/free-solid-svg-icons'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser from '../../components/InputDadosUser'
-import { AuthContext } from '../../apis/AuthContext';
-import { useSelector } from 'react-redux'
+import { AuthContext } from '../../apis/AuthContext'
 import { requisitarPermissaoArmazenamento, requisitarPermissaoLocalizacao } from '../../controllers/PermissoesController'
 
-
 export default function TelaLogin() {
-    const store: any = useSelector<any>(({ user }) => {
-        return {
-            user: user
-        }
-    })
-
     const navigation = useNavigation<any>()
+
     //Estudante
     //oliveira.luiz85@gmail.cm -> com motorista
     //vonishope.0134@gmail.com -> sem motorista
@@ -43,7 +33,7 @@ export default function TelaLogin() {
     const [loginMotorista, setLoginMotorista] = useState<boolean>(false)
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
-    const { isLoggedIn, login } = useContext(AuthContext)
+    const { login } = useContext(AuthContext)
 
     useEffect(() => {
         didMount()
@@ -107,6 +97,11 @@ export default function TelaLogin() {
 
     const alternarFormaLogin = () => {
         setLoginMotorista(!loginMotorista)
+        if (!loginMotorista) {
+            setEmail('email@andrephoto.com')
+            return
+        }
+        setEmail('oliveira.luiz85@gmail.cm')
     }
 
     const realizarLogin = () => {
@@ -129,12 +124,6 @@ export default function TelaLogin() {
         }
 
     }
-
-    // useEffect(() => {
-    //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
-    //     //to continue the login process by verifying if the userInfo has the access token to foward the user
-    //     isLoggedIn('home', navigation.navigate);
-    // }, [store.user.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -191,6 +180,7 @@ export default function TelaLogin() {
 
                 <View style={{ marginHorizontal: config.windowWidth / 10 }}>
                     <TouchableOpacity
+                        disabled={loaderReq}
                         style={{ alignItems: 'center' }}
                         onPress={() => navigation.navigate('cadastro')}
                         hitSlop={styles.hitSlopBtns}
@@ -202,7 +192,11 @@ export default function TelaLogin() {
                     <View style={styles.bordaDivisoria}>
                         <Text style={styles.txtBordaDivisoria}>OU</Text>
                     </View>
-                    {<TouchableOpacity style={{ alignItems: 'center' }} onPress={() => alternarFormaLogin()} hitSlop={styles.hitSlopBtns}>
+                    {<TouchableOpacity
+                        disabled={loaderReq}
+                        style={{ alignItems: 'center' }}
+                        onPress={() => alternarFormaLogin()}
+                        hitSlop={styles.hitSlopBtns}>
                         <Text style={styles.txtUnderline}>Entrar como {loginMotorista ? 'Estudante' : 'Motorista'}</Text>
                     </TouchableOpacity>}
                 </View>
@@ -213,33 +207,28 @@ export default function TelaLogin() {
 
 const styles = StyleSheet.create({
     header: {
-        paddingTop: config.windowWidth / 10, paddingHorizontal: config.windowWidth / 4
-        //paddingTop: config.windowWidth / 10, alignSelf: 'center'
+        paddingTop: config.windowWidth / 10,
+        paddingHorizontal: config.windowWidth / 4
     },
-
     txtLogo: {
         fontSize: 26,
         fontWeight: '700',
-        color: cores.fonteBranco,
+        color: cores.fonteBranco
     },
-
     txtTipoLogin: {
         fontSize: 18,
         fontWeight: 'bold',
         color: cores.azulBtn
     },
-
     txtBold: {
         fontSize: 26,
         fontWeight: 'bold',
         color: cores.fonteBranco
     },
-
     txtInput: {
         fontSize: 16,
         color: cores.fonteBranco
     },
-
     inputStyle: {
         borderBottomWidth: 1,
         borderColor: cores.azulBtn,
@@ -247,41 +236,33 @@ const styles = StyleSheet.create({
         color: cores.fonteBranco,
         paddingRight: config.windowWidth / 9
     },
-
     styleIcon: {
         position: 'absolute',
         right: 10,
         bottom: 10
     },
-
     espacoInputs: {
         paddingTop: 10
     },
-
     containerInputInvalido: {
         position: 'absolute',
         bottom: -20,
         right: 5
     },
-
     txtInputInvalido: {
         fontSize: 14,
         color: cores.vermelhoBorder
     },
-
-
     txt: {
         color: cores.fonteCinza,
         fontSize: 14
     },
-
     bordaDivisoria: {
         alignItems: 'center',
         marginVertical: config.windowWidth / 13,
         borderTopWidth: 2,
         borderColor: cores.fonteCinza
     },
-
     txtBordaDivisoria: {
         position: 'absolute',
         backgroundColor: cores.backgroundPadrao,
@@ -290,19 +271,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         top: -10
     },
-
     txtUnderline: {
         fontSize: 18,
         fontWeight: 'bold',
         color: cores.fonteBranco,
         textDecorationLine: 'underline'
     },
-
     hitSlopBtns: {
         top: 10,
         bottom: 10,
         left: 10,
         right: 10
     }
-
 })

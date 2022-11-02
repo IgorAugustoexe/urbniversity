@@ -1,21 +1,16 @@
-import React, { useContext, useState, useEffect, useRef, Fragment } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, PermissionsAndroid } from 'react-native'
-import { config, cores, estilos } from '../../styles/Estilos'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import React, { useContext, useState, useEffect, Fragment } from 'react'
+import { StyleSheet, View, Text, TouchableOpacity, PermissionsAndroid } from 'react-native'
+import { config, cores } from '../../styles/Estilos'
+import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
-import { faPen } from '@fortawesome/free-solid-svg-icons/faPen'
-import { faBroom } from '@fortawesome/free-solid-svg-icons/faBroom'
+import { faPen, faBroom } from '@fortawesome/free-solid-svg-icons'
 import MapView, { Marker } from 'react-native-maps'
 import Geolocation from '@react-native-community/geolocation'
 import MapViewDirections from 'react-native-maps-directions'
-import { mapaNoite } from './estilosMapa'
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback'
-import { navigationRef } from '../../apis/AuthContext'
-import { width } from '@fortawesome/free-solid-svg-icons/faGear'
 import { AuthContext } from '../../apis/AuthContext'
 import { selection_sort } from '../../helpers/FuncoesPadrao'
-import { useDispatch, useSelector } from 'react-redux'
+import BtnVoltar from '../../components/BtnVoltar'
 
 const options = {
     enableVibrateFallBack: true,
@@ -28,12 +23,11 @@ export default function TelaMapaMotorista() {
             user: user
         }
     })
-    const navigation = useNavigation<any>()
 
-    const [regiao, setRegiao] = useState<any>({"latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421})
+    const [regiao, setRegiao] = useState<any>({ "latitude": -21.96981, "latitudeDelta": 0.0922, "longitude": -46.79850499999999, "longitudeDelta": 0.0421 })
     const [pontos, setPontos] = useState<any>([])
-    const [origem, setOrigem] = useState<any>({"latitude": -21.969815466912234, "longitude": -46.793406003040985})
-    const [destino, setDestino] = useState<any>({"latitude": -21.964652345070213, "longitude": -46.791549417993124})
+    const [origem, setOrigem] = useState<any>({ "latitude": -21.969815466912234, "longitude": -46.793406003040985 })
+    const [destino, setDestino] = useState<any>({ "latitude": -21.964652345070213, "longitude": -46.791549417993124 })
     const [ativarMarcadores, setAtivarMarcadores] = useState<boolean>(false)
     const [loading, setLoading] = useState(false)
     const { getSpots, setSpots } = useContext(AuthContext)
@@ -49,8 +43,8 @@ export default function TelaMapaMotorista() {
 
 
     useEffect(() => {
-      pegarLocalizacaoUser()
-        
+        pegarLocalizacaoUser()
+
     }, [])
 
     const recuperaPontos = async () => {
@@ -88,7 +82,7 @@ export default function TelaMapaMotorista() {
     }
     const pegarLocalizacaoUser = () => {
         Geolocation.getCurrentPosition(info => {
-           
+
             setRegiao({
                 latitude: info.coords.latitude,
                 longitude: info.coords.longitude,
@@ -111,9 +105,9 @@ export default function TelaMapaMotorista() {
         return
     }
     const handelSave = async () => {
-       
+
         setSpots(newSpots)
-        
+
     }
     const salvarMarcadores = () => {
         var unifaeComp = Math.pow(unifae.latitude + unifae.longitude, 2)
@@ -140,18 +134,6 @@ export default function TelaMapaMotorista() {
         setLoading(true)
         recuperaPontos()
     }
-    // COMPONENTES
-    const Btnvoltar = () => (
-        <View style={styles.btnVoltar}>
-            <TouchableOpacity
-                style={styles.areaBtnVoltar}
-                hitSlop={styles.hitSlopPadrao}
-                onPress={() => navigation.goBack()}
-            >
-                <FontAwesomeIcon icon={faChevronLeft} size={config.windowWidth / 14} color={cores.branco} />
-            </TouchableOpacity>
-        </View>
-    )
 
     const EdicaoMarcadores = () => (
         <Fragment>
@@ -200,11 +182,13 @@ export default function TelaMapaMotorista() {
                         console.log('aceitou')
                     })
             }} // função chamada ao renderizar o mapa
-            initialRegion={regiao.length > 0 ? regiao : 
-                {"latitude": -21.96981, 
-                "latitudeDelta": 0.0922, 
-                "longitude": -46.79850499999999, 
-                "longitudeDelta": 0.0421}
+            initialRegion={regiao.length > 0 ? regiao :
+                {
+                    "latitude": -21.96981,
+                    "latitudeDelta": 0.0922,
+                    "longitude": -46.79850499999999,
+                    "longitudeDelta": 0.0421
+                }
             } // região inicial
             //minZoomLevel={14} // minimo de zoom no mapa
             showsUserLocation // mostrar localização do user
@@ -220,16 +204,18 @@ export default function TelaMapaMotorista() {
                 pontos.length > 0 &&
                 pontos.map((item: any, index: number) => {
                     return (
-                    <Marker key={index} coordinate={item} />
-                )})
+                        <Marker key={index} coordinate={item} />
+                    )
+                })
             }
 
             {!ativarMarcadores && pontos.length >= 2 &&
                 <Fragment>
                     <Marker
-                        coordinate={origem.length  ? origem : {
+                        coordinate={origem.length ? origem : {
                             latitude: -21.964652345070213,
-                            longitude: -46.791549417993124}}
+                            longitude: -46.791549417993124
+                        }}
                         draggable
                         onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                         onDragEnd={(event) => setOrigem(event.nativeEvent.coordinate)}
@@ -238,7 +224,8 @@ export default function TelaMapaMotorista() {
                     <Marker
                         coordinate={destino.length > 0 ? destino : {
                             latitude: -21.96981,
-                            longitude: -46.79850499999999} }
+                            longitude: -46.79850499999999
+                        }}
                         draggable
                         onDragStart={() => ReactNativeHapticFeedback.trigger("impactMedium", options)}
                         onDragEnd={(event) => setDestino(event.nativeEvent.coordinate)}
@@ -260,7 +247,7 @@ export default function TelaMapaMotorista() {
 
     return (
         <View style={{ flex: 1 }}>
-            <Btnvoltar />
+            <BtnVoltar />
             {Mapa()}
             {ativarMarcadores ?
                 <Fragment>
@@ -277,8 +264,8 @@ export default function TelaMapaMotorista() {
 const styles = StyleSheet.create({
     // mapa
     map: {
-        width: '100%',
-        height: '100%',
+        width: config.windowWidth,
+        height: config.windowHeight
     },
     // EdicaoMarcadores
     containerTxtInformativo: {
@@ -313,26 +300,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
         backgroundColor: cores.azulBtn,
-        borderRadius: 30,
+        borderRadius: 30
     },
-    // BtnEditar
-    btnVoltar: {
-        position: 'absolute',
-        zIndex: 2,
-        top: 10,
-        left: 10
-    },
-    areaBtnVoltar: {
-        alignItems: 'center',
-        padding: 8,
-        backgroundColor: cores.azulBtn,
-        borderRadius: 30,
-    },
-    // globais
     hitSlopPadrao: {
         top: 10,
         bottom: 10,
         left: 10,
         right: 10
-    },
+    }
 })

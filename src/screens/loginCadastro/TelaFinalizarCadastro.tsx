@@ -1,25 +1,18 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react'
+import React, { Fragment, useState, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, Linking, Alert, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { TextInputMask } from 'react-native-masked-text'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import NavBar from '../../components/NavBar'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser, { stylesInput } from '../../components/InputDadosUser'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCarSide } from '@fortawesome/free-solid-svg-icons/faCarSide'
-import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard'
-import { faSchool } from '@fortawesome/free-solid-svg-icons/faSchool'
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap'
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot'
-import { faTreeCity } from '@fortawesome/free-solid-svg-icons/faTreeCity'
-import { faHouseChimneyUser } from '@fortawesome/free-solid-svg-icons/faHouseChimneyUser'
+import { faCarSide, faIdCard, faSchool, faGraduationCap, faLocationDot, faTreeCity, faHouseChimneyUser } from '@fortawesome/free-solid-svg-icons'
 import { removerAcento } from '../../helpers/FuncoesPadrao'
 import { pesquisaEndereco } from '../../apis/shearchApi'
 import { requisitarPermissaoGaleria } from '../../controllers/PermissoesController'
 import { escolherImagem } from '../../controllers/ImagemController'
-import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 import { AuthContext } from '../../apis/AuthContext';
 import { useSelector } from 'react-redux'
 
@@ -41,8 +34,6 @@ export default function TelaFinalizarCadastro() {
         }
     })
 
-
-    const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
     const [cpf, setCpf] = useState<string>('')
@@ -92,7 +83,7 @@ export default function TelaFinalizarCadastro() {
     const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
     const [file, setFile] = useState<object>()
     //Register Function
-    const {register } = useContext(AuthContext)
+    const { register } = useContext(AuthContext)
 
     const validarCpf = () => {
         txtCpfInvalido.length > 0 && setTxtCpfInvalido('')
@@ -164,13 +155,11 @@ export default function TelaFinalizarCadastro() {
         if (!validarCpf()) {
             controleMotorista = false
         }
-        //Mudei pra 11, cnh com 13 é loucura
         if (cnh.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CNH Inválida')
             controleMotorista = false
         }
-        //Mudei pra 11, acredito que senha o Renavan que também tem 11 digitos
         if (crlv.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CRLV Inválido')
@@ -181,13 +170,11 @@ export default function TelaFinalizarCadastro() {
             setTxtAnoInvalido('Ano Inválido')
             controleMotorista = false
         }
-
         return controleMotorista
     }
 
     const finalizarCadastro = () => {
         setLoaderReq(true)
-        //console.log(`${route.params.id} ${route.params.email} ${route.params.nome} ${route.params.telefone} ${route.params.senha}`)
         if (route.params.isDrive) {
             if (!validarDadosMotorista()) {
                 setLoaderReq(false)
@@ -199,12 +186,6 @@ export default function TelaFinalizarCadastro() {
                 return
             }
         }
-
-        // if (route.params.isDrive) {
-        //     navigation.navigate('home', { isDrive: true })
-        // } else {
-        //     navigation.naviate('home', { isDrive: false })
-        // }
         let object = route.params.isDrive ? {
             cnh: cnh,
             fullName: route.params.nome,
@@ -212,7 +193,7 @@ export default function TelaFinalizarCadastro() {
             email: route.params.email,
             password: route.params.senha,
             phone: route.params.telefone,
-            file:file
+            file: file
         } : {
             fullName: route.params.nome,
             cpf: cpf,
@@ -227,7 +208,7 @@ export default function TelaFinalizarCadastro() {
             cep: cep,
             city: cidade,
             state: estado,
-            file:file
+            file: file
         }
 
         let complement = route.params.isDrive ? {
@@ -278,7 +259,7 @@ export default function TelaFinalizarCadastro() {
         }
     }
 
-    const callBackImagem = (img: string, image:any) => {
+    const callBackImagem = (img: string, image: any) => {
         setImagem(img)
         setFile(image)
     }
@@ -303,34 +284,10 @@ export default function TelaFinalizarCadastro() {
 
     const DadosMotorista = () => (
         <Fragment>
-             <View style={[{ paddingTop: 15, flexDirection: 'row' }]}>
-                <View style={{ width: '65%', marginLeft: config.windowWidth / 20 }}>
-                    <Text style={stylesInput.txtInput}>Cidade atendida</Text>
-                    <TextInput
-                         onChangeText={(text) => setCidade(text)}
-                         value={cidade}
-                         placeholder={'Nome da Cidade'}
-                         icon={faSchool}
-                         style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
-                         placeholderTextColor={cores.fonteCinza}
-                         editable={true}
-                    />
-                    <FontAwesomeIcon icon={faTreeCity} size={config.windowWidth / 16} color={cores.branco} style={stylesInput.styleIcon} />
-                </View>
-                <View style={{ width: '20%', marginLeft: config.windowWidth / 20 }}>
-                    <Text style={stylesInput.txtInput}>Estado</Text>
-                    <TextInput
-                        onChangeText={(text) => setEstado(text)}
-                        style={[stylesInput.inputStyle, { borderColor: cores.disabled }]}
-                        value={estado}
-                        placeholder={'UF'}
-                        placeholderTextColor={cores.fonteCinza}
-                        editable={true}
-                        maxLength={2}
-                    />
-                </View>
+            <View style={styles.bordaDivisoria}>
+                <Text style={styles.subTextoInformativo}>Informe os nome da Faculdade e a Cidade onde vai passar a atender</Text>
             </View>
-             <View style={styles.espacoInputs}>
+            <View style={styles.espacoInputs}>
                 <InputDadosUser
                     onChangeText={(text) => setFaculdade(text)}
                     value={faculdade}
@@ -340,6 +297,35 @@ export default function TelaFinalizarCadastro() {
                     txtErro={txtFaculdadeInvalida}
                     icon={faSchool}
                 />
+            </View>
+            <View style={{ paddingTop: 15, flexDirection: 'row' }}>
+                <View style={{ width: '65%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Cidade atendida</Text>
+                    <TextInput
+                        onChangeText={(text) => setCidade(text)}
+                        value={cidade}
+                        placeholder={'Nome da Cidade'}
+                        style={stylesInput.inputStyle}
+                        placeholderTextColor={cores.fonteCinza}
+                        editable={true}
+                    />
+                    <FontAwesomeIcon icon={faTreeCity} size={config.windowWidth / 16} color={cores.branco} style={stylesInput.styleIcon} />
+                </View>
+                <View style={{ width: '20%', marginLeft: config.windowWidth / 20 }}>
+                    <Text style={stylesInput.txtInput}>Estado</Text>
+                    <TextInput
+                        onChangeText={(text) => setEstado(text)}
+                        style={stylesInput.inputStyle}
+                        value={estado}
+                        placeholder={'UF'}
+                        placeholderTextColor={cores.fonteCinza}
+                        editable={true}
+                        maxLength={2}
+                    />
+                </View>
+            </View>
+            <View style={styles.bordaDivisoria}>
+                <Text style={styles.subTextoInformativo}>Informe seus dados Pessoais e do seu Veículo (assim como uma imagem)</Text>
             </View>
             <View style={styles.espacoInputs}>
                 <InputDadosUser
@@ -588,20 +574,6 @@ export default function TelaFinalizarCadastro() {
             </View>
         </Fragment>
     )
-    // useEffect(() => {
-    //     //This code makes the same as isLoggedIn from src/apis/AuthContext without the request part. Is necessary (At least for now) 
-    //     //to continue the login process by verifying if the userInfo has the access token to foward the user
-    //     if (store.user.access_token) {
-    //         setLoaderReq(true)
-
-    //         store.user.type == 'driver' ?
-    //             navigation.navigate('home', { isDrive: true })
-    //             :
-    //             navigation.navigate('home', { isDrive: false })
-
-    //         setLoaderReq(false)
-    //     }
-    // }, [store.user.access_token]);
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -620,16 +592,15 @@ export default function TelaFinalizarCadastro() {
                     :
                     DadosEstudante()
                 }
-                <View style={{ alignItems: 'center', paddingTop: 15 }}>
-                    <TouchableOpacity onPress={() => acessarGaleria()} style={{ paddingBottom: 10 }}>
-                        <Text>Enviar Imagem</Text>
-                    </TouchableOpacity>
+                <View style={styles.containerImagem}>
                     <Image
                         style={styles.imgUser}
                         source={{ uri: imagem }}
                     />
+                    <TouchableOpacity onPress={() => acessarGaleria()} style={styles.btnEnvImagem}>
+                        <Text style={styles.txtBtn}>Enviar Imagem</Text>
+                    </TouchableOpacity>
                 </View>
-
                 <TouchableOpacity onPress={() => finalizarCadastro()} disabled={loaderReq} style={styles.btnRodape}>
                     <BtnBlue
                         text={'FINALIZAR CADASTRO'}
@@ -645,12 +616,10 @@ const styles = StyleSheet.create({
     espacoInputs: {
         paddingTop: 10
     },
-
     btnRodape: {
         marginVertical: config.windowWidth / 8,
         marginHorizontal: config.windowWidth / 5
     },
-
     textoInformativo: {
         fontSize: 16,
         color: cores.fonteBranco,
@@ -658,14 +627,37 @@ const styles = StyleSheet.create({
         padding: config.windowWidth / 20,
         textAlign: 'center'
     },
-
+    bordaDivisoria: {
+        paddingVertical: config.windowWidth / 20,
+        marginHorizontal: config.windowWidth / 20,
+        borderBottomWidth: 1,
+        borderColor: cores.branco
+    },
+    subTextoInformativo: {
+        color: cores.branco, fontSize: 15, fontWeight: 'bold'
+    },
+    containerImagem: {
+        alignItems: 'center',
+        paddingTop: config.windowWidth / 10,
+        paddingHorizontal: config.windowWidth / 20
+    },
+    btnEnvImagem: {
+        marginTop: config.windowWidth / 10,
+        backgroundColor: cores.azulBtn,
+        padding: 13,
+        borderRadius: 15
+    },
+    txtBtn: {
+        color: cores.branco,
+        fontSize: 16,
+        fontWeight: '700'
+    },
     imgUser: {
-        width: 80,
-        height: 80,
+        width: 150,
+        height: 150,
         resizeMode: 'cover',
         borderWidth: 2,
         borderColor: cores.branco,
         borderRadius: 3
-    },
-
+    }
 })

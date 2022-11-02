@@ -28,7 +28,7 @@ function TelaMostraEstudante() {
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
     const [estudantes, setEstudantes] = useState<Student>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const {getData } = useContext(AuthContext)
+    const { getData } = useContext(AuthContext)
     const [load, setLoad] = useState(true)
 
     useEffect(() => {
@@ -37,11 +37,11 @@ function TelaMostraEstudante() {
     }, [load, navigation])
 
 
-    const didMount = async () => { 
-        if(load){
+    const didMount = async () => {
+        if (load) {
             const dtStudents = await getData(`${store.user.type}/students`)
             setEstudantes(await dtStudents);
-        }     
+        }
     }
     const callWhatsapp = (number: string) => {
         let url = "whatsapp://send?text=" +
@@ -66,7 +66,7 @@ function TelaMostraEstudante() {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{paddingLeft:'2%', backgroundColor: cores.azulPrimario, marginHorizontal: 0, marginVertical: 1, flexDirection: 'row', borderRadius: 0 }}>
+                    <TouchableOpacity style={{ paddingLeft: '2%', backgroundColor: cores.azulPrimario, marginHorizontal: 0, marginVertical: 1, flexDirection: 'row', borderRadius: 0 }}>
                         <View>
                             <Image
                                 style={styles.imgMotorista}
@@ -181,10 +181,6 @@ export default function TelaRota() {
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
-                            <Text style={styles.txtBtn}>CALENDARIO</Text>
-                            <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
-                        </TouchableOpacity>
                         <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('notificacoes')}>
                             <Text style={styles.txtBtn}>NOTIFICAÇÕES</Text>
                             <View style={styles.reqContainer}>
@@ -215,8 +211,8 @@ const styles = StyleSheet.create({
     },
 
     headerBtn: {
-        maxWidth:'85%',
-        marginLeft:'1%',
+        maxWidth: '85%',
+        marginLeft: '1%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -264,7 +260,7 @@ const styles = StyleSheet.create({
     },
 
     txtBtn: {
-        fontSize:(config.windowWidth/30),
+        fontSize: (config.windowWidth / 30),
         color: cores.fonteBranco,
         bottom: 5
     },
@@ -339,7 +335,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     reqCounter: {
-        fontSize: (config.windowWidth/19.5),
+        fontSize: (config.windowWidth / 19.5),
         color: 'white',
         fontWeight: 'bold'
     }
