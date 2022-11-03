@@ -4,10 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons/faRightFromBracket'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
 import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import BtnBlue from '../../components/BtnBlue'
@@ -26,9 +28,10 @@ function TelaMostraEstudante() {
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
+    const [refresh, setRefresh] = useState<boolean>(false);
     const [estudantes, setEstudantes] = useState<Student>();
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const { getData } = useContext(AuthContext)
+    const { getData, mediador } = useContext(AuthContext)
     const [load, setLoad] = useState(true)
 
     useEffect(() => {
@@ -42,6 +45,20 @@ function TelaMostraEstudante() {
             const dtStudents = await getData(`${store.user.type}/students`)
             setEstudantes(await dtStudents);
         }
+    }
+    const refreshScreen = async () => {
+        setEstudantes(undefined); 
+        const dtRequests = await getData(`${store.user.type}/students`)
+        const aux = await dtRequests;
+        setEstudantes(dtRequests)
+    }
+
+    useEffect(() => {
+        refreshScreen()
+    }, [refresh])
+
+    const removeEstudante = async () =>{
+        const response = await mediador('Deseja mesmo aceitar este estudante?', null, null, setRefresh);
     }
     const callWhatsapp = (number: string) => {
         let url = "whatsapp://send?text=" +
@@ -77,9 +94,13 @@ function TelaMostraEstudante() {
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold', }}>
                                 {item.user.fullName}
                             </Text>
-                            <View style={{ flex: 1 }}>
-                                <TouchableOpacity onPress={() => callWhatsapp(item.user.phone)}>
+                            <View style={{ flex: 1, flexDirection:'row', justifyContent:'flex-end'}}>
+                                
+                                <TouchableOpacity style={{marginRight:'3%'}} onPress={() => callWhatsapp(item.user.phone)}>
                                     <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faWhatsapp} size={config.windowWidth / 12} color={cores.branco} />
+                                </TouchableOpacity>
+                                <TouchableOpacity  onPress={() => removeEstudante()}>
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faXmark} size={config.windowWidth / 11} color={cores.branco} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -167,7 +188,7 @@ export default function TelaRota() {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={logout}>
-                        <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
+                        <FontAwesomeIcon icon={faRightFromBracket} size={config.windowWidth / 15} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
 

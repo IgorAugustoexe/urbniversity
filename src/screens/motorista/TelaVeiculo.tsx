@@ -46,7 +46,7 @@ export default function TelaVeiculo() {
     const assentos = store.user.driver ?
         parseInt(store.user.driver.vehicle.seats) - 2 : store.user.vehicle ?
             parseInt(store.user.vehicle.seats) - 2 : route.params.driver ?
-                parseInt(route.params.driver.vehicle.seats) - 2 : 0
+                parseInt(route.params.driver?.vehicle?.seats) - 2 : 0
 
     const nomeMotorista = store.user.driver ?
         store.user.driver.user.fullName : store.user.vehicle ?
@@ -92,7 +92,7 @@ export default function TelaVeiculo() {
                                         Assentos
                                     </Text>
                                     <Text style={styles.subtitulo}>
-                                        {props.seats}
+                                    {props.seats ? props.seats : "Assentos"}
                                     </Text>
                                 </View>
 
@@ -101,7 +101,7 @@ export default function TelaVeiculo() {
                                         Disponíveis
                                     </Text>
                                     <Text style={styles.subtitulo}>
-                                        {assentos}
+                                        {assentos ? assentos : "Disponíveis"}
                                     </Text>
                                 </View>
                             </View>
@@ -111,7 +111,7 @@ export default function TelaVeiculo() {
                                         Marca:
                                     </Text>
                                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtInfoDB}>
-                                        {props.brand}
+                                        {props.brand ? props.brand : "Marca"}
                                     </Text>
                                 </View>
 
@@ -120,7 +120,7 @@ export default function TelaVeiculo() {
                                         Modelo:
                                     </Text>
                                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtInfoDB}>
-                                        {props.model}
+                                        {props.model ? props.model : "Modelo"}
                                     </Text>
                                 </View>
                                 <View style={styles.containerTxt}>
@@ -128,7 +128,7 @@ export default function TelaVeiculo() {
                                         Placa:
                                     </Text>
                                     <Text style={styles.txtInfoDB}>
-                                        Placa
+                                        {props.plate ?  props.plate.slice(0, 3) + "-" +  props.plate.slice(3) : "Placa"}
                                     </Text>
                                 </View>
                                 <View style={styles.containerTxt}>
@@ -136,7 +136,7 @@ export default function TelaVeiculo() {
                                         Cor:
                                     </Text>
                                     <Text style={styles.txtInfoDB}>
-                                        {props.color}
+                                        {props.color ? props.color : "Cor"}
                                     </Text>
                                 </View>
                                 <View style={styles.containerTxt}>
@@ -144,7 +144,7 @@ export default function TelaVeiculo() {
                                         Ano:
                                     </Text>
                                     <Text style={styles.txtInfoDB}>
-                                        {props.year}
+                                        {props.year ? props.year : "Ano"}
                                     </Text>
                                 </View>
                             </View>
@@ -164,6 +164,7 @@ export default function TelaVeiculo() {
                 model={store.user.driver.vehicle.model}
                 color={store.user.driver.vehicle.color}
                 year={store.user.driver.vehicle.year}
+                plate={store.user.driver.vehicle.plate}
                 seats={store.user.driver.vehicle.seats} />
             : store.user.vehicle && !store.user.user.studentId ? //Visao do motorista
                 <Dados
@@ -172,16 +173,18 @@ export default function TelaVeiculo() {
                     model={store.user.vehicle.model}
                     color={store.user.vehicle.color}
                     year={store.user.vehicle.year}
+                    plate={store.user.vehicle.plate}
                     seats={store.user.vehicle.seats} />
 
                 : route.params.driver ? //Para estudante aplicar na rota
                     <Dados
                         phone={route.params.driver.user.phone}
-                        brand={route.params.driver.vehicle.brand}
-                        model={route.params.driver.vehicle.model}
-                        color={route.params.driver.vehicle.color}
-                        year={route.params.driver.vehicle.year}
-                        seats={route.params.driver.vehicle.seats} />
+                        brand={route.params?.driver?.vehicle?.brand}
+                        model={route.params?.driver?.vehicle?.model}
+                        color={route.params?.driver?.vehicle?.color}
+                        year={route.params?.driver?.vehicle?.year}
+                        plate={route.params?.driver?.vehicle?.plate}
+                        seats={route.params?.driver?.vehicle?.seats} />
                     : //Caso o estudante ainda não esteja cadastrado
                     <View style={{ backgroundColor: cores.azulPrimario, margin: config.windowWidth / 20, alignItems: 'center', padding: 5, borderRadius: 5 }}>
                         <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Você ainda não está cadastrado em nenhuma rota :(</Text>

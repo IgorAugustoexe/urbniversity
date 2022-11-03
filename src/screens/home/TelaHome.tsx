@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear, faAnglesRight, faVanShuttle } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext } from '../../apis/AuthContext';
 import { popUpErroGenerico } from '../PopUpErroGenerico'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons/faRightFromBracket'
 
 export default function TelaHome() {
     const store: any = useSelector<any>(({ user }) => {
@@ -27,8 +28,8 @@ export default function TelaHome() {
         let driver = store.user.type == 'driver' ? true : false
         setIsDriver(driver)
     }, [])
-    const updateScreen = async () => {
-        if (!store.user.route && !store.user.driverId) {
+    const updateScreen = async (forceUpdate:boolean = false) => {
+        if ((!store.user.route && !store.user.driverId) || forceUpdate) {
             const aux = store.user
             const resp = await refreshUser()
 
@@ -37,13 +38,16 @@ export default function TelaHome() {
             }
         }
     }
+    const sairRota = () =>{
+        updateScreen(true)
+    }
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={logout}>
-                        <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
+                        <FontAwesomeIcon icon={faRightFromBracket} size={config.windowWidth / 16} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
 
@@ -73,6 +77,7 @@ export default function TelaHome() {
                             <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                         </View>
                     </View>
+
                 </TouchableOpacity>
                 : !isDriver && store.user.driverId ?
                     <TouchableOpacity style={styles.btnRota} activeOpacity={0.8} onPress={() => navigation.navigate('mapa')}>
@@ -85,7 +90,9 @@ export default function TelaHome() {
                             <View style={{ width: '10%', justifyContent: 'center' }}>
                                 <FontAwesomeIcon icon={faAnglesRight} size={config.windowWidth / 13} color={cores.branco} />
                             </View>
+                            
                         </View>
+                        
                     </TouchableOpacity>
                     : isDriver ?
                         <View style={styles.containerErro} >
@@ -107,7 +114,10 @@ export default function TelaHome() {
                     <Text style={styles.txtBtnRodape}>Encontrar Motorista</Text>
                 </TouchableOpacity>
                 :
-                null
+                <TouchableOpacity style={styles.rodape} onPress={() =>{ sairRota() }}>
+                    <Text style={styles.txtBtnRodape}>Sair da Rota</Text>
+                </TouchableOpacity>
+                
             }
         </SafeAreaView>
     )
@@ -190,7 +200,7 @@ const styles = StyleSheet.create({
     rodape: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: config.windowWidth / 20,
+        bottom: config.windowWidth / 5,
         backgroundColor: cores.azulBtn,
         padding: 15,
         borderRadius: 20

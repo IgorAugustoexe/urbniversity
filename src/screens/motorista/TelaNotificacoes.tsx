@@ -5,8 +5,7 @@ import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear'
-import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
-import { faAnglesRight } from '@fortawesome/free-solid-svg-icons/faAnglesRight'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons/faRightFromBracket'
 import { faVanShuttle } from '@fortawesome/free-solid-svg-icons/faVanShuttle'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
@@ -161,7 +160,7 @@ export default function TelaRota() {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!</Text>
                     <TouchableOpacity onPress={logout}>
-                        <FontAwesomeIcon icon={faGear} size={config.windowWidth / 16} color={cores.branco} />
+                        <FontAwesomeIcon icon={faRightFromBracket} size={config.windowWidth / 15} color={cores.branco} />
                     </TouchableOpacity>
                 </View>
 
@@ -175,10 +174,10 @@ export default function TelaRota() {
                             <Text style={styles.txtBtn}>MINHA VAN</Text>
                             <FontAwesomeIcon icon={faVanShuttle} size={config.windowWidth / 12} color={cores.branco} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
+                        {/* <TouchableOpacity style={styles.containerBtn} onPress={() => console.log('navigation.navigate(financeiro)')}>
                             <Text style={styles.txtBtn}>CALENDARIO</Text>
                             <FontAwesomeIcon icon={faCalendarDays} size={config.windowWidth / 12} color={cores.branco} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
             </View>
