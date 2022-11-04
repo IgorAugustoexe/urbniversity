@@ -7,15 +7,15 @@ import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons/faTrian
 
 type navigation = {
     props: {
-        parameters?:any,
-        tipo:boolean,
+        parameters?: any,
+        tipo: boolean,
         icone?: any,
         texto?: string,
         btnTxt?: string,
-        btn1Func?: (...args:any) => void,
+        btn1Func?: (...args: any) => void,
         btn2Txt?: string,
         btn2Func?: () => void,
-        refresh:typeof useState
+        refresh: typeof useState
     }
 }
 
@@ -23,30 +23,31 @@ export default function ModalErroGenerico() {
     const navigation = useNavigation<any>()
     const route = useRoute<RouteProp<navigation, 'props'>>()
 
-    const {parameters, tipo, icone, texto, btnTxt, btn2Txt, btn1Func, btn2Func, refresh } = { ...route.params }
+    const { parameters, tipo, icone, texto, btnTxt, btn2Txt, btn1Func, btn2Func, refresh } = { ...route.params }
 
     const onPressLeft = () => {
-        try{
+        try {
             navigation.goBack()
             if (btn1Func) {
-                if(parameters){
+                if (parameters) {
                     btn1Func(parameters)
-                    if(refresh){
-                        refresh(true)
-                    }
-                }else{
+                } else {
                     btn1Func()
                 }
-            } 
-         } catch(e){
+                if (refresh) {
+                    console.log("pei")
+                    refresh(true)
+                }
+            }
+        } catch (e) {
             console.log(e)
         }
-       
-            
-            
-           
-        }
-    
+
+
+
+
+    }
+
 
     const onPressRight = () => {
         navigation.goBack()
@@ -54,38 +55,38 @@ export default function ModalErroGenerico() {
             btn2Func()
         }
     }
-    const Componente = (props:any) =>{
-        return(
-        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-            <View style={props.estilo}>
-                <View style={styles.containerImgTxt}>
-                    <FontAwesomeIcon icon={icone || faTriangleExclamation} size={config.windowWidth / 12} color={cores.branco} style={styles.icon} />
-                    <Text style={styles.txtAviso}>{texto || 'ocorreu um erro ao realizar esta operação, por favor verifique sua conexão e tente novamente.'}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <TouchableOpacity onPress={() => onPressLeft()} style={[styles.botoes, { borderRightWidth: 0.25 }, !btn2Txt && { width: '100%' }]} hitSlop={{ top: 10 }}>
-                        <Text style={[styles.txtAviso, { color: cores.fonteBranco }]}>{btnTxt || 'ok'}</Text>
-                    </TouchableOpacity>
-                    {btn2Txt &&
-                        <TouchableOpacity onPress={() => onPressRight()} style={[styles.botoes, { borderLeftWidth: 0.25 }]} hitSlop={{ top: 10 }}>
-                            <Text style={[styles.txtAviso, { color: cores.fonteBranco }]}>{btn2Txt}</Text>
+    const Componente = (props: any) => {
+        return (
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                <View style={props.estilo}>
+                    <View style={styles.containerImgTxt}>
+                        <FontAwesomeIcon icon={icone || faTriangleExclamation} size={config.windowWidth / 12} color={cores.branco} style={styles.icon} />
+                        <Text style={styles.txtAviso}>{texto || 'ocorreu um erro ao realizar esta operação, por favor verifique sua conexão e tente novamente.'}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <TouchableOpacity onPress={() => onPressLeft()} style={[styles.botoes, { borderRightWidth: 0.25 }, !btn2Txt && { width: '100%' }]} hitSlop={{ top: 10 }}>
+                            <Text style={[styles.txtAviso, { color: cores.fonteBranco }]}>{btnTxt || 'ok'}</Text>
                         </TouchableOpacity>
-                    }
+                        {btn2Txt &&
+                            <TouchableOpacity onPress={() => onPressRight()} style={[styles.botoes, { borderLeftWidth: 0.25 }]} hitSlop={{ top: 10 }}>
+                                <Text style={[styles.txtAviso, { color: cores.fonteBranco }]}>{btn2Txt}</Text>
+                            </TouchableOpacity>
+                        }
 
+                    </View>
                 </View>
-            </View>
 
-        </View>
+            </View>
         )
     }
 
     return (
         <>
-        {tipo ? 
-            <Componente estilo = {styles.containerAlertOk}/>
-        :
-        <Componente estilo = {styles.containerAlertErro}/>
-        }
+            {tipo ?
+                <Componente estilo={styles.containerAlertOk} />
+                :
+                <Componente estilo={styles.containerAlertErro} />
+            }
         </>
     )
 }

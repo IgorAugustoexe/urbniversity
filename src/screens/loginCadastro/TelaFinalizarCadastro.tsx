@@ -19,7 +19,6 @@ import { useSelector } from 'react-redux'
 type navigation = {
     props: {
         isDrive: boolean,
-        id: string,
         email: string,
         nome: string,
         telefone: string,
@@ -45,7 +44,6 @@ export default function TelaFinalizarCadastro() {
     const [modelo, setModelo] = useState<string>('')
     const [marca, setMarca] = useState<string>('')
     const [ano, setAno] = useState<string>('')
-    const [crlv, setCrlv] = useState<string>('')
     const [assentos, setAssentos] = useState<string>('')
     const [corPredominante, setCorPredominante] = useState<string>('')
 
@@ -53,7 +51,6 @@ export default function TelaFinalizarCadastro() {
     const [txtPlacaInvalida, setTxtPlacaInvalida] = useState<string>('')
     const [txtModeloInvalido, setTxtModeloInvalido] = useState<string>('')
     const [txtMarcaInvalida, setTxtMarcaInvalida] = useState<string>('')
-    const [txtCrlvInvalido, setTxtCrlvInvalido] = useState<string>('')
     const [txtAnoInvalido, setTxtAnoInvalido] = useState<string>('')
     const [txtAssentosInvalidos, setTxtAssentosInvalidos] = useState<string>('')
     const [txtCorPredominante, setTxtCorPredominante] = useState<string>('')
@@ -149,7 +146,6 @@ export default function TelaFinalizarCadastro() {
     const validarDadosMotorista = () => {
         let controleMotorista = true
         txtCnhInvalida.length > 0 && setTxtCnhInvalida('')
-        txtCrlvInvalido.length > 0 && setTxtCrlvInvalido('')
         txtAnoInvalido.length > 0 && setTxtAnoInvalido('')
 
         if (!validarCpf()) {
@@ -158,11 +154,6 @@ export default function TelaFinalizarCadastro() {
         if (cnh.length <= 10) {
             console.log(1)
             setTxtCnhInvalida('CNH Inválida')
-            controleMotorista = false
-        }
-        if (crlv.length <= 10) {
-            console.log(1)
-            setTxtCnhInvalida('CRLV Inválido')
             controleMotorista = false
         }
 
@@ -358,16 +349,6 @@ export default function TelaFinalizarCadastro() {
                         <Text style={stylesInput.txtErro}>{txtCpfInvalido}</Text>
                     </View>
                 }
-            </View>
-            <View style={styles.espacoInputs}>
-                <InputDadosUser
-                    onChangeText={(text) => setCrlv(text)}
-                    value={crlv}
-                    textoInput={'Crlv'}
-                    placeholder={'Digite o CRLV'}
-                    onFocus={() => txtCrlvInvalido.length > 0 && setTxtCrlvInvalido('')}
-                    txtErro={txtCrlvInvalido}
-                />
             </View>
             <View style={styles.espacoInputs}>
                 <InputDadosUser

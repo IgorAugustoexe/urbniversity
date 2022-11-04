@@ -60,7 +60,7 @@ export default function TelaMapaMotorista() {
             var unifeobComp = Math.pow(unifeob.latitude + unifeob.longitude, 2)
 
             if (store.user.route.university.name.toUpperCase() === "UNIFAE") {
-                selection_sort(pontos, unifaeComp)
+                // selection_sort(pontos, unifaeComp)
                 setPontos(spots)
                 setOrigem(spots[0])
             } else {

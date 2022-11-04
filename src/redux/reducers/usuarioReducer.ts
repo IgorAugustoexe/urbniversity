@@ -27,7 +27,7 @@ const usuarioReducer = createSlice({
             return {
                 ...initialStateUser
             }
-        }
+        },
     }
 })
 

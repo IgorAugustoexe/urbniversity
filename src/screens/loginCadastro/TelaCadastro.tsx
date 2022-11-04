@@ -15,11 +15,9 @@ export default function TelaCadastro() {
 
     const [email, setEmail] = useState<string>('')
     const [nome, setNome] = useState<string>('')
-    const [id, setId] = useState<string>('')
     const [telefone, setTelefone] = useState<string>('')
     const [senha, setSenha] = useState<string>('')
 
-    const [txtIdInvalido, setTxtIdInvalido] = useState<string>('')
     const [txtEmailInvalido, setTxtEmailInvalido] = useState<string>('')
     const [txtNomeInvalido, setTxtNomeInvalido] = useState<string>('')
     const [txtTelefoneInvalido, setTxtTelefoneInvalido] = useState<string>('')
@@ -41,15 +39,6 @@ export default function TelaCadastro() {
     const validarTipoCadastro = (tipoCadastro: number) => {
         if (tipoCadastro == 0) {
             setTipoCadastroValido(false)
-            return false
-        }
-        return true
-    }
-
-    const validarId = (id: string) => {
-        const reg = /^[aA-zZ0-9._-]{4,15}$/
-        if (!(reg.test(id.trim()))) {
-            setTxtIdInvalido('ID Inválido')
             return false
         }
         return true
@@ -92,19 +81,18 @@ export default function TelaCadastro() {
     const realizarCadastro = () => {
         setLoaderReq(true)
         !tipoCadastrovalido && setTipoCadastroValido(true)
-        txtIdInvalido.length > 0 && setTxtIdInvalido('')
         txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
         txtNomeInvalido.length > 0 && setTxtNomeInvalido('')
         txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
 
-        if ((!validarTipoCadastro(tipoCadastro)) || (!validarId(id)) || (!validarEmail(email)) || (!validarNome(nome)) || (!validarTelefone(telefone)) || (!validarSenha(senha))) {
+        if ((!validarTipoCadastro(tipoCadastro)) || (!validarEmail(email)) || (!validarNome(nome)) || (!validarTelefone(telefone)) || (!validarSenha(senha))) {
             setLoaderReq(false)
             return
         }
         if (tipoCadastro == 2) {
-            navigation.navigate('finalizarCadastro', { isDrive: true, id, email, nome, telefone, senha })
+            navigation.navigate('finalizarCadastro', { isDrive: true, email, nome, telefone, senha })
         } else {
-            navigation.navigate('finalizarCadastro', { isDrive: false, id, email, nome, telefone, senha })
+            navigation.navigate('finalizarCadastro', { isDrive: false, email, nome, telefone, senha })
         }
         setLoaderReq(false)
     }
@@ -135,18 +123,6 @@ export default function TelaCadastro() {
                                 <Text style={[styles.txtBtn, !tipoCadastrovalido && { color: cores.vermelhoBorder }]}>Motorista</Text>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                    <View style={styles.espacoInputs}>
-                        <InputDadosUser
-                            onChangeText={(text) => setId(text)}
-                            value={id}
-                            textoInput={'ID'}
-                            placeholder={'Digite sua Identificação'}
-                            onFocus={() => txtIdInvalido.length > 0 && setTxtIdInvalido('')}
-                            txtErro={txtIdInvalido}
-                            icon={faIdCard}
-                            autoCapitalize={'none'}
-                        />
                     </View>
                     <View style={styles.espacoInputs}>
                         <InputDadosUser

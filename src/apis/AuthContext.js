@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.request(options)
             const aux = await res.data;
             const authentication = await auth(object.email, object.password)
+            console.log(authentication.access_token)
 
             config = {
                 headers: {
@@ -109,6 +110,7 @@ export const AuthProvider = ({ children }) => {
             userInfo = user;
 
             if (!user) {
+                popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
                 return
             }
 
@@ -116,6 +118,7 @@ export const AuthProvider = ({ children }) => {
             userInfo['type'] = authentication.type
             //console.log(JSON.stringify(userInfo, null, "\t"));
 
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
 
         } catch (e) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
@@ -123,7 +126,6 @@ export const AuthProvider = ({ children }) => {
         } finally {
             callback(false)
             dispatch(setInfo(userInfo))
-            popUpErroGenerico({ type: 'customSuccess', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
         }
 
     };
@@ -131,9 +133,12 @@ export const AuthProvider = ({ children }) => {
     const registerComplement = async (entity, object, token) => {
         const config = { headers: { 'Authorization': `Bearer ${token}` } };
         try {
-            await axios.post(`/${entity}`, object, config)
+           const aux = await axios.post(`/${entity}`, object, config)
+           const resp = aux.data
+           return resp
         } catch (e) {
             console.log(`Register ${entity} error: ${e}`)
+            return
         }
     }
     // const getRoutesByStudent = async () => {
@@ -191,7 +196,6 @@ export const AuthProvider = ({ children }) => {
 
 
     const refreshUser = async () => {
-        popUpErroGenerico({ type: 'customSuccess', text1: 'Atualizando dados', text2: `Por favor aguarde aguarde um instante` })
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
             const user = await getUser(`${store.type}`, config)
@@ -231,7 +235,7 @@ export const AuthProvider = ({ children }) => {
             const resp = await aux.data //store.type
             //console.log(JSON.stringify(resp, null, "\t"));
             //console.log(JSON.stringify(resp[0].student, null, "\t"));
-            popUpErroGenerico({ type: 'success', text1: 'Solicitação aceitada com sucesso', text2: `O usuário foi inserido em sua rota` })
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Solicitação aceitada com sucesso', text2: `O usuário foi inserido em sua rota` })
             return resp;
 
 
@@ -272,6 +276,47 @@ export const AuthProvider = ({ children }) => {
     const mediador = (text, funcao, params, refresh) => {
         navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh: refresh })
     }
+    const quitFromRoute = async () =>{
+
+        const options = {
+            method: 'POST',
+            url: `${BASE_URL}/${store.type}/leave`,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${store.accessToken}`
+            }
+          };
+
+        try {       
+            const aux = axios.request(options)
+            const resp = aux.data
+            return resp
+        } catch (error) {
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            console.log(`Error while quiting route ${e}`);
+            return;
+        }
+    } 
+    const removeFromRoute = async (id) =>{
+        const options = {
+            method: 'POST',
+            url: `${BASE_URL}/${store.type}/kick`,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${store.accessToken}`
+            },
+            data: {studentId: id}
+          };
+        try {       
+            const aux = axios.request(options)
+            const resp = aux.data
+            return resp
+        } catch (error) {
+            popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
+            console.log(`Error while quiting route ${e}`);
+            return;
+        }
+    } 
     const getSpots = async () => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
@@ -330,7 +375,6 @@ export const AuthProvider = ({ children }) => {
     }
     //Função genérica que retorna dados como rotas, estudantes em uma rota, motoristas disponiveis, etc dado a rota(request)
     const getData = async (type) => {
-        console.log(type)
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
             const aux = await axios.get(`${type}`, config);
@@ -459,10 +503,13 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
+   
+
     //Chama a função resposnavel por verificar a validade do token
     useEffect(() => {
         if (store.accessToken && !isLogged) {
             isLoggedIn();
+            
         }
     }, [store.accessToken]);
 
@@ -480,7 +527,9 @@ export const AuthProvider = ({ children }) => {
                 refreshUser,
                 mediador,
                 setSpots,
-                getSpots
+                getSpots,
+                quitFromRoute,
+                removeFromRoute
             }}>
             {children}
         </AuthContext.Provider>
