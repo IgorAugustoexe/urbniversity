@@ -54,6 +54,16 @@ export default function TelaHome() {
       }
     }
   };
+  const updateOnRemove = async () => {
+    const aux = store.user;
+    try {
+      dispatch(setInfo({driver: null}));
+      dispatch(setInfo({diverId: null}));
+      const resp = await refreshUser();
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const sairRota = async () => {
     const response = await mediador(
       'Deseja mesmo sair desta rota?',
@@ -65,7 +75,7 @@ export default function TelaHome() {
 
   useEffect(() => {
     if (refresh) {
-      updateScreen(true);
+      updateOnRemove();
     }
   }, [refresh]);
 
@@ -147,16 +157,16 @@ export default function TelaHome() {
             numberOfLines={1}
             ellipsizeMode="tail"
             style={styles.txtCodigoRota}>
-            Rota: {store.user.driver.route.university.name}
+            Rota: {store.user?.driver?.route?.university?.name}
           </Text>
           <View style={styles.containerRota}>
             <View style={styles.containerInfoRota}>
               <Text style={styles.txtNomeRota}>
-                Motorista: {store.user.driver.user.fullName}
+                Motorista: {store?.user?.driver?.user?.fullName}
               </Text>
               <Text style={styles.txtNomeRota}>
-                Cidade: {store.user.driver.route.city.name} -{' '}
-                {store.user.driver.route.city.state}
+                Cidade: {store?.user?.driver?.route?.city?.name} -{' '}
+                {store?.user?.driver?.route?.city?.state}
               </Text>
             </View>
             <View style={{width: '10%', justifyContent: 'center'}}>
