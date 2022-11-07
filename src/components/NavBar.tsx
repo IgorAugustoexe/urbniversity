@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     navBar: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginHorizontal: config.windowWidth / 20,
+        marginHorizontal: config.windowWidth / 15,
         paddingVertical: config.windowWidth / 20,
         borderBottomWidth: 1,
         borderBottomColor: cores.branco
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 0,
         top: 10,
-        width: config.windowWidth / 8,
         height: 50,
         justifyContent: 'center'
     },
@@ -88,7 +87,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         top: 10,
-        width: config.windowWidth / 10,
         height: 50,
         justifyContent: 'center'
     }

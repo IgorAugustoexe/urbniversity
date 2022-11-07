@@ -1,19 +1,11 @@
 import React, { useEffect, useState, Fragment, useContext } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, FlatList } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useNavigation } from '@react-navigation/native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
-import { FlatList, ScrollView } from 'react-native-gesture-handler'
+import { useSelector } from 'react-redux'
+import { AuthContext } from '../../apis/AuthContext'
 import BtnBlue from '../../components/BtnBlue'
 import NavBar from '../../components/NavBar'
-import { AuthContext } from '../../apis/AuthContext'
-import { Driver } from '../../types/types'
-import { store } from '../../redux/store'
-import { useDispatch, useSelector } from 'react-redux'
-
-
-
 
 export default function TelaPesquisaMotorista() {
     const store: any = useSelector<any>(({ user }) => {
@@ -25,31 +17,52 @@ export default function TelaPesquisaMotorista() {
     const navigation = useNavigation<any>()
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
-    const [rotas, setRotas] = useState<Driver>();
+    const [loaderRefersh, setLoaderRefresh] = useState<boolean>(false)
+    const [motoristasDisp, setMotoristasDisp] = useState<any[]>([])
     const [erroReq, setErroReq] = useState<boolean>(false)
-    const {getData } = useContext(AuthContext)
+    const { getData } = useContext(AuthContext)
 
     useEffect(() => {
-        didMount()
+        montarTela()
     }, [])
 
-    const didMount = async () => {
-        //const dt = await getRoutesByStudent();
-        const dt = await getData(`${store.user.type}/routes`)
-        setRotas(await dt);
+    const montarTela = async (isRefresh = false) => {
+        try {
+            if (isRefresh) {
+                setLoaderRefresh(true)
+            } else {
+                !loaderReq && setLoaderReq(true)
+                erroReq && setErroReq(false)
+            }
+            const resp = await getData(`${store.user.type}/routes`)
+            if (resp) {
+                setMotoristasDisp(resp)
+                return
+            }
+            setErroReq(true)
+        } catch (e) {
+            console.log(e)
+            setErroReq(true)
+        } finally {
+            setLoaderReq(false)
+            isRefresh && setLoaderRefresh(false)
         }
+
+    }
 
     const ListaMotoristas = () => (
         <FlatList
             style={{ paddingTop: 10 }}
-            data={rotas}
+            data={motoristasDisp}
             ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
             ListFooterComponent={<View style={{ marginBottom: config.windowWidth / 15 }} />}
             showsVerticalScrollIndicator={true}
+            refreshing={loaderRefersh}
+            onRefresh={() => !loaderRefersh && montarTela(true)}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 return (
-                    <TouchableOpacity style={{paddingLeft:'2%', backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
+                    <TouchableOpacity style={{ paddingLeft: '2%', backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
                         onPress={() => navigation.navigate('veiculo', { driver: item })}>
                         <View>
                             <Image
@@ -69,30 +82,30 @@ export default function TelaPesquisaMotorista() {
     )
 
     const RenderListaVazia = () => (
-        <View style={{ backgroundColor: cores.azulPrimario, margin: config.windowWidth / 20, alignItems: 'center', padding: 5, borderRadius: 5 }}>
-            <Text style={{ color: cores.branco, fontSize: 16, textAlign: 'center' }}>Não tem motoristas disponíveis na sua região :(</Text>
+        <View style={styles.containerListaVazia}>
+            <Text style={styles.txtListaVazia}>Não tem motoristas disponíveis na sua região.</Text>
         </View>
     )
+
+    // COMPONENTES
 
     const ErroLoader = () => (
         <Fragment>
             {loaderReq ?
-                <View style={{ paddingTop: config.windowWidth / 5 }}>
+                <View style={{ marginTop: config.windowWidth / 3 }}>
                     <ActivityIndicator color={cores.branco} size={'large'} />
                 </View>
                 :
                 <View style={styles.containerErro} >
-                    <Text style={styles.txtErroBold}>Erro ao realizar está operação</Text>
+                    <Text style={styles.txtErroBold}>Erro ao realizar esta operação</Text>
                     <Text style={styles.txtErro}>Por favor verifique sua conexão com a internet e tente novamente.</Text>
-                    <TouchableOpacity onPress={() => didMount()}>
-                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text='TENTAR NOVAMENTE' />
+                    <TouchableOpacity onPress={() => montarTela()}>
+                        <BtnBlue style={{ marginHorizontal: config.windowWidth / 10, marginTop: config.windowWidth / 20 }} text='TENTAR NOVAMENTE' />
                     </TouchableOpacity>
                 </View>
             }
         </Fragment >
     )
-
-    // componentes
 
     return (
         <SafeAreaView style={estilos.containerPrincipal}>
@@ -100,7 +113,7 @@ export default function TelaPesquisaMotorista() {
             {(erroReq || loaderReq) ?
                 <ErroLoader />
                 :
-                <ListaMotoristas />
+                ListaMotoristas()
             }
         </SafeAreaView>
     )
@@ -112,30 +125,37 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 50,
     },
-
+    containerListaVazia: {
+        backgroundColor: cores.azulPrimario,
+        margin: config.windowWidth / 20,
+        alignItems: 'center',
+        padding: 5,
+        borderRadius: 5
+    },
+    txtListaVazia: {
+        color: cores.branco,
+        fontSize: 15,
+        textAlign: 'center'
+    },
     // ErroLoader
     containerErro: {
         alignItems: 'center',
         marginTop: config.windowWidth / 2,
         backgroundColor: cores.azulPrimario,
-        marginHorizontal: 10,
+        marginHorizontal: config.windowWidth / 20,
         paddingHorizontal: 5,
         paddingVertical: 10,
         borderRadius: 10
     },
-
     txtErroBold: {
         fontSize: 18,
         fontWeight: 'bold',
         color: cores.fonteBranco,
         paddingVertical: 5
     },
-
     txtErro: {
         fontSize: 16,
         color: cores.fonteBranco,
         textAlign: 'center'
-    },
-
-
+    }
 })

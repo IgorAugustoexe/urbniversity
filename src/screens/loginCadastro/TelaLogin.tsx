@@ -106,23 +106,25 @@ export default function TelaLogin() {
 
     const realizarLogin = () => {
         setLoaderReq(true)
-
-        txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
-        txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
-
-        validarEmail(email)
-        validarSenha(senha)
-
-        if ((!validarEmail(email)) || (!validarSenha(senha))) {
-            setLoaderReq(false)
-            return
-        }
         try {
+            setLoaderReq(true)
+
+            txtEmailInvalido.length > 0 && setTxtEmailInvalido('')
+            txtSenhaInvalida.length > 0 && setTxtSenhaInvalida('')
+
+            validarEmail(email)
+            validarSenha(senha)
+
+            if ((!validarEmail(email)) || (!validarSenha(senha))) {
+                setLoaderReq(false)
+                return
+            }
             login(email, senha, setLoaderReq)
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoaderReq(false)
         }
-
     }
 
     return (
@@ -171,7 +173,7 @@ export default function TelaLogin() {
                     </View>
                 </Fragment>
 
-                <TouchableOpacity onPress={() => realizarLogin()} disabled={loaderReq} style={{ marginVertical: config.windowWidth / 8, marginHorizontal: config.windowWidth / 4 }}>
+                <TouchableOpacity onPress={() => realizarLogin()} style={{ marginVertical: config.windowWidth / 8, marginHorizontal: config.windowWidth / 4 }}>
                     <BtnBlue
                         text={'ENTRAR'}
                         loader={loaderReq}

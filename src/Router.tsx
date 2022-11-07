@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import TelaHome from './screens/home/TelaHome'
+import TelaHome from './screens/TelaHome'
 import TelaLogin from './screens/loginCadastro/TelaLogin'
 import TelaCadastro from './screens/loginCadastro/TelaCadastro'
 import TelaFinalizarCadastro from './screens/loginCadastro/TelaFinalizarCadastro'
@@ -11,15 +11,15 @@ import TelaPesquisaMotorista from './screens/estudante/TelaPesquisaMotorista'
 import { useSelector } from 'react-redux'
 import TelaMapa from './screens/mapa/TelaMapa'
 import TelaRota from './screens/motorista/TelaRota'
-import TelaNotificacoes from './screens/motorista/TelaNotificacoes'
-import { navigationRef } from './apis/AuthContext';
+import TelaSolicitacoes from './screens/motorista/TelaSolicitacoes'
+import { navigationRef } from './apis/AuthContext'
 import TelaMapaMotorista from './screens/mapa/TelaMapaMotorista'
 
 const Stack = createStackNavigator()
 
 export default function App() {
 
-    const store = useSelector(({ user }) => {
+    const store: any = useSelector<any>(({ user }) => {
         return {
             user: user
         }
@@ -61,8 +61,8 @@ export default function App() {
                             component={TelaMapaMotorista}
                         />
                         <Stack.Screen
-                            name="notificacoes"
-                            component={TelaNotificacoes}
+                            name="solicitacoes"
+                            component={TelaSolicitacoes}
                         />
                     </> :
                     <>
@@ -87,7 +87,7 @@ export default function App() {
                     options={{
                         presentation: 'transparentModal',
                         animationEnabled: true,
-                        cardOverlay: true
+                        cardShadowEnabled: true
                     }}
                 />
             </Stack.Navigator>

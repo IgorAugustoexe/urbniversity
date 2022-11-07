@@ -1,323 +1,206 @@
-import React, {
-  useState,
-  Fragment,
-  useEffect,
-  useContext,
-  useLayoutEffect,
-} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  Linking,
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {config, cores, estilos} from '../../styles/Estilos';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faRightFromBracket} from '@fortawesome/free-solid-svg-icons/faRightFromBracket';
-import {faGear} from '@fortawesome/free-solid-svg-icons/faGear';
-import {faCalendarDays} from '@fortawesome/free-solid-svg-icons/faCalendarDays';
-import {faAnglesRight} from '@fortawesome/free-solid-svg-icons/faAnglesRight';
-import {faVanShuttle} from '@fortawesome/free-solid-svg-icons/faVanShuttle';
-import {faXmark} from '@fortawesome/free-solid-svg-icons/faXmark';
-import {faWhatsapp} from '@fortawesome/free-brands-svg-icons';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
-import BtnBlue from '../../components/BtnBlue';
-import {faEnvelopeOpen} from '@fortawesome/free-regular-svg-icons';
-import {store} from '../../redux/store';
-import {AuthContext} from '../../apis/AuthContext';
-import {Student, Requests} from '../../types/types';
-
-function TelaMostraEstudante() {
-  const store: any = useSelector<any>(({user}) => {
-    return {
-      user: user,
-    };
-  });
-  const navigation = useNavigation<any>();
-
-  const [loaderReq, setLoaderReq] = useState<boolean>(false);
-  const [refresh, setRefresh] = useState<boolean>(false);
-  const [estudantes, setEstudantes] = useState<Student>();
-  const [erroReq, setErroReq] = useState<boolean>(false);
-  const {getData, mediador, removeFromRoute} = useContext(AuthContext);
-  const [load, setLoad] = useState(true);
-
-  useEffect(() => {
-    didMount();
-    navigation.addListener('focus', () => setLoad(!load));
-  }, [load, navigation]);
-
-  const didMount = async () => {
-    if (load) {
-      const dtStudents = await getData(`${store.user.type}/students`);
-      setEstudantes(await dtStudents);
-    }
-  };
-  const refreshScreen = async () => {
-    setEstudantes(undefined);
-    const dtRequests = await getData(`${store.user.type}/students`);
-    const aux = await dtRequests;
-    setEstudantes(dtRequests);
-  };
-
-  useEffect(() => {
-    refreshScreen();
-  }, [refresh]);
-
-  const removeEstudante = async (id: string) => {
-    const response = await mediador(
-      'Deseja mesmo remover este estudante?',
-      removeFromRoute,
-      id,
-      setRefresh,
-    );
-  };
-  const callWhatsapp = (number: string) => {
-    let url = 'whatsapp://send?text=' + '' + '&phone=55' + number;
-    Linking.openURL(url)
-      .then(data => {
-        console.log('WhatsApp Opened successfully ' + data); //<---Success
-      })
-      .catch(e => {
-        console.log(e); //<---Error
-      });
-  };
-  const ListaMotoristas = () => (
-    <FlatList
-      style={{paddingTop: 10}}
-      data={estudantes}
-      ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
-      ListFooterComponent={
-        <View style={{marginBottom: config.windowWidth / 15}} />
-      }
-      showsVerticalScrollIndicator={true}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({item, index}) => {
-        return (
-          <TouchableOpacity
-            style={{
-              paddingLeft: '2%',
-              backgroundColor: cores.azulPrimario,
-              marginHorizontal: 0,
-              marginVertical: 1,
-              flexDirection: 'row',
-              borderRadius: 0,
-            }}>
-            <View>
-              <Image
-                style={styles.imgMotorista}
-                source={{
-                  uri:
-                    item.user.photo ||
-                    'https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg',
-                }}
-              />
-            </View>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                flexDirection: 'row',
-                marginHorizontal: 15,
-              }}>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 18,
-                  color: cores.fonteBranco,
-                  paddingVertical: 3,
-                  fontWeight: 'bold',
-                }}>
-                {item.user.fullName}
-              </Text>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                }}>
-                <TouchableOpacity
-                  style={{marginRight: '3%'}}
-                  onPress={() => callWhatsapp(item.user.phone)}>
-                  <FontAwesomeIcon
-                    style={{alignSelf: 'flex-end'}}
-                    icon={faWhatsapp}
-                    size={config.windowWidth / 12}
-                    color={cores.branco}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => removeEstudante(item.id)}>
-                  <FontAwesomeIcon
-                    style={{alignSelf: 'flex-end'}}
-                    icon={faXmark}
-                    size={config.windowWidth / 11}
-                    color={cores.branco}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        );
-      }}
-    />
-  );
-
-  const RenderListaVazia = () => (
-    <View
-      style={{
-        backgroundColor: cores.azulPrimario,
-        margin: config.windowWidth / 20,
-        alignItems: 'center',
-        padding: 5,
-        borderRadius: 5,
-      }}>
-      <Text style={{color: cores.branco, fontSize: 16, textAlign: 'center'}}>
-        Não há estudantes cadastrados na sua rota :(
-      </Text>
-    </View>
-  );
-
-  const ErroLoader = () => (
-    <Fragment>
-      {loaderReq ? (
-        <View style={{paddingTop: config.windowWidth / 5}}>
-          <ActivityIndicator color={cores.branco} size={'large'} />
-        </View>
-      ) : (
-        <View style={styles.containerErro}>
-          <Text style={styles.txtErroBold}>Erro ao realizar está operação</Text>
-          <Text style={styles.txtErro}>
-            Por favor verifique sua conexão com a internet e tente novamente.
-          </Text>
-          <TouchableOpacity onPress={() => didMount()}>
-            <BtnBlue
-              style={{
-                marginHorizontal: config.windowWidth / 5,
-                marginTop: config.windowWidth / 20,
-              }}
-              text="TENTAR NOVAMENTE"
-            />
-          </TouchableOpacity>
-        </View>
-      )}
-    </Fragment>
-  );
-
-  // componentes
-
-  return (
-    <SafeAreaView style={estilos.containerPrincipal}>
-      {erroReq || loaderReq ? <ErroLoader /> : <ListaMotoristas />}
-    </SafeAreaView>
-  );
-}
+import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } from 'react'
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, FlatList, Linking } from 'react-native'
+import { config, cores, estilos } from '../../styles/Estilos'
+import { useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import { AuthContext } from '../../apis/AuthContext'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faXmark, faVanShuttle, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
+import BtnBlue from '../../components/BtnBlue'
+import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 
 export default function TelaRota() {
-  const store: any = useSelector<any>(({user}) => {
+  const store: any = useSelector<any>(({ user }) => {
     return {
       user: user,
-    };
-  });
+    }
+  })
 
-  const {logout} = useContext(AuthContext);
-  const [userName, setUserName] = useState<string>('');
-  const [isDriver, setIsDriver] = useState(false);
-  const [requests, setRequests] = useState<Requests[]>();
-  const {getData} = useContext(AuthContext);
-  const navigation = useNavigation<any>();
-  const dispatch = useDispatch();
-  const [load, setLoad] = useState(true);
-  const image = store.user.user
-    ? store.user.user.photo
-    : 'https://jaraguatenisclube.com.br/images/avatar.png';
+  const navigation = useNavigation<any>()
+
+  const { logout, getData, mediador, removeFromRoute } = useContext(AuthContext)
+
+  const [userName, setUserName] = useState<string>('')
+  const [isDriver, setIsDriver] = useState(false)
+  const [requests, setRequests] = useState<any[]>([])
+  const [loaderReq, setLoaderReq] = useState<boolean>(false)
+  const [loaderRefresh, setLoaderRefresh] = useState<boolean>(false)
+  const [listaEstudantes, setListaEstudantes] = useState<any[]>([])
+  const [erroReq, setErroReq] = useState<boolean>(false)
 
   useEffect(() => {
-    didMount();
-    navigation.addListener('focus', () => setLoad(!load));
-  }, [load, navigation]);
+    montarTela()
+  }, [])
 
-  const didMount = async () => {
-    //const dtRequests = await getRequestsByDriver();
-    const dtRequests = await getData(`request/${store.user.type}`);
-    setRequests(await dtRequests);
-  };
   useLayoutEffect(() => {
     setUserName(store.user.user.fullName);
-    let driver = store.user.type == 'driver' ? true : false;
-    setIsDriver(driver);
-  }, []);
+    let driver = store.user.type == 'driver' ? true : false
+    setIsDriver(driver)
+  }, [])
 
-  return (
-    <SafeAreaView style={estilos.containerPrincipal}>
-      <View style={styles.header}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>
-            Bem Vindo{' '}
-            {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!
-          </Text>
-          <TouchableOpacity onPress={logout}>
+  const montarTela = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setLoaderRefresh(true)
+      } else {
+        !loaderReq && setLoaderReq(true)
+        erroReq && setErroReq(false)
+      }
+      const resp = await getData(`${store.user.type}/students`)
+      if (resp) {
+        setListaEstudantes(resp)
+      }
+    } catch (e) {
+      console.log(e)
+      setErroReq(true)
+    } finally {
+      setLoaderReq(false)
+      isRefresh && setLoaderRefresh(false)
+    }
+  }
+
+  const removeEstudante = async (id: string) => {
+    await mediador('Deseja mesmo remover este estudante?', removeFromRoute, id)
+  }
+
+  const callWhatsapp = (number: string) => {
+    let url = 'whatsapp://send?text=' + '' + '&phone=55' + number
+    Linking.openURL(url)
+      .then(data => {
+        console.log('WhatsApp Opened successfully ' + data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  }
+
+  // COMPONENTES
+
+  const Header = () => (
+    <View style={styles.header}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.txtBold}>Bem Vindo {userName ? userName : isDriver ? 'Motorista' : 'Estudante'}!
+        </Text>
+        <TouchableOpacity onPress={logout}>
+          <FontAwesomeIcon
+            icon={faRightFromBracket}
+            size={config.windowWidth / 15}
+            color={cores.branco}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.containerHeader}>
+        <Image style={styles.imgUser} source={store.user.user ? { uri: store.user.user.photo } : avatarPadrao} />
+        <View style={styles.headerBtn}>
+          <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
+            <Text style={styles.txtBtn}>MEU VEÍCULO</Text>
             <FontAwesomeIcon
-              icon={faRightFromBracket}
-              size={config.windowWidth / 15}
+              icon={faVanShuttle}
+              size={config.windowWidth / 12}
               color={cores.branco}
             />
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.containerHeader}>
-          <Image style={styles.imgUser} source={{uri: `${image}`}} />
-          <View style={styles.headerBtn}>
-            <TouchableOpacity
-              style={styles.containerBtn}
-              onPress={() => navigation.navigate('veiculo', {driver: null})}>
-              <Text style={styles.txtBtn}>MINHA VAN</Text>
-              <FontAwesomeIcon
-                icon={faVanShuttle}
-                size={config.windowWidth / 12}
-                color={cores.branco}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.containerBtn}
-              onPress={() => navigation.navigate('notificacoes')}>
-              <Text style={styles.txtBtn}>NOTIFICAÇÕES</Text>
-              <View style={styles.reqContainer}>
-                <Text style={styles.reqCounter}>
-                  {requests ? requests.length : '0'}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('solicitacoes')}>
+            <Text style={styles.txtBtn}>SOLICITAÇÕES</Text>
+            <View style={styles.reqContainer}>
+              <Text style={styles.reqCounter}>
+                {requests ? requests.length : '0'}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
-      <TelaMostraEstudante />
+    </View>
+  )
+
+  const ListaEstudantes = () => (
+    <FlatList
+      style={{ paddingTop: 10 }}
+      data={listaEstudantes}
+      ListEmptyComponent={erroReq ? ErroLoader : RenderListaVazia}
+      ListFooterComponent={<View style={{ marginBottom: config.windowWidth / 15 }} />}
+      showsVerticalScrollIndicator
+      refreshing={loaderRefresh}
+      onRefresh={() => !loaderRefresh && montarTela(true)}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item, index }) => {
+        return (
+          <TouchableOpacity
+            style={{ backgroundColor: cores.azulPrimario, marginVertical: 5, flexDirection: 'row', paddingHorizontal: 8 }}>
+            <Image
+              style={styles.imgMotorista}
+              source={item.user.photo ? { uri: item.user.photo } : avatarPadrao}
+            />
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row', marginHorizontal: 15 }}>
+              <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold' }}>
+                {item.user.fullName}
+              </Text>
+              <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }} onPress={() => removeEstudante(item.id)}>
+                <FontAwesomeIcon
+                  style={{ alignSelf: 'flex-end' }}
+                  icon={faXmark}
+                  size={config.windowWidth / 11}
+                  color={cores.branco}
+                />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )
+      }}
+    />
+  )
+
+  const RenderListaVazia = () => (
+    <View style={styles.containerListaVazia}>
+      <Text style={styles.txtListaVazia}>Não há estudantes cadastrados na sua rota.</Text>
+    </View>
+  )
+
+  const ErroLoader = () => (
+    <Fragment>
+      {loaderReq ?
+        <View style={{ paddingTop: config.windowWidth / 5 }}>
+          <ActivityIndicator color={cores.branco} size={'large'} />
+        </View>
+        :
+        <View style={styles.containerErro}>
+          <Text style={styles.txtErroBold}>Erro ao realizar está operação</Text>
+          <Text style={styles.txtErro}> Por favor verifique sua conexão com a internet e tente novamente.</Text>
+          <TouchableOpacity onPress={() => montarTela()}>
+            <BtnBlue style={{ marginHorizontal: config.windowWidth / 5, marginTop: config.windowWidth / 20 }} text="TENTAR NOVAMENTE" />
+          </TouchableOpacity>
+        </View>
+      }
+    </Fragment>
+  )
+
+  return (
+    <SafeAreaView style={estilos.containerPrincipal}>
+      <Header />
+      {(erroReq || loaderReq) ?
+        <ErroLoader />
+        :
+        ListaEstudantes()
+      }
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
+  // Header
   header: {
     padding: config.windowWidth / 20,
     backgroundColor: cores.azulPrimario,
     borderBottomWidth: 1,
-    borderColor: cores.pretoBorder,
+    borderColor: cores.pretoBorder
   },
-
   containerHeader: {
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight: config.windowWidth / 20,
+    paddingRight: config.windowWidth / 20
   },
-
   headerBtn: {
     maxWidth: '85%',
     marginLeft: '1%',
@@ -325,93 +208,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: cores.azulDisabled,
-    borderRadius: 15,
+    borderRadius: 15
   },
-
   containerBtn: {
     alignItems: 'center',
-    padding: 10,
+    padding: 10
   },
-
-  containerRota: {
-    marginTop: 10,
-    padding: 13,
-    flexDirection: 'row',
-  },
-  containerInfoRota: {
-    width: '85%',
-  },
-  btnRota: {
-    backgroundColor: cores.azulBtn,
-    marginTop: config.windowWidth / 15,
-    marginHorizontal: 5,
-    borderRadius: 15,
-  },
-
-  txtCodigoRota: {
-    fontSize: 16,
-    color: cores.fonteBranco,
-    backgroundColor: cores.azulPrimario,
-    position: 'absolute',
-    top: -16,
-    left: 10,
-    padding: 7,
-    borderRadius: 5,
-    textTransform: 'uppercase',
-    maxWidth: '50%',
-  },
-
-  txtNomeRota: {
-    fontSize: 18,
-    color: cores.branco,
-    width: '90%',
-  },
-
   txtBtn: {
     fontSize: config.windowWidth / 30,
     color: cores.fonteBranco,
-    bottom: 5,
+    bottom: 5
   },
-
   txtBold: {
     fontSize: 18,
     fontWeight: '700',
     color: cores.fonteBranco,
-    width: 300,
+    width: 300
   },
-
   imgUser: {
     width: 80,
     height: 80,
     resizeMode: 'cover',
     borderWidth: 2,
     borderColor: cores.branco,
-    borderRadius: 50,
+    borderRadius: 50
   },
-
   rodape: {
     position: 'absolute',
     alignSelf: 'center',
     bottom: config.windowWidth / 20,
     backgroundColor: cores.azulBtn,
     padding: 15,
-    borderRadius: 20,
-  },
-
-  txtBtnRodape: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: cores.fonteBranco,
-    textAlign: 'center',
+    borderRadius: 20
   },
   imgMotorista: {
     width: 60,
     height: 60,
     marginVertical: 10,
     marginLeft: 5,
-    borderRadius: 50,
+    borderRadius: 50
   },
-
+  // ListaVazia
+  containerListaVazia: {
+    backgroundColor: cores.azulPrimario,
+    margin: config.windowWidth / 20,
+    alignItems: 'center',
+    padding: 5,
+    borderRadius: 5
+  },
+  txtListaVazia: {
+    color: cores.branco,
+    fontSize: 15,
+    textAlign: 'center'
+  },
   // ErroLoader
   containerErro: {
     alignItems: 'center',
@@ -420,20 +269,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     paddingHorizontal: 5,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 10
   },
-
   txtErroBold: {
     fontSize: 18,
     fontWeight: 'bold',
     color: cores.fonteBranco,
-    paddingVertical: 5,
+    paddingVertical: 5
   },
-
   txtErro: {
     fontSize: 16,
     color: cores.fonteBranco,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   reqContainer: {
     width: config.windowWidth / 12,
@@ -442,11 +289,11 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 80,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   reqCounter: {
     fontSize: config.windowWidth / 19.5,
     color: 'white',
-    fontWeight: 'bold',
-  },
-});
+    fontWeight: 'bold'
+  }
+})  

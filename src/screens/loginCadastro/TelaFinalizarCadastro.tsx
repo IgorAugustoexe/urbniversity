@@ -2,19 +2,20 @@ import React, { Fragment, useState, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, Linking, Alert, PermissionsAndroid } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { RouteProp, useRoute } from '@react-navigation/native'
+import { AuthContext } from '../../apis/AuthContext'
+import { useSelector } from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faCarSide, faIdCard, faSchool, faGraduationCap, faLocationDot, faTreeCity, faHouseChimneyUser } from '@fortawesome/free-solid-svg-icons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { TextInputMask } from 'react-native-masked-text'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import NavBar from '../../components/NavBar'
 import BtnBlue from '../../components/BtnBlue'
 import InputDadosUser, { stylesInput } from '../../components/InputDadosUser'
-import { faCarSide, faIdCard, faSchool, faGraduationCap, faLocationDot, faTreeCity, faHouseChimneyUser } from '@fortawesome/free-solid-svg-icons'
 import { removerAcento } from '../../helpers/FuncoesPadrao'
 import { pesquisaEndereco } from '../../apis/shearchApi'
 import { requisitarPermissaoGaleria } from '../../controllers/PermissoesController'
 import { escolherImagem } from '../../controllers/ImagemController'
-import { AuthContext } from '../../apis/AuthContext';
-import { useSelector } from 'react-redux'
+import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 
 type navigation = {
     props: {
@@ -77,7 +78,7 @@ export default function TelaFinalizarCadastro() {
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
 
-    const [imagem, setImagem] = useState<any>('https://icon-library.com/images/default-profile-icon/default-profile-icon-6.jpg')
+    const [imagem, setImagem] = useState<any>(avatarPadrao)
     const [file, setFile] = useState<object>()
     //Register Function
     const { register } = useContext(AuthContext)
