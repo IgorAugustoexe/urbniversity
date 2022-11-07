@@ -1,8 +1,9 @@
 import React, { useState, Fragment, useEffect, useContext } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, FlatList } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
+import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
-import { AuthContext, navigationRef } from '../../apis/AuthContext'
+import { AuthContext } from '../../apis/AuthContext'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faXmark, faCheck } from '@fortawesome/free-solid-svg-icons'
 import BtnBlue from '../../components/BtnBlue'
@@ -16,6 +17,7 @@ export default function TelaSolicitacoes() {
         }
     })
 
+    const navigation = useNavigation<any>()
     const { acceptRequest, removeRequest, mediador, getData } = useContext(AuthContext)
 
     const [loaderReq, setLoaderReq] = useState<boolean>(false)
@@ -50,7 +52,7 @@ export default function TelaSolicitacoes() {
 
     const controleSolicitacao = async (tipo: number, id: string) => {
         await mediador(tipo == 0 ? 'Deseja mesmo aceitar este estudante?' : 'Deseja mesmo recusar este estudante?', tipo == 0 ? acceptRequest : removeRequest, id)
-        montarTela()
+        navigation.goBack()
     }
 
     // COMPONENTES 
@@ -78,10 +80,10 @@ export default function TelaSolicitacoes() {
                             </Text>
                             <View style={{ flexDirection: 'row', width: config.windowWidth / 5, justifyContent: 'space-between' }}>
                                 <TouchableOpacity onPress={() => controleSolicitacao(0, item.id)}>
-                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faCheck} size={config.windowWidth / 12} color={cores.branco} />
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faCheck} size={config.windowWidth / 12} color={cores.verde} />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => controleSolicitacao(1, item.id)}>
-                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faXmark} size={config.windowWidth / 12} color={cores.branco} />
+                                    <FontAwesomeIcon style={{ alignSelf: 'flex-end' }} icon={faXmark} size={config.windowWidth / 12} color={cores.vermelho} />
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -1,13 +1,12 @@
-import React, { useState, useContext, useLayoutEffect, useEffect, Fragment } from 'react'
+import React, { useState, useContext, useLayoutEffect, Fragment, useCallback } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { config, cores, estilos } from '../styles/Estilos'
 import BtnBlue from '../components/BtnBlue'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faRightFromBracket, faAnglesRight, faVanShuttle } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext } from '../apis/AuthContext'
-import { setInfo } from '../redux/reducers/usuarioReducer'
 import avatarPadrao from '../../assets/img/avatarPadrao.jpg'
 import { useAfterMountEffect } from '../helpers/FuncoesPadrao'
 
@@ -19,27 +18,27 @@ export default function TelaHome() {
   })
 
   const navigation = useNavigation<any>()
-  const dispatch = useDispatch()
 
   const { logout, refreshUser, mediador, quitFromRoute } = useContext(AuthContext)
   const [userName, setUserName] = useState<string>('')
   const [isDriver, setIsDriver] = useState(false)
   const [loaderReq, setLoaderReq] = useState(false)
 
-  useEffect(() => {
-    requisitarRota()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      requisitarRota()
+    }, [])
+  )
 
   useAfterMountEffect(() => {
     requisitarRota()
-  }, [store.user.route, store.user.driverid])
+  }, [store.user.driverId])
 
   useLayoutEffect(() => {
     setUserName(store.user.user.fullName)
     let driver = store.user.type == 'driver' ? true : false
     setIsDriver(driver)
   }, [])
-
 
   const requisitarRota = async () => {
     try {
@@ -49,17 +48,6 @@ export default function TelaHome() {
       console.log(e)
     } finally {
       setLoaderReq(false)
-    }
-  }
-
-  const updateOnRemove = async () => {
-    const aux = store.user
-    try {
-      dispatch(setInfo({ driver: null }))
-      dispatch(setInfo({ diverId: null }))
-      const resp = await refreshUser()
-    } catch (e) {
-      console.log(e)
     }
   }
 

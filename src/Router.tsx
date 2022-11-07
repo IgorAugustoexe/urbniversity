@@ -14,6 +14,7 @@ import TelaRota from './screens/motorista/TelaRota'
 import TelaSolicitacoes from './screens/motorista/TelaSolicitacoes'
 import { navigationRef } from './apis/AuthContext'
 import TelaMapaMotorista from './screens/mapa/TelaMapaMotorista'
+import DetalhesEstudante from './screens/motorista/DetalhesEstudante'
 
 const Stack = createStackNavigator()
 
@@ -33,10 +34,22 @@ export default function App() {
                 {store.user.access_token ?
                     <>
                         {store.user.user.driverId ?
-                            <Stack.Screen
-                                name="telaRota"
-                                component={TelaRota}
-                            />
+                            <>
+                                <Stack.Screen
+                                    name="telaRota"
+                                    component={TelaRota}
+                                />
+
+                                <Stack.Screen
+                                    name="detalhesEstudante"
+                                    component={DetalhesEstudante}
+                                    options={{
+                                        presentation: 'transparentModal',
+                                        animationEnabled: true,
+                                        cardOverlayEnabled: true
+                                    }}
+                                />
+                            </>
                             :
                             <Stack.Screen
                                 name="home"
@@ -80,7 +93,6 @@ export default function App() {
                         />
                     </>
                 }
-
                 <Stack.Screen
                     name="modalErro"
                     component={ModalErroGenerico}

@@ -68,8 +68,10 @@ export default function TelaVeiculo() {
 
   // componentes
 
+  console.log(route.params.driver?.user.photo)
+
   const ImagemVeiculo = () => (
-    <Image style={styles.imgVeiculo} source={(store.user.type == 'driver' || store.user.user.photo) ? { uri: route.params?.driver?.user.photo || store.user.user.photo } : avatarPadrao} />
+    <Image style={styles.imgVeiculo} source={(store.user.type == 'driver' || store.user.user.photo) ? { uri: route.params.driver?.user.photo || store.user.user.photo } : avatarPadrao} />
   );
 
   const Dados = (props: any) => {
@@ -214,7 +216,7 @@ export default function TelaVeiculo() {
           onPress={() => solicitarMotorista()}
           disabled={loaderBtn}
           style={styles.btnRodape}>
-          <BtnBlue text={'SOLICITAR MOTORISTA'} loader={loaderBtn} larguraLoader={config.windowWidth / 4.7} />
+          <BtnBlue text={'SOLICITAR MOTORISTA'} loader={loaderBtn} larguraLoader={config.windowWidth / 5.5} />
         </TouchableOpacity>
       )}
     </SafeAreaView>

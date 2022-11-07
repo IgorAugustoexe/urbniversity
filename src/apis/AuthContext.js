@@ -133,9 +133,9 @@ export const AuthProvider = ({ children }) => {
     const registerComplement = async (entity, object, token) => {
         const config = { headers: { 'Authorization': `Bearer ${token}` } };
         try {
-           const aux = await axios.post(`/${entity}`, object, config)
-           const resp = aux.data
-           return resp
+            const aux = await axios.post(`/${entity}`, object, config)
+            const resp = aux.data
+            return resp
         } catch (e) {
             console.log(`Register ${entity} error: ${e}`)
             return
@@ -276,19 +276,23 @@ export const AuthProvider = ({ children }) => {
     const mediador = (text, funcao, params, refresh) => {
         navigate('modalErro', { texto: text, btnTxt: "Sim", btn2Txt: "Não", btn1Func: funcao, parameters: params, refresh: refresh })
     }
-    const quitFromRoute = async () =>{
+    const quitFromRoute = async () => {
 
         const options = {
             method: 'POST',
             url: `${BASE_URL}/${store.type}/leave`,
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${store.accessToken}`
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${store.accessToken}`
             }
-          };
+        };
 
-        try {       
+        try {
             const aux = axios.request(options)
+            if (aux) {
+                dispatch(setInfo({ driver: null }))
+                dispatch(setInfo({ diverId: null }))
+            }
             const resp = aux.data
             return resp
         } catch (error) {
@@ -296,27 +300,28 @@ export const AuthProvider = ({ children }) => {
             console.log(`Error while quiting route ${e}`);
             return;
         }
-    } 
-    const removeFromRoute = async (id) =>{
+    }
+    const removeFromRoute = async (id) => {
         const options = {
             method: 'POST',
             url: `${BASE_URL}/${store.type}/kick`,
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${store.accessToken}`
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${store.accessToken}`
             },
-            data: {studentId: id}
-          };
-        try {       
+            data: { studentId: id }
+        };
+        try {
             const aux = axios.request(options)
             const resp = aux.data
+            popUpErroGenerico({ type: 'customSuccess', text1: 'Estudante removido com sucesso', text2: `O estudante foi removido do seu veículo` })
             return resp
         } catch (error) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             console.log(`Error while quiting route ${e}`);
             return;
         }
-    } 
+    }
     const getSpots = async () => {
         try {
             const config = { headers: { 'Authorization': `Bearer ${store.accessToken}` } };
@@ -329,7 +334,7 @@ export const AuthProvider = ({ children }) => {
 
 
         } catch (e) {
-           
+
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique a sua conexão e tente novamente` })
             return;
         }
@@ -503,13 +508,13 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
-   
+
 
     //Chama a função resposnavel por verificar a validade do token
     useEffect(() => {
         if (store.accessToken && !isLogged) {
             isLoggedIn();
-            
+
         }
     }, [store.accessToken]);
 

@@ -105,7 +105,6 @@ export default function TelaLogin() {
     }
 
     const realizarLogin = () => {
-        setLoaderReq(true)
         try {
             setLoaderReq(true)
 
@@ -120,8 +119,8 @@ export default function TelaLogin() {
                 return
             }
             login(email, senha, setLoaderReq)
-        } catch (error) {
-            console.log(error)
+        } catch (e) {
+            console.log(e)
         } finally {
             setLoaderReq(false)
         }

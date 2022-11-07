@@ -2,13 +2,15 @@ import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } fro
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, FlatList, Linking } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useSelector } from 'react-redux'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { AuthContext } from '../../apis/AuthContext'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faXmark, faVanShuttle, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
+import { faVanShuttle, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import BtnBlue from '../../components/BtnBlue'
 import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
+import { useCallback } from 'react'
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
+import { useAfterMountEffect } from '../../helpers/FuncoesPadrao'
 
 export default function TelaRota() {
   const store: any = useSelector<any>(({ user }) => {
@@ -23,15 +25,18 @@ export default function TelaRota() {
 
   const [userName, setUserName] = useState<string>('')
   const [isDriver, setIsDriver] = useState(false)
-  const [requests, setRequests] = useState<any[]>([])
   const [loaderReq, setLoaderReq] = useState<boolean>(false)
   const [loaderRefresh, setLoaderRefresh] = useState<boolean>(false)
+  const [solicitacoes, setSolicitacoes] = useState<number>(0)
   const [listaEstudantes, setListaEstudantes] = useState<any[]>([])
   const [erroReq, setErroReq] = useState<boolean>(false)
 
-  useEffect(() => {
-    montarTela()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      requisitarSolicitacoes()
+      montarTela()
+    }, [])
+  )
 
   useLayoutEffect(() => {
     setUserName(store.user.user.fullName);
@@ -60,11 +65,18 @@ export default function TelaRota() {
     }
   }
 
-  const removeEstudante = async (id: string) => {
-    await mediador('Deseja mesmo remover este estudante?', removeFromRoute, id)
+  const requisitarSolicitacoes = async () => {
+    try {
+      const resp = await getData(`request/${store.user.type}`)
+      if (resp) {
+        setSolicitacoes(resp.length)
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 
-  const callWhatsapp = (number: string) => {
+  const abrirWpp = (number: string) => {
     let url = 'whatsapp://send?text=' + '' + '&phone=55' + number
     Linking.openURL(url)
       .then(data => {
@@ -72,7 +84,21 @@ export default function TelaRota() {
       })
       .catch(e => {
         console.log(e)
+        navigation.navigate('modalErro')
       })
+  }
+
+  const abrirDetalhesEstudante = (item: any) => {
+    console.log(item)
+    navigation.navigate('detalhesEstudante', {
+      id: item.id,
+      imagem: item.user.photo,
+      cidade: `${item.address.city.name}/${item.address.city.state}`,
+      endereco: `${item.address.street}, ${item.address.number} - ${item.address.district} | ${item.address.cep}`,
+      faculdade: item.university.name,
+      nome: item.user.fullName,
+      celular: item.user.phone,
+    })
   }
 
   // COMPONENTES
@@ -105,7 +131,7 @@ export default function TelaRota() {
             <Text style={styles.txtBtn}>SOLICITAÇÕES</Text>
             <View style={styles.reqContainer}>
               <Text style={styles.reqCounter}>
-                {requests ? requests.length : '0'}
+                {solicitacoes}
               </Text>
             </View>
           </TouchableOpacity>
@@ -127,7 +153,9 @@ export default function TelaRota() {
       renderItem={({ item, index }) => {
         return (
           <TouchableOpacity
-            style={{ backgroundColor: cores.azulPrimario, marginVertical: 5, flexDirection: 'row', paddingHorizontal: 8 }}>
+            style={{ backgroundColor: cores.azulPrimario, marginVertical: 5, flexDirection: 'row', paddingHorizontal: 8 }}
+            onPress={() => abrirDetalhesEstudante(item)}
+          >
             <Image
               style={styles.imgMotorista}
               source={item.user.photo ? { uri: item.user.photo } : avatarPadrao}
@@ -136,10 +164,10 @@ export default function TelaRota() {
               <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 18, color: cores.fonteBranco, paddingVertical: 3, fontWeight: 'bold' }}>
                 {item.user.fullName}
               </Text>
-              <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }} onPress={() => removeEstudante(item.id)}>
+              <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }} onPress={() => abrirWpp(item.user.phone)}>
                 <FontAwesomeIcon
                   style={{ alignSelf: 'flex-end' }}
-                  icon={faXmark}
+                  icon={faWhatsapp}
                   size={config.windowWidth / 11}
                   color={cores.branco}
                 />
