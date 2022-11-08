@@ -63,7 +63,7 @@ export default function TelaPesquisaMotorista() {
             renderItem={({ item, index }) => {
                 return (
                     <TouchableOpacity style={{ paddingLeft: '2%', backgroundColor: cores.azulPrimario, marginHorizontal: config.windowWidth / 20, marginVertical: 7, flexDirection: 'row', borderRadius: 5 }}
-                        onPress={() => navigation.navigate('veiculo', { driver: item })}>
+                        onPress={() => navigation.navigate('veiculo', { driver: item, tela: 'Pesquisa' })}>
                         <View>
                             <Image
                                 style={styles.imgMotorista}
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 50,
+        backgroundColor: cores.disabled
     },
     containerListaVazia: {
         backgroundColor: cores.azulPrimario,

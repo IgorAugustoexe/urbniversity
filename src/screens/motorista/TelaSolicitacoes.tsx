@@ -52,7 +52,6 @@ export default function TelaSolicitacoes() {
 
     const controleSolicitacao = async (tipo: number, id: string) => {
         await mediador(tipo == 0 ? 'Deseja mesmo aceitar este estudante?' : 'Deseja mesmo recusar este estudante?', tipo == 0 ? acceptRequest : removeRequest, id)
-        navigation.goBack()
     }
 
     // COMPONENTES 

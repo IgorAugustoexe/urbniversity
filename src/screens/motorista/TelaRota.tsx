@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useContext, useLayoutEffect } from 'react'
+import React, { useState, Fragment, useContext, useLayoutEffect } from 'react'
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, FlatList, Linking } from 'react-native'
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useSelector } from 'react-redux'
@@ -10,7 +10,6 @@ import BtnBlue from '../../components/BtnBlue'
 import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 import { useCallback } from 'react'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
-import { useAfterMountEffect } from '../../helpers/FuncoesPadrao'
 
 export default function TelaRota() {
   const store: any = useSelector<any>(({ user }) => {
@@ -89,7 +88,6 @@ export default function TelaRota() {
   }
 
   const abrirDetalhesEstudante = (item: any) => {
-    console.log(item)
     navigation.navigate('detalhesEstudante', {
       id: item.id,
       imagem: item.user.photo,
@@ -119,7 +117,7 @@ export default function TelaRota() {
       <View style={styles.containerHeader}>
         <Image style={styles.imgUser} source={store.user.user ? { uri: store.user.user.photo } : avatarPadrao} />
         <View style={styles.headerBtn}>
-          <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { driver: null })}>
+          <TouchableOpacity style={styles.containerBtn} onPress={() => navigation.navigate('veiculo', { tela: 'Rota' })}>
             <Text style={styles.txtBtn}>MEU VEÍCULO</Text>
             <FontAwesomeIcon
               icon={faVanShuttle}
@@ -259,7 +257,8 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderWidth: 2,
     borderColor: cores.branco,
-    borderRadius: 50
+    borderRadius: 50,
+    backgroundColor: cores.disabled
   },
   rodape: {
     position: 'absolute',

@@ -10,7 +10,6 @@ type Props = {
 }
 
 export default function BtnBlue({ text, loader, style, larguraLoader }: Props) {
-    console.log(larguraLoader)
     return (
         <View style={[styles.btn, style]}>
             {loader ? <ActivityIndicator color={cores.branco} style={[{ paddingVertical: 2, paddingHorizontal: larguraLoader ? larguraLoader : 0 }]} /> : <Text style={styles.textoBtn}>{text}</Text>}

@@ -75,7 +75,7 @@ export default function TelaHome() {
             <TouchableOpacity
               disabled={!isDriver && !store.user.driverId}
               style={styles.containerBtn}
-              onPress={() => { navigation.navigate('veiculo', { driver: null }) }}>
+              onPress={() => { navigation.navigate('veiculo', { tela: 'Home' }) }}>
               <Text style={[styles.txtBtn, (!isDriver && !store.user.driverId) && { color: cores.disabled }]}>MINHA VAN</Text>
               <FontAwesomeIcon
                 icon={faVanShuttle}
@@ -245,7 +245,8 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderWidth: 2,
     borderColor: cores.branco,
-    borderRadius: 3
+    borderRadius: 3,
+    backgroundColor: cores.disabled
   },
   rodape: {
     position: 'absolute',

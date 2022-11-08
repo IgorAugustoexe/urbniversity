@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useContext } from 'react';
+import React, { useState, Fragment, useEffect, useContext, useRef } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { config, cores, estilos } from '../../styles/Estilos'
 import { useSelector } from 'react-redux'
@@ -12,6 +12,7 @@ import avatarPadrao from '../../../assets/img/avatarPadrao.jpg'
 type navigation = {
   props: {
     driver?: Driver
+    tela: String
   }
 }
 
@@ -21,13 +22,22 @@ export default function TelaVeiculo() {
       user: user,
     }
   })
+
   const navigation = useNavigation<any>()
+  const route = useRoute<RouteProp<navigation, 'props'>>()
+
+  const { createRequest } = useContext(AuthContext)
 
   const [loaderBtn, setLoaderBtn] = useState<boolean>(false)
   const [solicitar, setSolicitar] = useState<boolean>(false)
-  const { createRequest } = useContext(AuthContext);
-  const route = useRoute<RouteProp<navigation, 'props'>>()
+  const [imagem, setImagem] = useState<any>()
 
+  useEffect(() => {
+    verificaTela()
+    if (route.params.driver) {
+      setSolicitar(!solicitar);
+    }
+  }, []);
   const assentos = store.user.driver
     ? parseInt(store.user.driver.vehicle.seats) - 2
     : store.user.vehicle
@@ -42,7 +52,21 @@ export default function TelaVeiculo() {
       ? store.user.user.fullName
       : route.params.driver
         ? route.params.driver.user.fullName
-        : '';
+        : 'Motorista'
+
+  const verificaTela = () => {
+    switch (route.params.tela) {
+      case 'Rota':
+        setImagem(store.user.user.photo)
+        break
+      case 'Home':
+        setImagem(store.user.driver.user.photo)
+        break
+      case 'Pesquisa':
+        setImagem(route.params.driver?.user.photo)
+        break
+    }
+  }
 
   const solicitarMotorista = async () => {
     try {
@@ -59,19 +83,11 @@ export default function TelaVeiculo() {
     }
   }
 
-  useEffect(() => {
-    //console.log(JSON.stringify(route.params.driver, null, "\t"));
-    if (route.params.driver) {
-      setSolicitar(!solicitar);
-    }
-  }, []);
 
   // componentes
 
-  console.log(route.params.driver?.user.photo)
-
   const ImagemVeiculo = () => (
-    <Image style={styles.imgVeiculo} source={(store.user.type == 'driver' || store.user.user.photo) ? { uri: route.params.driver?.user.photo || store.user.user.photo } : avatarPadrao} />
+    <Image style={styles.imgVeiculo} source={imagem ? { uri: imagem } : avatarPadrao} />
   );
 
   const Dados = (props: any) => {
@@ -234,6 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: '2%',
     borderWidth: 2,
     borderColor: 'white',
+    backgroundColor: cores.disabled
   },
 
   btnRodape: {
