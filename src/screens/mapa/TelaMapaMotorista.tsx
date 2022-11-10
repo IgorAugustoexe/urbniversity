@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, Fragment} from 'react';
+import React, { useContext, useState, useEffect, Fragment } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,16 +6,16 @@ import {
   TouchableOpacity,
   PermissionsAndroid,
 } from 'react-native';
-import {config, cores} from '../../styles/Estilos';
-import {useSelector} from 'react-redux';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faPen, faBroom} from '@fortawesome/free-solid-svg-icons';
-import MapView, {Marker} from 'react-native-maps';
+import { config, cores } from '../../styles/Estilos';
+import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faPen, faBroom } from '@fortawesome/free-solid-svg-icons';
+import MapView, { Marker } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import MapViewDirections from 'react-native-maps-directions';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {AuthContext} from '../../apis/AuthContext';
-import {selection_sort} from '../../helpers/FuncoesPadrao';
+import { AuthContext } from '../../apis/AuthContext';
+import { selection_sort } from '../../helpers/FuncoesPadrao';
 import BtnVoltar from '../../components/BtnVoltar';
 
 const options = {
@@ -24,7 +24,7 @@ const options = {
 };
 
 export default function TelaMapaMotorista() {
-  const store: any = useSelector<any>(({user}) => {
+  const store: any = useSelector<any>(({ user }) => {
     return {
       user: user,
     };
@@ -47,7 +47,7 @@ export default function TelaMapaMotorista() {
   });
   const [ativarMarcadores, setAtivarMarcadores] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const {getSpots, setSpots} = useContext(AuthContext);
+  const { getSpots, setSpots } = useContext(AuthContext);
   const [newSpots, setNewSpots] = useState<any>([]);
   const unifae = {
     latitude: -21.964652345070213,
@@ -181,7 +181,7 @@ export default function TelaMapaMotorista() {
   );
 
   const BtnLimpar = () => (
-    <View style={[styles.btnEditarMarcadores, {top: config.windowWidth / 2}]}>
+    <View style={[styles.btnEditarMarcadores, { top: config.windowWidth / 2 }]}>
       <TouchableOpacity
         style={styles.areaBtnEditarMarcadores}
         hitSlop={styles.hitSlopPadrao}
@@ -210,11 +210,11 @@ export default function TelaMapaMotorista() {
         Object.keys(regiao).length !== 0
           ? regiao
           : {
-              latitude: -21.96981,
-              latitudeDelta: 0.0922,
-              longitude: -46.79850499999999,
-              longitudeDelta: 0.0421,
-            }
+            latitude: -21.96981,
+            latitudeDelta: 0.0922,
+            longitude: -46.79850499999999,
+            longitudeDelta: 0.0421,
+          }
       } // região inicial
       //minZoomLevel={14} // minimo de zoom no mapa
       showsUserLocation // mostrar localização do user
@@ -237,25 +237,25 @@ export default function TelaMapaMotorista() {
               Object.keys(origem).length !== 0
                 ? origem
                 : {
-                    latitude: -21.964652345070213,
-                    longitude: -46.791549417993124,
-                  }
+                  latitude: -21.964652345070213,
+                  longitude: -46.791549417993124,
+                }
             }
             draggable
             onDragStart={() =>
               ReactNativeHapticFeedback.trigger('impactMedium', options)
             }
             onDragEnd={event => setOrigem(event.nativeEvent.coordinate)}
-            image={require('../../../assets/img/onibusImage.png')}
+            image={require('../../../assets/img/onibus.png')}
           />
           <Marker
             coordinate={
               Object.keys(destino).length !== 0
                 ? destino
                 : {
-                    latitude: -21.96981,
-                    longitude: -46.79850499999999,
-                  }
+                  latitude: -21.96981,
+                  longitude: -46.79850499999999,
+                }
             }
             draggable
             onDragStart={() =>
@@ -279,7 +279,7 @@ export default function TelaMapaMotorista() {
   );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <BtnVoltar />
       {Mapa()}
       {ativarMarcadores ? (

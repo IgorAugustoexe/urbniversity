@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useContext} from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,18 +8,18 @@ import {
   Image,
   PermissionsAndroid,
 } from 'react-native';
-import {config, cores, estilos} from '../../styles/Estilos';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faFlagCheckered} from '@fortawesome/free-solid-svg-icons/faFlagCheckered';
-import MapView, {Marker, Polyline} from 'react-native-maps';
+import { config, cores, estilos } from '../../styles/Estilos';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faFlagCheckered } from '@fortawesome/free-solid-svg-icons/faFlagCheckered';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import MapViewDirections from 'react-native-maps-directions';
-import {mapaNoite} from './estilosMapa';
+import { mapaNoite } from './estilosMapa';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {AuthContext} from '../../apis/AuthContext';
-import {useDispatch, useSelector} from 'react-redux';
-import {selection_sort} from '../../helpers/FuncoesPadrao';
+import { AuthContext } from '../../apis/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { selection_sort } from '../../helpers/FuncoesPadrao';
 import BtnVoltar from '../../components/BtnVoltar';
 
 const options = {
@@ -28,7 +28,7 @@ const options = {
 };
 
 export default function TelaMapa() {
-  const store: any = useSelector<any>(({user}) => {
+  const store: any = useSelector<any>(({ user }) => {
     return {
       user: user,
     };
@@ -51,7 +51,7 @@ export default function TelaMapa() {
     longitude: -46.79187,
   });
   const [loading, setLoading] = useState(false);
-  const {getSpots} = useContext(AuthContext);
+  const { getSpots } = useContext(AuthContext);
   const unifae = {
     latitude: -21.964652345070213,
     longitude: -46.791549417993124,
@@ -139,11 +139,11 @@ export default function TelaMapa() {
           Object.keys(regiao).length !== 0
             ? regiao
             : {
-                latitude: -21.96981,
-                latitudeDelta: 0.0922,
-                longitude: -46.79850499999999,
-                longitudeDelta: 0.0421,
-              }
+              latitude: -21.96981,
+              latitudeDelta: 0.0922,
+              longitude: -46.79850499999999,
+              longitudeDelta: 0.0421,
+            }
         } // região inicial
         minZoomLevel={10} // minimo de zoom no mapa
         showsUserLocation // mostrar localização do user
@@ -163,25 +163,25 @@ export default function TelaMapa() {
             Object.keys(origem).length !== 0
               ? origem
               : {
-                  latitude: -21.964652345070213,
-                  longitude: -46.791549417993124,
-                }
+                latitude: -21.964652345070213,
+                longitude: -46.791549417993124,
+              }
           }
           draggable
           onDragStart={() =>
             ReactNativeHapticFeedback.trigger('impactMedium', options)
           }
           onDragEnd={event => setOrigem(event.nativeEvent.coordinate)}
-          image={require('../../../assets/img/onibusImage.png')}
+          image={require('../../../assets/img/onibus.png')}
         />
         <Marker
           coordinate={
             Object.keys(destino).length !== 0
               ? destino
               : {
-                  latitude: -21.96981,
-                  longitude: -46.79850499999999,
-                }
+                latitude: -21.96981,
+                longitude: -46.79850499999999,
+              }
           }
           draggable
           onDragStart={() =>
