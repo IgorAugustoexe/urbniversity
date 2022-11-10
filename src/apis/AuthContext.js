@@ -117,8 +117,8 @@ export const AuthProvider = ({ children }) => {
             userInfo['access_token'] = authentication.access_token
             userInfo['type'] = authentication.type
             //console.log(JSON.stringify(userInfo, null, "\t"));
-
             popUpErroGenerico({ type: 'customSuccess', text1: 'Usuario cadastrado com sucesso', text2: `Por favor aguarde enquanto iniciamos a sua sessão` })
+
 
         } catch (e) {
             popUpErroGenerico({ type: 'customError', text1: 'Alguma coisa aconteceu', text2: `Por favor verfique todos os campos, a sua conexão e tente novamente` })
